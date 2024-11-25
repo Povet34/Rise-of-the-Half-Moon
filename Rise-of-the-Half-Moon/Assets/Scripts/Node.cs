@@ -5,17 +5,19 @@ public class Node : MonoBehaviour
 {
     public Vector3 position;
     public List<Edge> connectedEdges = new List<Edge>();
-    private Renderer nodeRenderer;  // Renderer to change the color
+    
+    private Renderer renderer;  // Renderer to change the color
+    private int occupiedUser;
 
     public void Init(Vector3 position, GameObject nodeObject)
     {
         this.position = position;
-        nodeRenderer = nodeObject.GetComponent<Renderer>(); // Get the Renderer component
+        renderer = nodeObject.GetComponent<Renderer>(); // Get the Renderer component
     }
 
-    public void SetData(MoonPhaseData data)
+    public void PutCard(MoonPhaseData data)
     {
-        nodeRenderer.material.mainTexture = data.phaseTexture; // Set the texture to the phase texture
+        renderer.material.mainTexture = data.phaseTexture; // Set the texture to the phase texture
     }
 
     // This method changes the color of the node based on the number of connected edges
@@ -61,6 +63,6 @@ public class Node : MonoBehaviour
         if (!TestManager.Instance.isTest)
             return;
 
-        nodeRenderer.material.color = color;
+        renderer.material.color = color;
     }
 }

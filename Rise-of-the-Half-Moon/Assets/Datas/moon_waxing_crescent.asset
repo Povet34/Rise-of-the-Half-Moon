@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8152da077a04bc439cf45cbec924661, type: 3}
   m_Name: moon_waxing_crescent
   m_EditorClassIdentifier: 
-  phaseName: WaxingCrescent
+  phaseType: 7
   phaseTexture: {fileID: 2800000, guid: 229bda6f67317014980cf547b3017eb0, type: 3}
+  cardBackSprite: {fileID: 21300000, guid: e6982a2942b3bea4e94d89f7aea3c080, type: 3}
   description: "\uCD08\uC2B9\uB2EC"

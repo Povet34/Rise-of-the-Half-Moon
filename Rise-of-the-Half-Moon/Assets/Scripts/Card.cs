@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using DG.Tweening;
 
 public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    public bool isMine;
     public MoonPhaseData moonPhaseData; // MoonPhaseData를 참조
     private CanvasGroup canvasGroup;
     private RectTransform rectTransform;
@@ -22,13 +22,16 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     {
         if (moonPhaseData != null)
         {
-            cardImage.sprite = moonPhaseData.GetSprite();
+            cardImage.sprite = moonPhaseData.GetSprite(isMine);
             cardImage.transform.localScale = new Vector3(-1, 1, 1);
         }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (!isMine)
+            return;
+
         canvasGroup.alpha = 0.6f; // 드래그 중 투명도 조절
         canvasGroup.blocksRaycasts = false; // 드래그 중 다른 UI 요소와의 상호작용 허용
     }
@@ -51,7 +54,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             Node node = hit.collider.GetComponent<Node>();
             if (node != null)
             {
-                node.SetData(moonPhaseData); // 노드의 텍스처를 변경
+                node.PutCard(moonPhaseData);
                 Destroy();
             }
         }
