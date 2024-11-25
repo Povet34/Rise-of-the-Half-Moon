@@ -1,3 +1,5 @@
+using System;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -11,6 +13,8 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     [SerializeField] private Image cardBackgroundIamge;
     [SerializeField] private Image cardImage;
+
+    Action nextTurnCallback;
 
     private void Awake()
     {
@@ -27,6 +31,13 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         }
     }
 
+    public void SetCallbacks(Action nextTurnCallback)
+    {
+        this.nextTurnCallback = nextTurnCallback;
+    }
+
+    #region Player Input
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!isMine)
@@ -38,11 +49,17 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (!isMine)
+            return;
+
         rectTransform.anchoredPosition += eventData.delta / canvasGroup.transform.localScale.x; // 드래그 위치 업데이트
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!isMine)
+            return;
+
         canvasGroup.alpha = 1.0f; // 드래그 종료 후 투명도 복원
         canvasGroup.blocksRaycasts = true; // 드래그 종료 후 상호작용 복원
 
@@ -54,10 +71,19 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             Node node = hit.collider.GetComponent<Node>();
             if (node != null)
             {
-                node.PutCard(moonPhaseData);
-                Destroy();
+                PlaceCard(node);
             }
         }
+    }
+
+    #endregion
+
+    public void PlaceCard(Node node)
+    {
+        node.PutCard(moonPhaseData);
+        nextTurnCallback?.Invoke();
+
+        Destroy();
     }
 
     private void Destroy()

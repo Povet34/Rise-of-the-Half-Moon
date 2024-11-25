@@ -20,6 +20,8 @@ public class GridGeneratorWithEightDirections : MonoBehaviour
 
     private Node selectedNode = null; // The currently selected node
 
+    public List<Node> Nodes => nodes;
+
     readonly Vector3[] validDirections = new Vector3[]
     {
         Vector3.right,
@@ -28,20 +30,15 @@ public class GridGeneratorWithEightDirections : MonoBehaviour
         Vector3.down
     };
 
-    void Start()
-    {
-        Create();
-    }
-
     public void Create()
     {
+        nodes.Clear();
+        edges.Clear();
+
         Random.InitState(seed); // 랜덤 시드 초기화
         GenerateGrid();
         GenerateRandomConnections();
         EnsureAllNodesConnected();
-
-        nodes.Clear();
-        edges.Clear();
     }
 
     private void Update()

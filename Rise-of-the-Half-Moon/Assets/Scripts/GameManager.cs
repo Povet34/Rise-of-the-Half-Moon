@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -8,6 +9,8 @@ public class GameManager : MonoBehaviour
     public Transform canvasTransform; 
     public MoonPhaseData[] moonPhaseDataArray;
     private System.Random random;
+    private GridGeneratorWithEightDirections gridGenerator;
+    private bool isPlayerTurn;
 
     [Header("Me")]
     public List<Card> myCards;
@@ -23,6 +26,7 @@ public class GameManager : MonoBehaviour
     };
 
     [Header("Other")]
+    public Bot bot;
     public List<Card> otherCards;
 
     private static readonly Vector2[] otherTwoCardPositions = {
@@ -38,9 +42,17 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        gridGenerator = FindObjectOfType<GridGeneratorWithEightDirections>();
+        gridGenerator.Create();
+
         random = new System.Random();
         InitCards(2, myCards, true);
         InitCards(2, otherCards, false);
+
+        bot.Init(otherCards, gridGenerator.Nodes);
+
+        isPlayerTurn = true; // 플레이어가 먼저 시작
+        DrawCard(isPlayerTurn);
     }
 
     private void InitCards(int cardCount, List<Card> cards, bool isPlayer1)
@@ -71,5 +83,33 @@ public class GameManager : MonoBehaviour
         {
             return cardCount == 2 ? otherTwoCardPositions : otherThreeCardPositions;
         }
+    }
+
+    private void NextTurn()
+    {
+        isPlayerTurn = !isPlayerTurn;
+        DrawCard(isPlayerTurn);
+
+        if (!isPlayerTurn)
+        {
+            bot.PlaceCard();
+        }
+    }
+
+    private void DrawCard(bool isPlayerTurn)
+    {
+        List<Card> targetCards = isPlayerTurn ? myCards : otherCards;
+        Vector2[] positions = GetCardPositions(targetCards.Count + 1, isPlayerTurn);
+
+        GameObject go = Instantiate(cardPrefab, canvasTransform);
+        RectTransform rectTransform = go.GetComponent<RectTransform>();
+        rectTransform.anchoredPosition = positions[targetCards.Count];
+
+        Card card = go.GetComponent<Card>();
+        card.moonPhaseData = moonPhaseDataArray[random.Next(moonPhaseDataArray.Length)];
+        card.isMine = isPlayerTurn;
+        card.SetCallbacks(NextTurn);
+
+        targetCards.Add(card);
     }
 }
