@@ -35,7 +35,7 @@ public class Node : MonoBehaviour
     }
 
     public List<Node> GetAdjacentNodes()
-    {
+    {   
         List<Node> adjacentNodes = new List<Node>();
         foreach (Edge edge in connectedEdges)
         {
@@ -60,11 +60,11 @@ public class Node : MonoBehaviour
             int score = RuleManager.Instance.OnCardPlaced(this);
             if(data.occupiedUser == Definitions.MY_INDEX)
             {
-                UIManager.Instance.UpdateMyScore(score);
+                GameManager.Instance.UpdateMyScore(score);
             }
             else
             {
-                UIManager.Instance.UpdateOtherScore(score);
+                GameManager.Instance.UpdateOtherScore(score);
             }
         }
     }

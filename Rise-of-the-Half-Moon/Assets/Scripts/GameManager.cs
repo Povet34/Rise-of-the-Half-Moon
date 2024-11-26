@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
     [Header("Data")]
     public GameObject cardPrefab;
@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     private bool isPlayerTurn;
 
     [Header("Me")]
+    public int myScore;
     public List<Card> myCards;
 
     private static readonly Vector2[] myTwoCardPositions = {
@@ -26,6 +27,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Other")]
     public Bot bot;
+    public int otherScore;
     public List<Card> otherCards;
 
     private static readonly Vector2[] otherTwoCardPositions = {
@@ -132,5 +134,17 @@ public class GameManager : MonoBehaviour
             RectTransform rectTransform = cards[i].GetComponent<RectTransform>();
             rectTransform.anchoredPosition = positions[i];
         }
+    }
+
+    public void UpdateMyScore(int score)
+    {
+        myScore += score;
+        UIManager.Instance.UpdateMyScore(score);
+    }
+
+    public void UpdateOtherScore(int score)
+    {
+        otherScore += score;
+        UIManager.Instance.UpdateOtherScore(score);
     }
 }
