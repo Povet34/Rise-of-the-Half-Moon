@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -10,7 +11,7 @@ public class Node : MonoBehaviour
         public MoonPhaseData moonPhaseData; //moon phase data
     }
 
-    private Renderer renderer;  // Renderer to change the color
+    private Renderer nodeRenderer;  // Renderer to change the color
     public Vector3 position;
     public List<Edge> connectedEdges = new List<Edge>();
 
@@ -23,7 +24,7 @@ public class Node : MonoBehaviour
     public void Init(Vector3 position, GameObject nodeObject)
     {
         this.position = position;
-        renderer = nodeObject.GetComponent<Renderer>(); // Get the Renderer component
+        nodeRenderer = nodeObject.GetComponent<Renderer>(); // Get the Renderer component
     }
 
     public MoonPhaseData.PhaseType GetPhaseType()
@@ -55,10 +56,14 @@ public class Node : MonoBehaviour
             moonPhaseData = data.moonPhaseData;
             occupiedUser = data.occupiedUser;
 
-            renderer.material.mainTexture = moonPhaseData.phaseTexture; // Set the texture to the phase texture
+            nodeRenderer.material.mainTexture = moonPhaseData.phaseTexture; // Set the texture to the phase texture
 
             int score = RuleManager.Instance.OnCardPlaced(this);
-            if(data.occupiedUser == Definitions.MY_INDEX)
+
+            transform.DOShakePosition(0.5f, 0.5f, 10, 90, false, true);
+            transform.DOShakeScale(0.5f, 0.5f, 10, 90, false);
+
+            if (data.occupiedUser == Definitions.MY_INDEX)
             {
                 GameManager.Instance.UpdateMyScore(score);
             }
@@ -103,6 +108,6 @@ public class Node : MonoBehaviour
 
     public void ChangeColor(Color color)
     {
-        renderer.material.color = color;
+        nodeRenderer.material.color = color;
     }
 }
