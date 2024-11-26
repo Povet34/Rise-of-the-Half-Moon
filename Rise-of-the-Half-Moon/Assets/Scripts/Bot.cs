@@ -17,9 +17,13 @@ public class Bot : MonoBehaviour
     {
         if (cards.Count == 0 || nodes.Count == 0) return;
 
+        // 사용 가능한 노드 필터링
+        List<Node> availableNodes = nodes.FindAll(node => node.OccupiedUser == 0);
+        if (availableNodes.Count == 0) return;
+
         // 임의의 카드와 Node 선택
         Card cardToPlace = cards[Random.Range(0, cards.Count)];
-        Node targetNode = nodes[Random.Range(0, nodes.Count)];
+        Node targetNode = availableNodes[Random.Range(0, availableNodes.Count)];
 
         cards.Remove(cardToPlace);
         cardToPlace.PlaceCard(targetNode);

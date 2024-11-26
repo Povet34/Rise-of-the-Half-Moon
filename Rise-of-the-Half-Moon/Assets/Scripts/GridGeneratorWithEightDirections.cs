@@ -41,19 +41,6 @@ public class GridGeneratorWithEightDirections : MonoBehaviour
         EnsureAllNodesConnected();
     }
 
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            DetectNode();
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            ResetAllNodeColors();
-        }
-    }
-
     void GenerateGrid()
     {
         for (int i = 0; i < rows; i++)
@@ -196,6 +183,7 @@ public class GridGeneratorWithEightDirections : MonoBehaviour
         nodeB.connectedEdges.Add(newEdge);
     }
 
+    #region Detect node relationship
 
     // Node clicked, select and color based on distance in edges
     void DetectNode()
@@ -268,4 +256,6 @@ public class GridGeneratorWithEightDirections : MonoBehaviour
             node.ResetColor();
         }
     }
+
+    #endregion
 }

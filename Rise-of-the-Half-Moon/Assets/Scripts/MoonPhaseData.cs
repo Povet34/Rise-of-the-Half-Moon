@@ -6,14 +6,15 @@ public class MoonPhaseData : ScriptableObject
 {
     public enum PhaseType
     {
-        NewMoon,            //삭
-        WaningCrescent,     //그믐달
-        ThirdQuarter,       //하현달
-        WaningGibbous,      //하현망
-        FullMoon,           //보름달
-        WaxingGibbous,      //상현망
-        FirstQuarter,       //상현달
-        WaxingCrescent      //초승달
+        None = -100,
+        NewMoon = 0,            // 삭
+        WaningCrescent = 1,     // 그믐달
+        ThirdQuarter = 2,       // 하현달
+        WaningGibbous = 3,      // 하현망
+        FullMoon = 4,           // 보름달
+        WaxingGibbous = 5,      // 상현망
+        FirstQuarter = 6,       // 상현달
+        WaxingCrescent = 7      // 초승달
     }
 
     public PhaseType phaseType;  
@@ -29,5 +30,30 @@ public class MoonPhaseData : ScriptableObject
             return Sprite.Create(phaseTexture, new Rect(0, 0, phaseTexture.width, phaseTexture.height), new Vector2(0.5f, 0.5f));
         else
             return cardBackSprite;
+    }
+
+    /// <summary>
+    /// Phase의 영역인지 확인
+    /// </summary>
+    /// <param name="currentPhase"></param>
+    /// <param name="comparePhase"></param>
+    /// <returns></returns>
+    public bool IsPhasing(PhaseType currentPhase, PhaseType comparePhase)
+    {
+        return comparePhase == GetPreviousPhaseType(currentPhase) || comparePhase == GetNextPhaseType(currentPhase);
+    }
+
+    public static PhaseType GetPreviousPhaseType(PhaseType currentType)
+    {
+        int currentIndex = (int)currentType;
+        int previousIndex = (currentIndex - 1 + 8) % 8; // 8은 PhaseType의 개수
+        return (PhaseType)previousIndex;
+    }
+
+    public static PhaseType GetNextPhaseType(PhaseType currentType)
+    {
+        int currentIndex = (int)currentType;
+        int nextIndex = (currentIndex + 1) % 8; // 8은 PhaseType의 개수
+        return (PhaseType)nextIndex;
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -14,7 +13,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     [SerializeField] private Image cardBackgroundIamge;
     [SerializeField] private Image cardImage;
 
-    Action nextTurnCallback;
+    Action<Card> nextTurnCallback;
 
     private void Awake()
     {
@@ -31,7 +30,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         }
     }
 
-    public void SetCallbacks(Action nextTurnCallback)
+    public void SetCallbacks(Action<Card> nextTurnCallback)
     {
         this.nextTurnCallback = nextTurnCallback;
     }
@@ -80,8 +79,12 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void PlaceCard(Node node)
     {
-        node.PutCard(moonPhaseData);
-        nextTurnCallback?.Invoke();
+        Node.PutData data = new Node.PutData();
+        data.occupiedUser = isMine ? Definitions.MY_INDEX : Definitions.OTHER_INDEX;
+        data.moonPhaseData = moonPhaseData;
+
+        node.PutCard(data);
+        nextTurnCallback?.Invoke(this);
 
         Destroy();
     }
@@ -90,4 +93,5 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     {
         Destroy(gameObject);
     }
+
 }

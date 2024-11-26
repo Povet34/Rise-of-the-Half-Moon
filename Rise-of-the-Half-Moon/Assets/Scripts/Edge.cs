@@ -15,6 +15,14 @@ public class Edge : MonoBehaviour
     // Method to get the other node in case of traversal
     public Node GetOtherNode(Node currentNode)
     {
-        return currentNode == nodeA ? nodeB : nodeA;
+        if (currentNode == nodeA)
+        {
+            return nodeB;
+        }
+        else if (currentNode == nodeB)
+        {
+            return nodeA;
+        }
+        return null;
     }
 }

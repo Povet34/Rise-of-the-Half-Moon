@@ -1,13 +1,24 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class Node : MonoBehaviour
 {
+    public class PutData
+    {
+        public int occupiedUser;   //occupied user index
+        public MoonPhaseData moonPhaseData; //moon phase data
+    }
+
+    private Renderer renderer;  // Renderer to change the color
     public Vector3 position;
     public List<Edge> connectedEdges = new List<Edge>();
-    
-    private Renderer renderer;  // Renderer to change the color
-    private int occupiedUser;
+
+    private int occupiedUser;   //occupied user index
+    private MoonPhaseData moonPhaseData;
+
+    public int OccupiedUser => occupiedUser;
+    public MoonPhaseData MoonPhaseData => moonPhaseData;
 
     public void Init(Vector3 position, GameObject nodeObject)
     {
@@ -15,17 +26,52 @@ public class Node : MonoBehaviour
         renderer = nodeObject.GetComponent<Renderer>(); // Get the Renderer component
     }
 
-    public void PutCard(MoonPhaseData data)
+    public MoonPhaseData.PhaseType GetPhaseType()
     {
-        renderer.material.mainTexture = data.phaseTexture; // Set the texture to the phase texture
+        if (null != moonPhaseData)
+            return moonPhaseData.phaseType;
+        else
+            return MoonPhaseData.PhaseType.None;
+    }
+
+    public List<Node> GetAdjacentNodes()
+    {
+        List<Node> adjacentNodes = new List<Node>();
+        foreach (Edge edge in connectedEdges)
+        {
+            Node adjacentNode = edge.GetOtherNode(this);
+            if (adjacentNode != null)
+            {
+                adjacentNodes.Add(adjacentNode);
+            }
+        }
+        return adjacentNodes;
+    }
+
+    public void PutCard(PutData data)
+    {
+        if (null != data)
+        {
+            moonPhaseData = data.moonPhaseData;
+            occupiedUser = data.occupiedUser;
+
+            renderer.material.mainTexture = moonPhaseData.phaseTexture; // Set the texture to the phase texture
+
+            int score = RuleManager.Instance.OnCardPlaced(this);
+            if(data.occupiedUser == Definitions.MY_INDEX)
+            {
+                UIManager.Instance.UpdateMyScore(score);
+            }
+            else
+            {
+                UIManager.Instance.UpdateOtherScore(score);
+            }
+        }
     }
 
     // This method changes the color of the node based on the number of connected edges
     public void ChangeColorBasedOnEdgeDistance(int edgeDistance)
     {
-        if (!TestManager.Instance.isTest)
-            return;
-
         switch (edgeDistance)
         {
             case 0:
@@ -52,17 +98,11 @@ public class Node : MonoBehaviour
     // Reset color to white
     public void ResetColor()
     {
-        if (!TestManager.Instance.isTest)
-            return;
-
         ChangeColor(Color.white);
     }
 
     public void ChangeColor(Color color)
     {
-        if (!TestManager.Instance.isTest)
-            return;
-
         renderer.material.color = color;
     }
 }

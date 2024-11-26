@@ -1,12 +1,11 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     [Header("Data")]
     public GameObject cardPrefab;
-    public Transform canvasTransform; 
+    public Transform canvasTransform;
     public MoonPhaseData[] moonPhaseDataArray;
     private System.Random random;
     private GridGeneratorWithEightDirections gridGenerator;
@@ -14,7 +13,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Me")]
     public List<Card> myCards;
-    
+
     private static readonly Vector2[] myTwoCardPositions = {
         new Vector2(-80, -400),
         new Vector2(80, -400)
@@ -39,7 +38,6 @@ public class GameManager : MonoBehaviour
         new Vector2(150, 400)
     };
 
-
     private void Start()
     {
         gridGenerator = FindObjectOfType<GridGeneratorWithEightDirections>();
@@ -57,19 +55,9 @@ public class GameManager : MonoBehaviour
 
     private void InitCards(int cardCount, List<Card> cards, bool isPlayer1)
     {
-        Vector2[] positions = GetCardPositions(cardCount, isPlayer1);
-
         for (int i = 0; i < cardCount; i++)
         {
-            GameObject go = Instantiate(cardPrefab, canvasTransform);
-            RectTransform rectTransform = go.GetComponent<RectTransform>();
-            rectTransform.anchoredPosition = positions[i];
-
-            Card card = go.GetComponent<Card>();
-            card.moonPhaseData = moonPhaseDataArray[random.Next(moonPhaseDataArray.Length)];
-            card.isMine = isPlayer1;
-
-            cards.Add(card);
+            DrawCard(isPlayer1, cards);
         }
     }
 
@@ -85,21 +73,41 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void NextTurn()
+    private void NextTurn(Card removedCard)
     {
+        //리스트에서 제거하고
+        if(isPlayerTurn)
+            myCards.Remove(removedCard); 
+        else
+            otherCards.Remove(removedCard);
+
+        //턴을 바꿔주고
         isPlayerTurn = !isPlayerTurn;
+
+        //드로우한다
         DrawCard(isPlayerTurn);
 
+        //만약 ai 턴이면, bot이 둘 수 있도록 한다.
         if (!isPlayerTurn)
         {
             bot.PlaceCard();
         }
     }
 
-    private void DrawCard(bool isPlayerTurn)
+    private void DrawCard(bool isPlayerTurn, List<Card> targetCards = null)
     {
-        List<Card> targetCards = isPlayerTurn ? myCards : otherCards;
+        if (targetCards == null)
+        {
+            targetCards = isPlayerTurn ? myCards : otherCards;
+        }
+
         Vector2[] positions = GetCardPositions(targetCards.Count + 1, isPlayerTurn);
+
+        if (targetCards.Count >= positions.Length)
+        {
+            Debug.LogError("Not enough positions defined for the number of cards.");
+            return;
+        }
 
         GameObject go = Instantiate(cardPrefab, canvasTransform);
         RectTransform rectTransform = go.GetComponent<RectTransform>();
@@ -111,5 +119,18 @@ public class GameManager : MonoBehaviour
         card.SetCallbacks(NextTurn);
 
         targetCards.Add(card);
+
+        RepositionCards(targetCards, isPlayerTurn);
+    }
+
+    private void RepositionCards(List<Card> cards, bool isPlayerTurn)
+    {
+        Vector2[] positions = GetCardPositions(cards.Count, isPlayerTurn);
+
+        for (int i = 0; i < cards.Count; i++)
+        {
+            RectTransform rectTransform = cards[i].GetComponent<RectTransform>();
+            rectTransform.anchoredPosition = positions[i];
+        }
     }
 }
