@@ -13,7 +13,7 @@ public class Bot : MonoBehaviour
         this.nodes = nodes;
     }
 
-    public void PlaceCard()
+    private void PlaceCardRandom()
     {
         if (cards.Count == 0 || nodes.Count == 0) return;
 
@@ -27,5 +27,16 @@ public class Bot : MonoBehaviour
 
         cards.Remove(cardToPlace);
         cardToPlace.PlaceCard(targetNode);
+    }
+
+    public void StartPlaceCard(float delay)
+    {
+        StartCoroutine(DelayPlaceCardBody(delay));
+    }
+
+    private IEnumerator DelayPlaceCardBody(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        PlaceCardRandom();
     }
 }

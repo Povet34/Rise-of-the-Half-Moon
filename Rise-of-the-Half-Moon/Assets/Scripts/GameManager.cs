@@ -92,7 +92,7 @@ public class GameManager : Singleton<GameManager>
         //만약 ai 턴이면, bot이 둘 수 있도록 한다.
         if (!isPlayerTurn)
         {
-            bot.PlaceCard();
+            bot.StartPlaceCard(UnityEngine.Random.Range(1f, 3f));
         }
     }
 

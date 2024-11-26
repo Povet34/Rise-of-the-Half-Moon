@@ -60,6 +60,7 @@ public class Node : MonoBehaviour
 
             int score = RuleManager.Instance.OnCardPlaced(this);
 
+            //Place Animation
             transform.DOShakePosition(0.5f, 0.5f, 10, 90, false, true);
             transform.DOShakeScale(0.5f, 0.5f, 10, 90, false);
 
