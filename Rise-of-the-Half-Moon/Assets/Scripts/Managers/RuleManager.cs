@@ -1,55 +1,70 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using UnityEditor.Search;
 using UnityEngine;
 
 public class RuleManager : Singleton<RuleManager>
 {
-    #region Score
+    bool isAnimating = false;
 
-    public int OnCardPlaced(Node node)
+    Queue<Action> animationQueue = new Queue<Action>();
+
+    #region Calc Score
+
+    private void Update()
     {
-        int totalScore = 0;
-
-        totalScore += CheckAdjacentNodes(node);
-        totalScore += CheckFullMoon(node);
-        totalScore += CheckMoonCycle(node);
-
-        return totalScore;
+        if (!isAnimating && animationQueue.Count > 0)
+        {
+            animationQueue.Dequeue().Invoke();
+        }
     }
 
-    private int CheckAdjacentNodes(Node node)
+    public void OnCardPlaced(Node node)
     {
-        int score = 0;
+        CheckAdjacentNodes(node);
+        CheckFullMoon(node);
+        CheckMoonCycle(node);
+    }
+
+    private void CheckAdjacentNodes(Node node)
+    {
         foreach (Node adjacentNode in node.GetAdjacentNodes())
         {
             if (adjacentNode.MoonPhaseData != null && adjacentNode.GetPhaseType() == node.GetPhaseType())
             {
-                Debug.Log("Adjacent node has the same type.");
-                score += Definitions.SAME_PHASE_SCORE;
+                animationQueue.Enqueue(() =>
+                {
+                    bool isMine = node.OccupiedUser == Definitions.MY_INDEX;
+                    AnimateNodes(new List<Node>() { node, adjacentNode }, isMine);
+                    
+                    if(isMine)
+                        GameManager.Instance.UpdateMyScore(Definitions.SAME_PHASE_SCORE);
+                    else
+                        GameManager.Instance.UpdateOtherScore(Definitions.SAME_PHASE_SCORE);
 
-                AnimateNodes(new List<Node>() { node, adjacentNode }, node.OccupiedUser == Definitions.MY_INDEX);
+                });
             }
         }
-
-        return score;
     }
 
-    private int CheckFullMoon(Node node)
+    private void CheckFullMoon(Node node)
     {
-        int score = 0;
         foreach (Node adjacentNode in node.GetAdjacentNodes())
         {
             if (adjacentNode.MoonPhaseData != null && IsFullMoonCombination(node.GetPhaseType(), adjacentNode.GetPhaseType()))
             {
-                Debug.Log("Adjacent node can form a full moon.");
-                score += Definitions.FULL_MOON_SCORE;
+                bool isMine = node.OccupiedUser == Definitions.MY_INDEX;
+                AnimateNodes(new List<Node>() { node, adjacentNode }, isMine);
 
-                AnimateNodes(new List<Node>() { node, adjacentNode }, node.OccupiedUser == Definitions.MY_INDEX);
+                if (isMine)
+                    GameManager.Instance.UpdateMyScore(Definitions.SAME_PHASE_SCORE);
+                else
+                    GameManager.Instance.UpdateOtherScore(Definitions.SAME_PHASE_SCORE);
             }
         }
-
-        return score;
     }
 
     private bool IsFullMoonCombination(MoonPhaseData.PhaseType type1, MoonPhaseData.PhaseType type2)
@@ -65,10 +80,8 @@ public class RuleManager : Singleton<RuleManager>
                (type1 == MoonPhaseData.PhaseType.WaxingCrescent && type2 == MoonPhaseData.PhaseType.WaningGibbous);
     }
 
-    private int CheckMoonCycle(Node node)
+    private void CheckMoonCycle(Node node)
     {
-        int score = 0;
-
         ColorNodesByPhase(node);
 
         List <Node> cycleNodes = new List<Node>();
@@ -76,7 +89,6 @@ public class RuleManager : Singleton<RuleManager>
         {
             Debug.Log("The placed node forms a moon cycle.");
         }
-        return score;
     }
 
     private bool IsMoonCycle(Node node, List<Node> cycleNodes)
@@ -148,10 +160,12 @@ public class RuleManager : Singleton<RuleManager>
             Vector3 originalScale = node.transform.localScale;
             Vector3 targetScale = originalScale * 1.5f;
 
+            sequence.AppendCallback(() => isAnimating = true);
             sequence.Append(node.transform.DOScale(targetScale, 0.5f));
             sequence.AppendCallback(() => node.EnableEmission(isMine ? Definitions.My_Occupied_Color : Definitions.Other_Occupied_Color));
             sequence.AppendInterval(0.5f);
             sequence.Append(node.transform.DOScale(originalScale, 0.5f));
+            sequence.AppendCallback(() => isAnimating = false);
         }
 
         sequence.Play();

@@ -101,6 +101,8 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         nextTurnCallback?.Invoke(this);
         replaceCallback?.Invoke();
 
+        RuleManager.Instance.OnCardPlaced(node);
+
         Destroy();
     }
 

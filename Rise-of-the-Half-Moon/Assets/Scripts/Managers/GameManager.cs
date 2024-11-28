@@ -78,12 +78,12 @@ public class GameManager : Singleton<GameManager>
     public void UpdateMyScore(int score)
     {
         myScore += score;
-        UIManager.Instance.UpdateMyScore(score);
+        UIManager.Instance.UpdateMyScore(myScore);
     }
 
     public void UpdateOtherScore(int score)
     {
         otherScore += score;
-        UIManager.Instance.UpdateOtherScore(score);
+        UIManager.Instance.UpdateOtherScore(otherScore);
     }
 }

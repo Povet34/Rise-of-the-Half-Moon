@@ -58,20 +58,10 @@ public class Node : MonoBehaviour
 
             nodeRenderer.material.mainTexture = moonPhaseData.phaseTexture; // Set the texture to the phase texture
 
-            int score = RuleManager.Instance.OnCardPlaced(this);
 
             ////Place Animation
             //transform.DOShakePosition(0.5f, 0.5f, 10, 90, false, true);
             //transform.DOShakeScale(0.5f, 0.5f, 10, 90, false);
-
-            if (data.occupiedUser == Definitions.MY_INDEX)
-            {
-                GameManager.Instance.UpdateMyScore(score);
-            }
-            else
-            {
-                GameManager.Instance.UpdateOtherScore(score);
-            }
         }
     }
 
