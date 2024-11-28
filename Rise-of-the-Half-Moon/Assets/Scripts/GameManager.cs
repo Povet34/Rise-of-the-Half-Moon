@@ -32,7 +32,7 @@ public class GameManager : Singleton<GameManager>
     {
         for (int i = 0; i < cardCount; i++)
         {
-            cardDrawer.DrawCard(isPlayer1, cards, NextTurn);
+            cardDrawer.DrawCard(isPlayer1, cards, NextTurn, false);
         }
     }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -10,10 +11,10 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     private CanvasGroup canvasGroup;
     private RectTransform rectTransform;
 
-    [SerializeField] private Image cardBackgroundIamge;
     [SerializeField] private Image cardImage;
 
     Action<Card> nextTurnCallback;
+    Action replaceCallback;
 
     private void Awake()
     {
@@ -30,9 +31,10 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         }
     }
 
-    public void SetCallbacks(Action<Card> nextTurnCallback)
+    public void SetCallbacks(Action<Card> nextTurnCallback, Action replaceCallback)
     {
         this.nextTurnCallback = nextTurnCallback;
+        this.replaceCallback = replaceCallback;
     }
 
     #region Player Input
@@ -85,6 +87,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
         node.PutCard(data);
         nextTurnCallback?.Invoke(this);
+        replaceCallback?.Invoke();
 
         Destroy();
     }

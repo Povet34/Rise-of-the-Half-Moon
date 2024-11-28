@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,9 +17,10 @@ public class CardDrawer : MonoBehaviour
         this.random = random;
     }
 
-    public void DrawCard(bool isPlayerTurn, List<Card> targetCards, System.Action<Card> nextTurnCallback)
+    public void DrawCard(bool isPlayerTurn, List<Card> targetCards, System.Action<Card> nextTurnCallback, bool isTween = true)
     {
         Vector2[] positions = GetCardPositions(targetCards.Count + 1, isPlayerTurn);
+        Vector2 spawnPos = isPlayerTurn ? Definitions.MyDrawCardSpawnPos : Definitions.OhterDrawCardSpawnPos;
 
         if (targetCards.Count >= positions.Length)
         {
@@ -28,14 +30,26 @@ public class CardDrawer : MonoBehaviour
 
         GameObject go = Instantiate(cardPrefab, canvasTransform);
         RectTransform rectTransform = go.GetComponent<RectTransform>();
-        rectTransform.anchoredPosition = positions[targetCards.Count];
+
+        if (isTween)
+            rectTransform.anchoredPosition = spawnPos;
+        else
+            rectTransform.anchoredPosition = positions[targetCards.Count];
 
         Card card = go.GetComponent<Card>();
         card.moonPhaseData = moonPhaseDataArray[random.Next(moonPhaseDataArray.Length)];
         card.isMine = isPlayerTurn;
-        card.SetCallbacks(nextTurnCallback);
+
+        card.SetCallbacks(nextTurnCallback, 
+            () => 
+            {
+                RepositionCards(targetCards, positions);
+            });
 
         targetCards.Add(card);
+
+        RectTransform cardRt = card.GetComponent<RectTransform>();
+        cardRt.DOAnchorPos(positions[targetCards.Count - 1], Definitions.CardMoveDuration).SetEase(Ease.OutQuint);
 
         RepositionCards(targetCards, positions);
     }
@@ -45,7 +59,7 @@ public class CardDrawer : MonoBehaviour
         for (int i = 0; i < cards.Count; i++)
         {
             RectTransform rectTransform = cards[i].GetComponent<RectTransform>();
-            rectTransform.anchoredPosition = positions[i];
+            rectTransform.DOAnchorPos(positions[i], Definitions.CardMoveDuration).SetEase(Ease.OutQuint);
         }
     }
 
