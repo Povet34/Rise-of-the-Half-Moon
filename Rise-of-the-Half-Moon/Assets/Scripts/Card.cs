@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -15,6 +16,8 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     Action<Card> nextTurnCallback;
     Action replaceCallback;
+
+    Vector2 dragPos;
 
     private void Awake()
     {
@@ -44,6 +47,8 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         if (!isMine)
             return;
 
+        dragPos = transform.position;
+
         canvasGroup.alpha = 0.6f; // 드래그 중 투명도 조절
         canvasGroup.blocksRaycasts = false; // 드래그 중 다른 UI 요소와의 상호작용 허용
     }
@@ -72,9 +77,16 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             Node node = hit.collider.GetComponent<Node>();
             if (node != null)
             {
-                PlaceCard(node);
+                if(node.OccupiedUser == 0)
+                {
+                    PlaceCard(node);
+                    return;
+                }
             }
         }
+
+        transform.position = dragPos;
+        dragPos = Vector2.zero;
     }
 
     #endregion

@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/HalfMoon.unity
+    path: Assets/Scenes/HalfMoon.unity
     guid: 3a981242b3b88994a97189f164898002
   m_configObjects: {}

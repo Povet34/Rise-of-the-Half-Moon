@@ -1,9 +1,12 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class RuleManager : Singleton<RuleManager>
 {
+    #region Score
+
     public int OnCardPlaced(Node node)
     {
         int totalScore = 0;
@@ -24,6 +27,8 @@ public class RuleManager : Singleton<RuleManager>
             {
                 Debug.Log("Adjacent node has the same type.");
                 score += Definitions.SAME_PHASE_SCORE;
+
+                AnimateNodes(new List<Node>() { node, adjacentNode }, node.OccupiedUser == Definitions.MY_INDEX);
             }
         }
 
@@ -39,6 +44,8 @@ public class RuleManager : Singleton<RuleManager>
             {
                 Debug.Log("Adjacent node can form a full moon.");
                 score += Definitions.FULL_MOON_SCORE;
+
+                AnimateNodes(new List<Node>() { node, adjacentNode }, node.OccupiedUser == Definitions.MY_INDEX);
             }
         }
 
@@ -115,16 +122,40 @@ public class RuleManager : Singleton<RuleManager>
                     {
                         queue.Enqueue(neighbor);
                         visited.Add(neighbor); // Mark as visited
-                        neighbor.ChangeColor(Color.blue); // Change color to indicate phase
+                        //neighbor.ChangeColor(Color.blue); // Change color to indicate phase
                     }
                     else if (isIncreasing && MoonPhaseData.GetNextPhaseType(currentPhase) == neighborPhase)
                     {
                         queue.Enqueue(neighbor);
                         visited.Add(neighbor); // Mark as visited
-                        neighbor.ChangeColor(Color.green); // Change color to indicate phase
+                        //neighbor.ChangeColor(Color.green); // Change color to indicate phase
                     }
                 }
             }
         }
     }
+
+    #endregion
+
+    #region Animation
+
+    public void AnimateNodes(List<Node> nodes, bool isMine)
+    {
+        Sequence sequence = DOTween.Sequence();
+
+        foreach (Node node in nodes)
+        {
+            Vector3 originalScale = node.transform.localScale;
+            Vector3 targetScale = originalScale * 1.5f;
+
+            sequence.Append(node.transform.DOScale(targetScale, 0.5f));
+            sequence.AppendCallback(() => node.EnableEmission(isMine ? Definitions.My_Occupied_Color : Definitions.Other_Occupied_Color));
+            sequence.AppendInterval(0.5f);
+            sequence.Append(node.transform.DOScale(originalScale, 0.5f));
+        }
+
+        sequence.Play();
+    }
+
+    #endregion
 }

@@ -35,6 +35,8 @@ public class GridGeneratorWithEightDirections : MonoBehaviour
         nodes.Clear();
         edges.Clear();
 
+        seed = Random.Range(0, 10000);
+
         Random.InitState(seed); // 랜덤 시드 초기화
         GenerateGrid();
         GenerateRandomConnections();

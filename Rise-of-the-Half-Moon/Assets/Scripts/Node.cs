@@ -60,9 +60,9 @@ public class Node : MonoBehaviour
 
             int score = RuleManager.Instance.OnCardPlaced(this);
 
-            //Place Animation
-            transform.DOShakePosition(0.5f, 0.5f, 10, 90, false, true);
-            transform.DOShakeScale(0.5f, 0.5f, 10, 90, false);
+            ////Place Animation
+            //transform.DOShakePosition(0.5f, 0.5f, 10, 90, false, true);
+            //transform.DOShakeScale(0.5f, 0.5f, 10, 90, false);
 
             if (data.occupiedUser == Definitions.MY_INDEX)
             {
@@ -110,5 +110,14 @@ public class Node : MonoBehaviour
     public void ChangeColor(Color color)
     {
         nodeRenderer.material.color = color;
+    }
+
+    public void EnableEmission(Color emissionColor)
+    {
+        if (nodeRenderer != null && nodeRenderer.material != null)
+        {
+            nodeRenderer.material.EnableKeyword("_EMISSION");
+            nodeRenderer.material.SetColor("_EmissionColor", emissionColor);
+        }
     }
 }

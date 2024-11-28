@@ -34,5 +34,8 @@ public static class Definitions
     public static readonly Vector2 MyDrawCardSpawnPos = new Vector2(Screen.width, -Card_Alignment_Y);
 
     public static readonly Vector2 OhterDrawCardSpawnPos = new Vector2(Screen.width, Card_Alignment_Y);
-    internal static float CardMoveDuration = 3f;
+    public static float CardMoveDuration = 3f;
+
+    public static Color My_Occupied_Color = new Color(0.8f, 0.1f, 0.1f, 1f);
+    public static Color Other_Occupied_Color = new Color(0.1f, 0.1f, 0.8f, 1f);
 }
