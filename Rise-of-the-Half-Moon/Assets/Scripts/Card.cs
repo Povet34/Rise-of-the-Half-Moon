@@ -23,7 +23,10 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     {
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
+    }
 
+    void Start()
+    {
         if (moonPhaseData != null)
         {
             cardImage.sprite = moonPhaseData.GetSprite(isMine);
