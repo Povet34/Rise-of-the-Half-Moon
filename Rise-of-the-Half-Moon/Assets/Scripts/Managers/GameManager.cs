@@ -56,7 +56,7 @@ public class GameManager : Singleton<GameManager>
 
     private void NextTurn(Card removedCard)
     {
-        if (!nodeGenerator.IsExistEmptyNode)
+        if (nodeGenerator.IsEndGame())
         {
             SettlementPlay();
             return;

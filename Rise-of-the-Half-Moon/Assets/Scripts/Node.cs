@@ -16,13 +16,10 @@ public class Node : MonoBehaviour
     private Renderer nodeRenderer;  // Renderer to change the color
     private MaterialPropertyBlock propertyBlock;
 
-    private int occupiedUser;   //occupied user index
-    private MoonPhaseData moonPhaseData;
+    public int occupiedUser;
+    public MoonPhaseData moonPhaseData;
 
     [SerializeField] private TextMeshProUGUI pointValueNotifier;
-
-    public int OccupiedUser => occupiedUser;
-    public MoonPhaseData MoonPhaseData => moonPhaseData;
 
     public void Init(Vector3 position, GameObject nodeObject)
     {

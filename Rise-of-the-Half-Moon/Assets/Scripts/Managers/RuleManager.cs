@@ -33,7 +33,7 @@ public class RuleManager : Singleton<RuleManager>
 
         foreach (Node node in nodeGenerator.Nodes)
         {
-            if (node.OccupiedUser == Definitions.MY_INDEX)
+            if (node.occupiedUser == Definitions.MY_INDEX)
             {
                 myOccupiedNodes.Add(node);
             }
@@ -59,7 +59,7 @@ public class RuleManager : Singleton<RuleManager>
     {
         foreach (Node adjacentNode in node.GetAdjacentNodes())
         {
-            if (adjacentNode.MoonPhaseData != null && adjacentNode.GetPhaseType() == node.GetPhaseType())
+            if (adjacentNode.moonPhaseData != null && adjacentNode.GetPhaseType() == node.GetPhaseType())
             {
                 AddAnimateQueue(node, new List<Node>() { node, adjacentNode }, Definitions.SAME_PHASE_SCORE);
             }
@@ -70,7 +70,7 @@ public class RuleManager : Singleton<RuleManager>
     {
         foreach (Node adjacentNode in node.GetAdjacentNodes())
         {
-            if (adjacentNode.MoonPhaseData != null && IsFullMoonCombination(node.GetPhaseType(), adjacentNode.GetPhaseType()))
+            if (adjacentNode.moonPhaseData != null && IsFullMoonCombination(node.GetPhaseType(), adjacentNode.GetPhaseType()))
             {
                 AddAnimateQueue(node, new List<Node>() { node, adjacentNode }, Definitions.FULL_MOON_SCORE);
             }
@@ -110,7 +110,7 @@ public class RuleManager : Singleton<RuleManager>
         // Check adjacent nodes for same phase type
         foreach (Node adjacentNode in node.GetAdjacentNodes())
         {
-            if (adjacentNode.MoonPhaseData != null && adjacentNode.GetPhaseType() == card.moonPhaseData.phaseType)
+            if (adjacentNode.moonPhaseData != null && adjacentNode.GetPhaseType() == card.moonPhaseData.phaseType)
             {
                 totalScore += Definitions.SAME_PHASE_SCORE;
             }
@@ -119,7 +119,7 @@ public class RuleManager : Singleton<RuleManager>
         // Check adjacent nodes for full moon combination
         foreach (Node adjacentNode in node.GetAdjacentNodes())
         {
-            if (adjacentNode.MoonPhaseData != null && IsFullMoonCombination(card.moonPhaseData.phaseType, adjacentNode.GetPhaseType()))
+            if (adjacentNode.moonPhaseData != null && IsFullMoonCombination(card.moonPhaseData.phaseType, adjacentNode.GetPhaseType()))
             {
                 totalScore += Definitions.FULL_MOON_SCORE;
             }
@@ -142,7 +142,7 @@ public class RuleManager : Singleton<RuleManager>
 
     private void AddAnimateQueue(Node fristNode, List<Node> nodes, int score, Action callback = null)
     {
-        bool isMine = fristNode.OccupiedUser == Definitions.MY_INDEX;
+        bool isMine = fristNode.occupiedUser == Definitions.MY_INDEX;
         AnimateNodes(nodes, isMine, callback);
 
         if (isMine)
@@ -164,8 +164,10 @@ public class RuleManager : Singleton<RuleManager>
             sequence.AppendCallback(() => isAnimating = true);
             sequence.Append(node.transform.DOScale(targetScale, 0.5f));
             sequence.AppendCallback(() => node.EnableEmission(isMine ? Definitions.My_Occupied_Color : Definitions.Other_Occupied_Color));
+            sequence.AppendCallback(() => node.occupiedUser = isMine ? Definitions.MY_INDEX : Definitions.OTHER_INDEX);
             sequence.AppendInterval(0.5f);
             sequence.Append(node.transform.DOScale(originalScale, 0.5f));
+            sequence.AppendCallback(() => node.transform.localScale = originalScale);
             sequence.AppendCallback(() => isAnimating = false);
             sequence.AppendCallback(() => callback());
         }

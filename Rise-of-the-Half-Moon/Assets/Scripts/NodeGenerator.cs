@@ -19,9 +19,7 @@ public class NodeGenerator : MonoBehaviour
     public List<GameObject> edgeObjects = new List<GameObject>();
 
     private Dictionary<int, List<Node>> mooncycles = new Dictionary<int, List<Node>>(); // Dictionary to store moon cycles
-    private bool isExistEmptyNode = true;
 
-    public bool IsExistEmptyNode => isExistEmptyNode;
     public List<Node> Nodes => nodes;
 
     readonly Vector3[] validDirections = new Vector3[]
@@ -238,7 +236,7 @@ public class NodeGenerator : MonoBehaviour
                     }
                 }
 
-                if (phaseGroup.Count > 1)
+                if (phaseGroup.Count > 2)
                 {
                     mooncycles[cycleId++] = phaseGroup;
                 }
@@ -250,7 +248,7 @@ public class NodeGenerator : MonoBehaviour
     {
         GenerateMoonCycles();
 
-        List < List < Node >> includedStartNodeCycles = new List<List<Node>>();
+        List<List<Node>> includedStartNodeCycles = new List<List<Node>>();
 
         foreach (var cycle in mooncycles)
         {
@@ -270,17 +268,18 @@ public class NodeGenerator : MonoBehaviour
         List<Node> emptyNodes = new List<Node>();
         foreach (Node node in nodes)
         {
-            if (node.OccupiedUser == Definitions.NOT_OCCUPIED)
+            if (node.occupiedUser == Definitions.NOT_OCCUPIED)
             {
                 emptyNodes.Add(node);
             }
         }
 
-        if(emptyNodes.Count == 0)
-        {
-            isExistEmptyNode = false;
-        }
-
         return emptyNodes;
+    }
+
+
+    public bool IsEndGame()
+    {
+        return FindEmptyOccupidNodes().Count == 0;
     }
 }

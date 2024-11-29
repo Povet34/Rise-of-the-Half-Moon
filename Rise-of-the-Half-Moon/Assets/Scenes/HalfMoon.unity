@@ -757,7 +757,7 @@ GameObject:
   - component: {fileID: 776903930}
   - component: {fileID: 776903931}
   m_Layer: 0
-  m_Name: GridGenerator
+  m_Name: NodeGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -792,7 +792,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodePrefab: {fileID: 8713281928742885693, guid: faa85c1847b4c3e47abeb000f9ea42dc, type: 3}
   edgePrefab: {fileID: 936009015636973731, guid: 025d60f5112aafa4bbcace35dacd6a17, type: 3}
-  rows: 4
+  rows: 5
   cols: 5
   spacing: 2
   seed: 42

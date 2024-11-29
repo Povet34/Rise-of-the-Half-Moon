@@ -80,7 +80,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             Node node = hit.collider.GetComponent<Node>();
             if (node != null)
             {
-                if(node.OccupiedUser == Definitions.NOT_OCCUPIED)
+                if(node.occupiedUser == Definitions.NOT_OCCUPIED)
                 {
                     PlaceCard(node);
                     return;
