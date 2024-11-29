@@ -633,7 +633,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 776903930}
-  - component: {fileID: 776903929}
+  - component: {fileID: 776903931}
   m_Layer: 0
   m_Name: GridGenerator
   m_TagString: Untagged
@@ -641,26 +641,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &776903929
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 776903928}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24dd157fd1a5c9d4aaee3fad4285797b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nodePrefab: {fileID: 8713281928742885693, guid: faa85c1847b4c3e47abeb000f9ea42dc, type: 3}
-  edgePrefab: {fileID: 936009015636973731, guid: 025d60f5112aafa4bbcace35dacd6a17, type: 3}
-  rows: 4
-  cols: 5
-  spacing: 2
-  seed: 6155
-  nodeObjects: []
-  edgeObjects: []
 --- !u!4 &776903930
 Transform:
   m_ObjectHideFlags: 0
@@ -676,6 +656,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &776903931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 776903928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 333e2ba56b5d1df488dda216dd2d816b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodePrefab: {fileID: 8713281928742885693, guid: faa85c1847b4c3e47abeb000f9ea42dc, type: 3}
+  edgePrefab: {fileID: 936009015636973731, guid: 025d60f5112aafa4bbcace35dacd6a17, type: 3}
+  rows: 4
+  cols: 5
+  spacing: 2
+  seed: 42
+  nodeObjects: []
+  edgeObjects: []
 --- !u!1 &811859521
 GameObject:
   m_ObjectHideFlags: 0
@@ -2184,6 +2184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3129cc3b16367164b82b7cbb98cc321f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAnimating: 0
 --- !u!114 &1999131772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2240,8 +2241,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a8b725a6481a44489386e7b334a4255, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  defficulity: -1
   cards: []
-  nodes: []
 --- !u!1 &2041589264
 GameObject:
   m_ObjectHideFlags: 0

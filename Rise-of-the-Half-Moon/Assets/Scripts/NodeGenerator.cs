@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 
-public class GridGeneratorWithEightDirections : MonoBehaviour
+public class NodeGenerator : MonoBehaviour
 {
     public GameObject nodePrefab;  // Prefab for the nodes
     public GameObject edgePrefab;  // Prefab for the edges
@@ -18,7 +18,7 @@ public class GridGeneratorWithEightDirections : MonoBehaviour
     public List<GameObject> nodeObjects = new List<GameObject>();
     public List<GameObject> edgeObjects = new List<GameObject>();
 
-    private Node selectedNode = null; // The currently selected node
+    private Dictionary<int, List<Node>> mooncycles = new Dictionary<int, List<Node>>(); // Dictionary to store moon cycles
 
     public List<Node> Nodes => nodes;
 
@@ -185,79 +185,84 @@ public class GridGeneratorWithEightDirections : MonoBehaviour
         nodeB.connectedEdges.Add(newEdge);
     }
 
-    #region Detect node relationship
+    #region Moon Cycle
 
-    // Node clicked, select and color based on distance in edges
-    void DetectNode()
+
+    // Generate moon cycles
+    void GenerateMoonCycles()
     {
-        // Detect if a node is clicked
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
+        HashSet<Node> visited = new HashSet<Node>();
+        int cycleId = 0;
 
-        if (Physics.Raycast(ray, out hit))
+        foreach (Node node in nodes)
         {
-            GameObject hitObject = hit.collider.gameObject;
-            selectedNode = hitObject.GetComponent<Node>();
-
-            // Change color of nodes based on distance (in edges) to selected node
-            if (selectedNode != null)
+            if (!visited.Contains(node))
             {
-                ColorNodesByEdgeDistance(selectedNode);
-            }
-        }
-    }
+                List<Node> phaseGroup = new List<Node>();
+                Queue<Node> queue = new Queue<Node>();
 
-    // Perform BFS and color the nodes based on distance (edges)
-    void ColorNodesByEdgeDistance(Node startNode)
-    {
-        Queue<Node> queue = new Queue<Node>();
-        Dictionary<Node, int> distances = new Dictionary<Node, int>(); // Dictionary to store distances from startNode
-        HashSet<Node> visited = new HashSet<Node>(); // To track visited nodes and prevent revisiting
+                queue.Enqueue(node);
+                visited.Add(node);
 
-        // Initialize distances to infinity
-        foreach (var node in nodes)
-        {
-            distances[node] = int.MaxValue;
-        }
-
-        // Initialize the start node
-        distances[startNode] = 0;
-        queue.Enqueue(startNode);
-        visited.Add(startNode); // Mark the start node as visited
-
-        // Change the color of the selected start node to red
-        startNode.ChangeColor(Color.red);
-
-        while (queue.Count > 0)
-        {
-            Node currentNode = queue.Dequeue();
-            int currentDistance = distances[currentNode];
-
-            foreach (Edge edge in currentNode.connectedEdges)
-            {
-                Node neighbor = edge.GetOtherNode(currentNode);
-
-                // If this node hasn't been visited yet
-                if (!visited.Contains(neighbor))
+                while (queue.Count > 0)
                 {
-                    distances[neighbor] = currentDistance + 1;
-                    queue.Enqueue(neighbor);
-                    visited.Add(neighbor); // Mark as visited
+                    Node currentNode = queue.Dequeue();
+                    phaseGroup.Add(currentNode);
+                    MoonPhaseData.PhaseType currentPhase = currentNode.GetPhaseType();
 
-                    // Change the color of the neighbor node based on distance
-                    neighbor.ChangeColorBasedOnEdgeDistance(distances[neighbor]);
+                    foreach (Node neighbor in currentNode.GetAdjacentNodes())
+                    {
+                        if (!visited.Contains(neighbor))
+                        {
+                            MoonPhaseData.PhaseType neighborPhase = neighbor.GetPhaseType();
+
+                            if (MoonPhaseData.GetPreviousPhaseType(currentPhase) == neighborPhase ||
+                                MoonPhaseData.GetNextPhaseType(currentPhase) == neighborPhase)
+                            {
+                                queue.Enqueue(neighbor);
+                                visited.Add(neighbor);
+                            }
+                        }
+                    }
+                }
+
+                if (phaseGroup.Count > 1)
+                {
+                    mooncycles[cycleId++] = phaseGroup;
                 }
             }
         }
     }
 
-    void ResetAllNodeColors()
+    public List<List<Node>> GetSequentialPhaseNodes(Node startNode)
     {
-        foreach (Node node in nodes)
+        GenerateMoonCycles();
+
+        List < List < Node >> includedStartNodeCycles = new List<List<Node>>();
+
+        foreach (var cycle in mooncycles)
         {
-            node.ResetColor();
+            if (cycle.Value.Contains(startNode))
+            {
+                includedStartNodeCycles.Add(cycle.Value);
+            }
         }
+
+        return includedStartNodeCycles; // Return an empty list if no group contains the startNode
     }
 
     #endregion
+
+    public List<Node> FindEmptyOccupidNodes()
+    {
+        List<Node> emptyNodes = new List<Node>();
+        foreach (Node node in nodes)
+        {
+            if (node.OccupiedUser == Definitions.NOT_OCCUPIED)
+            {
+                emptyNodes.Add(node);
+            }
+        }
+        return emptyNodes;
+    }
 }

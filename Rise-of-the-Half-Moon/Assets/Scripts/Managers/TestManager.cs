@@ -10,6 +10,9 @@ public class TestManager : Singleton<TestManager>
 
     private void Start()
     {
+        if (!Application.isEditor)
+            isTest = false;
+
         testCards.gameObject.SetActive(isTest);
     }
 }

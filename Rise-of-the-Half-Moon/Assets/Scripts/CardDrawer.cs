@@ -8,6 +8,7 @@ public class CardDrawer : MonoBehaviour
     private Transform canvasTransform;
     private MoonPhaseData[] moonPhaseDataArray;
     private System.Random random;
+    private NodeGenerator nodeGenerator;
 
     public void Init(GameObject cardPrefab, Transform canvasTransform, MoonPhaseData[] moonPhaseDataArray, System.Random random)
     {
@@ -15,6 +16,8 @@ public class CardDrawer : MonoBehaviour
         this.canvasTransform = canvasTransform;
         this.moonPhaseDataArray = moonPhaseDataArray;
         this.random = random;
+
+        nodeGenerator = FindObjectOfType<NodeGenerator>();
     }
 
     public void DrawCard(bool isPlayerTurn, List<Card> targetCards, System.Action<Card> nextTurnCallback, bool isTween = true)
@@ -40,10 +43,17 @@ public class CardDrawer : MonoBehaviour
         card.moonPhaseData = moonPhaseDataArray[random.Next(moonPhaseDataArray.Length)];
         card.isMine = isPlayerTurn;
 
-        card.SetCallbacks(nextTurnCallback, 
+        card.Init(nextTurnCallback, 
             () => 
             {
                 RepositionCards(targetCards, positions);
+            },
+            ()=>
+            {
+                foreach (var node in nodeGenerator.Nodes)
+                {
+                    node.UpdatePointValue(RuleManager.Instance.PredictScoreForCard(node, card));
+                }
             });
 
         targetCards.Add(card);

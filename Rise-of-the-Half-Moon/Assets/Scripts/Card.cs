@@ -1,6 +1,5 @@
+using DG.Tweening;
 using System;
-using System.Collections.Generic;
-using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -16,6 +15,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     Action<Card> nextTurnCallback;
     Action replaceCallback;
+    Action selectCallback;
 
     Vector2 dragPos;
 
@@ -23,10 +23,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     {
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
-    }
 
-    private void Start()
-    {
         if (moonPhaseData != null)
         {
             cardImage.sprite = moonPhaseData.GetSprite(isMine);
@@ -34,10 +31,11 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         }
     }
 
-    public void SetCallbacks(Action<Card> nextTurnCallback, Action replaceCallback)
+    public void Init(Action<Card> nextTurnCallback, Action replaceCallback, Action selectCallback)
     {
         this.nextTurnCallback = nextTurnCallback;
         this.replaceCallback = replaceCallback;
+        this.selectCallback = selectCallback;
     }
 
     #region Player Input
@@ -59,6 +57,8 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             return;
 
         rectTransform.anchoredPosition += eventData.delta / canvasGroup.transform.localScale.x; // 드래그 위치 업데이트
+
+        selectCallback?.Invoke();
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -77,10 +77,15 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             Node node = hit.collider.GetComponent<Node>();
             if (node != null)
             {
-                if(node.OccupiedUser == 0)
+                if(node.OccupiedUser == Definitions.NOT_OCCUPIED)
                 {
                     PlaceCard(node);
                     return;
+                }
+                else
+                {
+                    node.transform.DOShakePosition(0.5f, 0.5f, 10, 90, false, true);
+                    node.transform.DOShakeScale(0.5f, 0.5f, 10, 90, false);
                 }
             }
         }
@@ -110,5 +115,4 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     {
         Destroy(gameObject);
     }
-
 }

@@ -2,6 +2,7 @@ using UnityEngine;
 
 public static class Definitions
 {
+    public const int NOT_OCCUPIED = 0;
     public const int MY_INDEX = 1;
     public const int OTHER_INDEX = 2;
 

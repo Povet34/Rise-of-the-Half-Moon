@@ -4,26 +4,59 @@ using UnityEngine;
 
 public class Bot : MonoBehaviour
 {
+    public int defficulity = -1; // Bot의 난이도
     public List<Card> cards; // Bot이 가지고 있는 카드 리스트
-    public List<Node> nodes; // 가능한 Node 리스트
+    private NodeGenerator nodeGenerator;
 
-    public void Init(List<Card> cards, List<Node> nodes)
+    public void Init(List<Card> cards)
     {
         this.cards = cards;
-        this.nodes = nodes;
+        nodeGenerator = FindObjectOfType<NodeGenerator>();
+    }
+
+    private void PlaceCardByPriority()
+    {
+        List<Node> emptyNodes = nodeGenerator.FindEmptyOccupidNodes();
+        if (cards.Count == 0 || emptyNodes.Count == 0) return;
+
+        Card cardToPlace = null;
+        Node targetNode = null;
+        int highestScore = int.MinValue;
+
+        // 각 카드와 노드 조합의 점수를 계산하여 가장 높은 점수를 가진 조합을 선택
+        foreach (Card card in cards)
+        {
+            foreach (Node node in emptyNodes)
+            {
+                int score = RuleManager.Instance.PredictScoreForCard(node, card) + BotHandicap();
+                if (score > highestScore)
+                {
+                    highestScore = score;
+                    cardToPlace = card;
+                    targetNode = node;
+                }
+            }
+        }
+
+        if (cardToPlace == null || targetNode == null)
+        {
+            PlaceCardRandom();
+            return;
+        }
+
+        cards.Remove(cardToPlace);
+        cardToPlace.PlaceCard(targetNode);
     }
 
     private void PlaceCardRandom()
     {
-        if (cards.Count == 0 || nodes.Count == 0) return;
+        List<Node> emptyNodes = nodeGenerator.FindEmptyOccupidNodes();
 
-        // 사용 가능한 노드 필터링
-        List<Node> availableNodes = nodes.FindAll(node => node.OccupiedUser == 0);
-        if (availableNodes.Count == 0) return;
+        if (cards.Count == 0 || emptyNodes.Count == 0) return;
 
         // 임의의 카드와 Node 선택
         Card cardToPlace = cards[Random.Range(0, cards.Count)];
-        Node targetNode = availableNodes[Random.Range(0, availableNodes.Count)];
+        Node targetNode = emptyNodes[Random.Range(0, emptyNodes.Count)];
 
         cards.Remove(cardToPlace);
         cardToPlace.PlaceCard(targetNode);
@@ -36,7 +69,17 @@ public class Bot : MonoBehaviour
 
     private IEnumerator DelayPlaceCardBody(float delay)
     {
+        yield return new WaitUntil(()=> !RuleManager.Instance.isAnimating);
         yield return new WaitForSeconds(delay);
-        PlaceCardRandom();
+
+        if (defficulity == -1)
+            PlaceCardRandom();
+        else
+            PlaceCardByPriority();
+    }
+
+    private int BotHandicap()
+    {
+        return Random.Range(0, defficulity);
     }
 }

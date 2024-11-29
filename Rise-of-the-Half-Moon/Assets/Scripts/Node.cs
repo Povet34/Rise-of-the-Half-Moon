@@ -1,6 +1,5 @@
-using DG.Tweening;
 using System.Collections.Generic;
-using UnityEditor;
+using TMPro;
 using UnityEngine;
 
 public class Node : MonoBehaviour
@@ -11,12 +10,14 @@ public class Node : MonoBehaviour
         public MoonPhaseData moonPhaseData; //moon phase data
     }
 
-    private Renderer nodeRenderer;  // Renderer to change the color
-    public Vector3 position;
     public List<Edge> connectedEdges = new List<Edge>();
+    public Vector3 position;
 
+    private Renderer nodeRenderer;  // Renderer to change the color
     private int occupiedUser;   //occupied user index
     private MoonPhaseData moonPhaseData;
+
+    [SerializeField] private TextMeshProUGUI pointValueNotifier;
 
     public int OccupiedUser => occupiedUser;
     public MoonPhaseData MoonPhaseData => moonPhaseData;
@@ -25,6 +26,8 @@ public class Node : MonoBehaviour
     {
         this.position = position;
         nodeRenderer = nodeObject.GetComponent<Renderer>(); // Get the Renderer component
+
+        pointValueNotifier.gameObject.SetActive(TestManager.Instance.isTest);
     }
 
     public MoonPhaseData.PhaseType GetPhaseType()
@@ -57,11 +60,6 @@ public class Node : MonoBehaviour
             occupiedUser = data.occupiedUser;
 
             nodeRenderer.material.mainTexture = moonPhaseData.phaseTexture; // Set the texture to the phase texture
-
-
-            ////Place Animation
-            //transform.DOShakePosition(0.5f, 0.5f, 10, 90, false, true);
-            //transform.DOShakeScale(0.5f, 0.5f, 10, 90, false);
         }
     }
 
@@ -108,6 +106,15 @@ public class Node : MonoBehaviour
         {
             nodeRenderer.material.EnableKeyword("_EMISSION");
             nodeRenderer.material.SetColor("_EmissionColor", emissionColor);
+        }
+    }
+
+    public void UpdatePointValue(int value)
+    {
+        pointValueNotifier.gameObject.SetActive(TestManager.Instance.isTest);
+        if (TestManager.Instance.isTest)
+        {
+            pointValueNotifier.text = value.ToString();
         }
     }
 }

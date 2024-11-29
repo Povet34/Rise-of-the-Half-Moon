@@ -8,7 +8,7 @@ public class GameManager : Singleton<GameManager>
     public Transform canvasTransform;
     public MoonPhaseData[] moonPhaseDataArray;
     private System.Random random;
-    private GridGeneratorWithEightDirections gridGenerator;
+    private NodeGenerator nodeGenerator;
     private bool isPlayerTurn;
 
     [Header("Me")]
@@ -38,8 +38,8 @@ public class GameManager : Singleton<GameManager>
 
     private void Init()
     {
-        gridGenerator = FindObjectOfType<GridGeneratorWithEightDirections>();
-        gridGenerator.Create();
+        nodeGenerator = FindObjectOfType<NodeGenerator>();
+        nodeGenerator.Create();
 
         random = new System.Random();
         cardDrawer = gameObject.AddComponent<CardDrawer>();
@@ -48,7 +48,7 @@ public class GameManager : Singleton<GameManager>
         InitCards(2, myCards, true);
         InitCards(2, otherCards, false);
 
-        bot.Init(otherCards, gridGenerator.Nodes);
+        bot.Init(otherCards);
 
         isPlayerTurn = true; // 플레이어가 먼저 시작
         cardDrawer.DrawCard(isPlayerTurn, myCards, NextTurn);
@@ -71,7 +71,7 @@ public class GameManager : Singleton<GameManager>
         //만약 ai 턴이면, bot이 둘 수 있도록 한다.
         if (!isPlayerTurn)
         {
-            bot.StartPlaceCard(UnityEngine.Random.Range(3f, 5f));
+            bot.StartPlaceCard(UnityEngine.Random.Range(1f, 4f));
         }
     }
 

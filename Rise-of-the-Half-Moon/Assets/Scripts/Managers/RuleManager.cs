@@ -1,18 +1,21 @@
 using DG.Tweening;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using UnityEditor.Search;
 using UnityEngine;
 
 public class RuleManager : Singleton<RuleManager>
 {
-    bool isAnimating = false;
+    public bool isAnimating = false;
 
+    NodeGenerator nodeGenerator;
     Queue<Action> animationQueue = new Queue<Action>();
 
     #region Calc Score
+
+    private void Awake()
+    {
+        nodeGenerator = FindObjectOfType<NodeGenerator>();
+    }
 
     private void Update()
     {
@@ -35,17 +38,7 @@ public class RuleManager : Singleton<RuleManager>
         {
             if (adjacentNode.MoonPhaseData != null && adjacentNode.GetPhaseType() == node.GetPhaseType())
             {
-                animationQueue.Enqueue(() =>
-                {
-                    bool isMine = node.OccupiedUser == Definitions.MY_INDEX;
-                    AnimateNodes(new List<Node>() { node, adjacentNode }, isMine);
-                    
-                    if(isMine)
-                        GameManager.Instance.UpdateMyScore(Definitions.SAME_PHASE_SCORE);
-                    else
-                        GameManager.Instance.UpdateOtherScore(Definitions.SAME_PHASE_SCORE);
-
-                });
+                AddAnimateQueue(node, new List<Node>() { node, adjacentNode });
             }
         }
     }
@@ -56,13 +49,7 @@ public class RuleManager : Singleton<RuleManager>
         {
             if (adjacentNode.MoonPhaseData != null && IsFullMoonCombination(node.GetPhaseType(), adjacentNode.GetPhaseType()))
             {
-                bool isMine = node.OccupiedUser == Definitions.MY_INDEX;
-                AnimateNodes(new List<Node>() { node, adjacentNode }, isMine);
-
-                if (isMine)
-                    GameManager.Instance.UpdateMyScore(Definitions.SAME_PHASE_SCORE);
-                else
-                    GameManager.Instance.UpdateOtherScore(Definitions.SAME_PHASE_SCORE);
+                AddAnimateQueue(node, new List<Node>() { node, adjacentNode });
             }
         }
     }
@@ -82,74 +69,64 @@ public class RuleManager : Singleton<RuleManager>
 
     private void CheckMoonCycle(Node node)
     {
-        ColorNodesByPhase(node);
+        List<List<Node>> cycles = nodeGenerator.GetSequentialPhaseNodes(node);
 
-        List <Node> cycleNodes = new List<Node>();
-        if (IsMoonCycle(node, cycleNodes))
-        {
-            Debug.Log("The placed node forms a moon cycle.");
-        }
+        foreach(var cycle in cycles)
+            AddAnimateQueue(node, cycle);
     }
 
-    private bool IsMoonCycle(Node node, List<Node> cycleNodes)
+    #endregion
+
+    #region Infer Score
+
+    public int PredictScoreForCard(Node node, Card card)
     {
-        return false;
-    }
+        int totalScore = 0;
 
-    public void ColorNodesByPhase(Node startNode)
-    {
-        Queue<Node> queue = new Queue<Node>();
-        HashSet<Node> visited = new HashSet<Node>(); // To track visited nodes and prevent revisiting
-
-        queue.Enqueue(startNode);
-        visited.Add(startNode); // Mark the start node as visited
-
-        bool isDecreasing = false;
-        bool isIncreasing = false;
-
-        while (queue.Count > 0)
+        // Check adjacent nodes for same phase type
+        foreach (Node adjacentNode in node.GetAdjacentNodes())
         {
-            Node currentNode = queue.Dequeue();
-            MoonPhaseData.PhaseType currentPhase = currentNode.GetPhaseType();
-
-            foreach (Node neighbor in currentNode.GetAdjacentNodes())
+            if (adjacentNode.MoonPhaseData != null && adjacentNode.GetPhaseType() == card.moonPhaseData.phaseType)
             {
-                if (!visited.Contains(neighbor))
-                {
-                    MoonPhaseData.PhaseType neighborPhase = neighbor.GetPhaseType();
-
-                    if (!isDecreasing && !isIncreasing)
-                    {
-                        if (MoonPhaseData.GetPreviousPhaseType(currentPhase) == neighborPhase)
-                        {
-                            isDecreasing = true;
-                        }
-                        else if (MoonPhaseData.GetNextPhaseType(currentPhase) == neighborPhase)
-                        {
-                            isIncreasing = true;
-                        }
-                    }
-
-                    if (isDecreasing && MoonPhaseData.GetPreviousPhaseType(currentPhase) == neighborPhase)
-                    {
-                        queue.Enqueue(neighbor);
-                        visited.Add(neighbor); // Mark as visited
-                        //neighbor.ChangeColor(Color.blue); // Change color to indicate phase
-                    }
-                    else if (isIncreasing && MoonPhaseData.GetNextPhaseType(currentPhase) == neighborPhase)
-                    {
-                        queue.Enqueue(neighbor);
-                        visited.Add(neighbor); // Mark as visited
-                        //neighbor.ChangeColor(Color.green); // Change color to indicate phase
-                    }
-                }
+                totalScore += Definitions.SAME_PHASE_SCORE;
             }
         }
+
+        // Check adjacent nodes for full moon combination
+        foreach (Node adjacentNode in node.GetAdjacentNodes())
+        {
+            if (adjacentNode.MoonPhaseData != null && IsFullMoonCombination(card.moonPhaseData.phaseType, adjacentNode.GetPhaseType()))
+            {
+                totalScore += Definitions.FULL_MOON_SCORE;
+            }
+        }
+
+        // Check for moon cycle
+        List<List<Node>> moonCycleNodes = nodeGenerator.GetSequentialPhaseNodes(node);
+        if (moonCycleNodes.Count > 0)
+        {
+            foreach (var cycle in moonCycleNodes)
+                totalScore += Definitions.PHASE_CYCLE_SCORE * cycle.Count;
+        }
+
+        return totalScore;
     }
 
     #endregion
 
     #region Animation
+
+    private void AddAnimateQueue(Node fristNode, List<Node> nodes)
+    {
+        bool isMine = fristNode.OccupiedUser == Definitions.MY_INDEX;
+        AnimateNodes(nodes, isMine);
+
+        if (isMine)
+            GameManager.Instance.UpdateMyScore(Definitions.FULL_MOON_SCORE);
+        else
+            GameManager.Instance.UpdateOtherScore(Definitions.FULL_MOON_SCORE);
+
+    }
 
     public void AnimateNodes(List<Node> nodes, bool isMine)
     {
