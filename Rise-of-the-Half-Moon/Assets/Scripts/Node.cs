@@ -14,6 +14,8 @@ public class Node : MonoBehaviour
     public Vector3 position;
 
     private Renderer nodeRenderer;  // Renderer to change the color
+    private MaterialPropertyBlock propertyBlock;
+
     private int occupiedUser;   //occupied user index
     private MoonPhaseData moonPhaseData;
 
@@ -28,6 +30,7 @@ public class Node : MonoBehaviour
         nodeRenderer = nodeObject.GetComponent<Renderer>(); // Get the Renderer component
 
         pointValueNotifier.gameObject.SetActive(TestManager.Instance.isTest);
+        propertyBlock = new MaterialPropertyBlock();
     }
 
     public MoonPhaseData.PhaseType GetPhaseType()
@@ -59,7 +62,9 @@ public class Node : MonoBehaviour
             moonPhaseData = data.moonPhaseData;
             occupiedUser = data.occupiedUser;
 
-            nodeRenderer.material.mainTexture = moonPhaseData.phaseTexture; // Set the texture to the phase texture
+            nodeRenderer.GetPropertyBlock(propertyBlock); // Retrieve current properties
+            propertyBlock.SetTexture("_BaseMap", moonPhaseData.phaseTexture); // Change texture
+            nodeRenderer.SetPropertyBlock(propertyBlock); // Apply changes
         }
     }
 
@@ -104,8 +109,9 @@ public class Node : MonoBehaviour
     {
         if (nodeRenderer != null && nodeRenderer.material != null)
         {
-            nodeRenderer.material.EnableKeyword("_EMISSION");
-            nodeRenderer.material.SetColor("_EmissionColor", emissionColor);
+            nodeRenderer.GetPropertyBlock(propertyBlock);
+            propertyBlock.SetColor("_EmissionColor", emissionColor); // Change emission color
+            nodeRenderer.SetPropertyBlock(propertyBlock);
         }
     }
 

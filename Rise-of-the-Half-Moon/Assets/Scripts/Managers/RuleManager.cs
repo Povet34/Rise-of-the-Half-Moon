@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class RuleManager : Singleton<RuleManager>
@@ -25,6 +26,28 @@ public class RuleManager : Singleton<RuleManager>
         }
     }
 
+    public void SettlementOccupiedNodes(Action settlementEndCallback)
+    {
+        List<Node> myOccupiedNodes = new List<Node>();
+        List<Node> otherOccupiedNodes = new List<Node>();
+
+        foreach (Node node in nodeGenerator.Nodes)
+        {
+            if (node.OccupiedUser == Definitions.MY_INDEX)
+            {
+                myOccupiedNodes.Add(node);
+            }
+            else
+            {
+                otherOccupiedNodes.Add(node);
+            }
+        }
+
+        AddAnimateQueue(myOccupiedNodes.First(), myOccupiedNodes, Definitions.SETTLEMENT_SCORE, settlementEndCallback);
+        AddAnimateQueue(otherOccupiedNodes.First(), otherOccupiedNodes, Definitions.SETTLEMENT_SCORE, settlementEndCallback);
+    }
+
+
     public void OnCardPlaced(Node node)
     {
         CheckAdjacentNodes(node);
@@ -38,7 +61,7 @@ public class RuleManager : Singleton<RuleManager>
         {
             if (adjacentNode.MoonPhaseData != null && adjacentNode.GetPhaseType() == node.GetPhaseType())
             {
-                AddAnimateQueue(node, new List<Node>() { node, adjacentNode });
+                AddAnimateQueue(node, new List<Node>() { node, adjacentNode }, Definitions.SAME_PHASE_SCORE);
             }
         }
     }
@@ -49,7 +72,7 @@ public class RuleManager : Singleton<RuleManager>
         {
             if (adjacentNode.MoonPhaseData != null && IsFullMoonCombination(node.GetPhaseType(), adjacentNode.GetPhaseType()))
             {
-                AddAnimateQueue(node, new List<Node>() { node, adjacentNode });
+                AddAnimateQueue(node, new List<Node>() { node, adjacentNode }, Definitions.FULL_MOON_SCORE);
             }
         }
     }
@@ -72,8 +95,9 @@ public class RuleManager : Singleton<RuleManager>
         List<List<Node>> cycles = nodeGenerator.GetSequentialPhaseNodes(node);
 
         foreach(var cycle in cycles)
-            AddAnimateQueue(node, cycle);
+            AddAnimateQueue(node, cycle, Definitions.PHASE_CYCLE_SCORE);
     }
+
 
     #endregion
 
@@ -116,19 +140,19 @@ public class RuleManager : Singleton<RuleManager>
 
     #region Animation
 
-    private void AddAnimateQueue(Node fristNode, List<Node> nodes)
+    private void AddAnimateQueue(Node fristNode, List<Node> nodes, int score, Action callback = null)
     {
         bool isMine = fristNode.OccupiedUser == Definitions.MY_INDEX;
-        AnimateNodes(nodes, isMine);
+        AnimateNodes(nodes, isMine, callback);
 
         if (isMine)
-            GameManager.Instance.UpdateMyScore(Definitions.FULL_MOON_SCORE);
+            GameManager.Instance.UpdateMyScore(score);
         else
-            GameManager.Instance.UpdateOtherScore(Definitions.FULL_MOON_SCORE);
+            GameManager.Instance.UpdateOtherScore(score);
 
     }
 
-    public void AnimateNodes(List<Node> nodes, bool isMine)
+    public void AnimateNodes(List<Node> nodes, bool isMine, Action callback)
     {
         Sequence sequence = DOTween.Sequence();
 
@@ -143,6 +167,7 @@ public class RuleManager : Singleton<RuleManager>
             sequence.AppendInterval(0.5f);
             sequence.Append(node.transform.DOScale(originalScale, 0.5f));
             sequence.AppendCallback(() => isAnimating = false);
+            sequence.AppendCallback(() => callback());
         }
 
         sequence.Play();

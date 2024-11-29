@@ -19,7 +19,9 @@ public class NodeGenerator : MonoBehaviour
     public List<GameObject> edgeObjects = new List<GameObject>();
 
     private Dictionary<int, List<Node>> mooncycles = new Dictionary<int, List<Node>>(); // Dictionary to store moon cycles
+    private bool isExistEmptyNode = true;
 
+    public bool IsExistEmptyNode => isExistEmptyNode;
     public List<Node> Nodes => nodes;
 
     readonly Vector3[] validDirections = new Vector3[]
@@ -32,6 +34,16 @@ public class NodeGenerator : MonoBehaviour
 
     public void Create()
     {
+        foreach (GameObject nodeObject in nodeObjects)
+        {
+            Destroy(nodeObject);
+        }
+
+        foreach (GameObject edgeObject in edgeObjects)
+        {
+            Destroy(edgeObject);
+        }
+
         nodes.Clear();
         edges.Clear();
 
@@ -263,6 +275,12 @@ public class NodeGenerator : MonoBehaviour
                 emptyNodes.Add(node);
             }
         }
+
+        if(emptyNodes.Count == 0)
+        {
+            isExistEmptyNode = false;
+        }
+
         return emptyNodes;
     }
 }

@@ -9,6 +9,7 @@ public static class Definitions
     public const int SAME_PHASE_SCORE = 1;
     public const int FULL_MOON_SCORE = 2;
     public const int PHASE_CYCLE_SCORE = 1;
+    public const int SETTLEMENT_SCORE = 1;
 
     public const float Card_Alignment_Y = 400f;
 

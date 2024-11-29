@@ -45,7 +45,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (!isMine)
+        if (!isMine && RuleManager.Instance.isAnimating)
             return;
 
         dragPos = transform.position;
@@ -56,7 +56,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (!isMine)
+        if (!isMine && RuleManager.Instance.isAnimating)
             return;
 
         rectTransform.anchoredPosition += eventData.delta / canvasGroup.transform.localScale.x; // 드래그 위치 업데이트
@@ -66,7 +66,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!isMine)
+        if (!isMine && RuleManager.Instance.isAnimating)
             return;
 
         canvasGroup.alpha = 1.0f; // 드래그 종료 후 투명도 복원

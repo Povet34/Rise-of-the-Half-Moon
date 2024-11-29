@@ -25,18 +25,10 @@ public class GameManager : Singleton<GameManager>
 
     private void Start()
     {
-        Init();
+        StartPlay();
     }
 
-    private void InitCards(int cardCount, List<Card> cards, bool isPlayer1)
-    {
-        for (int i = 0; i < cardCount; i++)
-        {
-            cardDrawer.DrawCard(isPlayer1, cards, NextTurn, false);
-        }
-    }
-
-    private void Init()
+    public void StartPlay()
     {
         nodeGenerator = FindObjectOfType<NodeGenerator>();
         nodeGenerator.Create();
@@ -54,8 +46,22 @@ public class GameManager : Singleton<GameManager>
         cardDrawer.DrawCard(isPlayerTurn, myCards, NextTurn);
     }
 
+    private void InitCards(int cardCount, List<Card> cards, bool isPlayer1)
+    {
+        for (int i = 0; i < cardCount; i++)
+        {
+            cardDrawer.DrawCard(isPlayer1, cards, NextTurn, false);
+        }
+    }
+
     private void NextTurn(Card removedCard)
     {
+        if (!nodeGenerator.IsExistEmptyNode)
+        {
+            SettlementPlay();
+            return;
+        }
+
         //리스트에서 제거하고
         if (isPlayerTurn)
             myCards.Remove(removedCard);
@@ -75,6 +81,28 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    private void SettlementPlay()
+    {
+        RuleManager.Instance.SettlementOccupiedNodes(
+            () => 
+            {
+                if (myScore > otherScore)
+                {
+                    UIManager.Instance.ShowWin();
+                }
+                else if (myScore < otherScore)
+                {
+                    UIManager.Instance.ShowLose();
+                }
+                else
+                {
+                    UIManager.Instance.ShowDraw();
+                }
+            });
+    }
+
+    #region Update Score
+
     public void UpdateMyScore(int score)
     {
         myScore += score;
@@ -86,4 +114,6 @@ public class GameManager : Singleton<GameManager>
         otherScore += score;
         UIManager.Instance.UpdateOtherScore(otherScore);
     }
+
+    #endregion
 }
