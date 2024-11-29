@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Bot : MonoBehaviour
 {
-    public int defficulity = -1; // Bot의 난이도
+    [SerializeField] int defficulity = -1; // Bot의 난이도
+    [SerializeField] int randomCount;
     public List<Card> cards; // Bot이 가지고 있는 카드 리스트
     private NodeGenerator nodeGenerator;
 
@@ -72,8 +73,11 @@ public class Bot : MonoBehaviour
         yield return new WaitUntil(()=> !RuleManager.Instance.isAnimating);
         yield return new WaitForSeconds(delay);
 
-        if (defficulity == -1)
+        if (defficulity == -1 || randomCount > 0)
+        {
             PlaceCardRandom();
+            randomCount--;
+        }
         else
             PlaceCardByPriority();
     }

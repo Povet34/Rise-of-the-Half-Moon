@@ -50,7 +50,7 @@ public class NodeGenerator : MonoBehaviour
         Random.InitState(seed); // 랜덤 시드 초기화
         GenerateGrid();
         GenerateRandomConnections();
-        EnsureAllNodesConnected();
+        //EnsureAllNodesConnected();
     }
 
     void GenerateGrid()
@@ -74,15 +74,22 @@ public class NodeGenerator : MonoBehaviour
     // Generate random connections between the nodes
     void GenerateRandomConnections()
     {
+        System.Random random = new System.Random(seed);
+        System.Random random2 = new System.Random(seed + 100);
+
         foreach (Node node in nodes)
         {
             List<Node> neighbors = GetNeighbors(node);
 
             foreach (Node neighbor in neighbors)
             {
-                if (Random.value > 0.5f && !IsAlreadyConnected(node, neighbor))
+                float distance = Vector3.Distance(node.position, neighbor.position);
+                if (distance <= (spacing + spacing * 0.5f) && !IsAlreadyConnected(node, neighbor))
                 {
-                    CreateEdge(node, neighbor);
+                    if (random.NextDouble() <= random2.NextDouble())
+                    {
+                        CreateEdge(node, neighbor);
+                    }
                 }
             }
         }

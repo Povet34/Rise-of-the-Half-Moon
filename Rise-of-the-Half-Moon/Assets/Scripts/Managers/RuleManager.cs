@@ -18,14 +18,6 @@ public class RuleManager : Singleton<RuleManager>
         nodeGenerator = FindObjectOfType<NodeGenerator>();
     }
 
-    private void Update()
-    {
-        if (!isAnimating && animationQueue.Count > 0)
-        {
-            animationQueue.Dequeue().Invoke();
-        }
-    }
-
     public void SettlementOccupiedNodes(Action settlementEndCallback)
     {
         List<Node> myOccupiedNodes = new List<Node>();
@@ -140,6 +132,15 @@ public class RuleManager : Singleton<RuleManager>
 
     #region Animation
 
+    private void Update()
+    {
+        if (!isAnimating && animationQueue.Count > 0)
+        {
+            Debug.Log($"AnimationQueue Count : {animationQueue.Count}");
+            animationQueue.Dequeue().Invoke();
+        }
+    }
+
     private void AddAnimateQueue(Node fristNode, List<Node> nodes, int score, Action callback = null)
     {
         bool isMine = fristNode.occupiedUser == Definitions.MY_INDEX;
@@ -155,22 +156,23 @@ public class RuleManager : Singleton<RuleManager>
     public void AnimateNodes(List<Node> nodes, bool isMine, Action callback)
     {
         Sequence sequence = DOTween.Sequence();
+        isAnimating = true;
 
         foreach (Node node in nodes)
         {
             Vector3 originalScale = node.transform.localScale;
             Vector3 targetScale = originalScale * 1.5f;
 
-            sequence.AppendCallback(() => isAnimating = true);
             sequence.Append(node.transform.DOScale(targetScale, 0.5f));
             sequence.AppendCallback(() => node.EnableEmission(isMine ? Definitions.My_Occupied_Color : Definitions.Other_Occupied_Color));
             sequence.AppendCallback(() => node.occupiedUser = isMine ? Definitions.MY_INDEX : Definitions.OTHER_INDEX);
             sequence.AppendInterval(0.5f);
             sequence.Append(node.transform.DOScale(originalScale, 0.5f));
             sequence.AppendCallback(() => node.transform.localScale = originalScale);
-            sequence.AppendCallback(() => isAnimating = false);
-            sequence.AppendCallback(() => callback());
+            sequence.AppendCallback(() => callback?.Invoke());
         }
+
+        sequence.AppendCallback(() => isAnimating = false);
 
         sequence.Play();
     }

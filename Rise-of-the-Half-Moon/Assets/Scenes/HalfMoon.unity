@@ -792,10 +792,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodePrefab: {fileID: 8713281928742885693, guid: faa85c1847b4c3e47abeb000f9ea42dc, type: 3}
   edgePrefab: {fileID: 936009015636973731, guid: 025d60f5112aafa4bbcace35dacd6a17, type: 3}
-  rows: 5
+  rows: 4
   cols: 5
   spacing: 2
-  seed: 42
+  seed: 0
   nodeObjects: []
   edgeObjects: []
 --- !u!1 &811859521
@@ -2712,6 +2712,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defficulity: 1
+  randomCount: 3
   cards: []
 --- !u!1 &2041589264
 GameObject:
