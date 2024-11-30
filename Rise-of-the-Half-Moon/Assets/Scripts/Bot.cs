@@ -5,12 +5,14 @@ using UnityEngine;
 public class Bot : MonoBehaviour
 {
     [SerializeField] int defficulity = -1; // Bot의 난이도
-    [SerializeField] int randomCount;
+    [SerializeField] int initRandomCount;
+    private int randomCount;
     public List<Card> cards; // Bot이 가지고 있는 카드 리스트
     private NodeGenerator nodeGenerator;
 
     public void Init(List<Card> cards)
     {
+        randomCount = initRandomCount;
         this.cards = cards;
         nodeGenerator = FindObjectOfType<NodeGenerator>();
     }
@@ -70,7 +72,7 @@ public class Bot : MonoBehaviour
 
     private IEnumerator DelayPlaceCardBody(float delay)
     {
-        yield return new WaitUntil(()=> !RuleManager.Instance.isAnimating);
+        yield return new WaitUntil(()=> RuleManager.Instance.IsRemainScoreSettlement());
         yield return new WaitForSeconds(delay);
 
         if (defficulity == -1 || randomCount > 0)

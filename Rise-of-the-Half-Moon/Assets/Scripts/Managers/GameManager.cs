@@ -20,8 +20,12 @@ public class GameManager : Singleton<GameManager>
     public int otherScore;
     public List<Card> otherCards;
 
-
     private CardDrawer cardDrawer;
+
+    private void Awake()
+    {
+        nodeGenerator = FindObjectOfType<NodeGenerator>();
+    }
 
     private void Start()
     {
@@ -30,7 +34,19 @@ public class GameManager : Singleton<GameManager>
 
     public void StartPlay()
     {
-        nodeGenerator = FindObjectOfType<NodeGenerator>();
+        foreach(var card in otherCards)
+        {
+            card.Destroy();
+        }
+
+        foreach (var card in myCards)
+        {
+            card.Destroy();
+        }
+
+        myCards.Clear();
+        otherCards.Clear();
+
         nodeGenerator.Create();
 
         random = new System.Random();

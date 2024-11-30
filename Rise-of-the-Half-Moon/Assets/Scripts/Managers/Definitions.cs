@@ -2,7 +2,8 @@ using UnityEngine;
 
 public static class Definitions
 {
-    public const int NOT_OCCUPIED = 0;
+    public const int EMPTY_NODE = -1;
+    public const int NOT_OCCUPIED_NODE = 0;
     public const int MY_INDEX = 1;
     public const int OTHER_INDEX = 2;
 

@@ -275,7 +275,7 @@ public class NodeGenerator : MonoBehaviour
         List<Node> emptyNodes = new List<Node>();
         foreach (Node node in nodes)
         {
-            if (node.occupiedUser == Definitions.NOT_OCCUPIED)
+            if (node.occupiedUser == Definitions.EMPTY_NODE)
             {
                 emptyNodes.Add(node);
             }

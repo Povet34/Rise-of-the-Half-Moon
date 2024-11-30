@@ -17,6 +17,7 @@ public class Node : MonoBehaviour
     private MaterialPropertyBlock propertyBlock;
 
     public int occupiedUser;
+
     public MoonPhaseData moonPhaseData;
 
     [SerializeField] private TextMeshProUGUI pointValueNotifier;

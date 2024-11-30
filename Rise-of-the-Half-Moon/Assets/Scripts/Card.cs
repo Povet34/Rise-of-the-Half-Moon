@@ -43,10 +43,15 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     #region Player Input
 
+    private bool CanInput()
+    {
+        return isMine && !RuleManager.Instance.IsRemainScoreSettlement();
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (!isMine && RuleManager.Instance.isAnimating)
-            return;
+        if(!CanInput())
+            return; 
 
         dragPos = transform.position;
 
@@ -56,7 +61,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (!isMine && RuleManager.Instance.isAnimating)
+        if (!CanInput())
             return;
 
         rectTransform.anchoredPosition += eventData.delta / canvasGroup.transform.localScale.x; // 드래그 위치 업데이트
@@ -66,7 +71,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!isMine && RuleManager.Instance.isAnimating)
+        if (!CanInput())
             return;
 
         canvasGroup.alpha = 1.0f; // 드래그 종료 후 투명도 복원
@@ -80,7 +85,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             Node node = hit.collider.GetComponent<Node>();
             if (node != null)
             {
-                if(node.occupiedUser == Definitions.NOT_OCCUPIED)
+                if(node.occupiedUser == Definitions.EMPTY_NODE)
                 {
                     PlaceCard(node);
                     return;
@@ -102,19 +107,19 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     public void PlaceCard(Node node)
     {
         Node.PutData data = new Node.PutData();
-        data.occupiedUser = isMine ? Definitions.MY_INDEX : Definitions.OTHER_INDEX;
+        data.occupiedUser = Definitions.NOT_OCCUPIED_NODE;
         data.moonPhaseData = moonPhaseData;
 
         node.PutCard(data);
+        RuleManager.Instance.OnCardPlaced(node);
+
         nextTurnCallback?.Invoke(this);
         replaceCallback?.Invoke();
-
-        RuleManager.Instance.OnCardPlaced(node);
 
         Destroy();
     }
 
-    private void Destroy()
+    public void Destroy()
     {
         Destroy(gameObject);
     }

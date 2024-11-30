@@ -1,12 +1,13 @@
 using DG.Tweening;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class RuleManager : Singleton<RuleManager>
 {
-    public bool isAnimating = false;
+    private bool isAnimating = false;
 
     NodeGenerator nodeGenerator;
     Queue<Action> animationQueue = new Queue<Action>();
@@ -16,6 +17,18 @@ public class RuleManager : Singleton<RuleManager>
     private void Awake()
     {
         nodeGenerator = FindObjectOfType<NodeGenerator>();
+        StartCoroutine(DelayAnimation());
+    }
+
+
+    public bool IsRemainScoreSettlement()
+    {
+        return animationQueue.Count > 0 || isAnimating;
+    }
+
+    public void SetIsAnimation(bool isOn)
+    {
+        isAnimating = isOn;
     }
 
     public void SettlementOccupiedNodes(Action settlementEndCallback)
@@ -132,31 +145,38 @@ public class RuleManager : Singleton<RuleManager>
 
     #region Animation
 
-    private void Update()
+    private IEnumerator DelayAnimation()
     {
-        if (!isAnimating && animationQueue.Count > 0)
+        while(true)
         {
-            Debug.Log($"AnimationQueue Count : {animationQueue.Count}");
-            animationQueue.Dequeue().Invoke();
+            yield return new WaitForSeconds(0.25f);
+
+            if (!isAnimating && animationQueue.Count > 0)
+            {
+                Debug.Log($"AnimationQueue Count : {animationQueue.Count}");
+                animationQueue.Dequeue().Invoke();
+            }
         }
     }
 
     private void AddAnimateQueue(Node fristNode, List<Node> nodes, int score, Action callback = null)
     {
-        bool isMine = fristNode.occupiedUser == Definitions.MY_INDEX;
-        AnimateNodes(nodes, isMine, callback);
+        animationQueue.Enqueue(() => 
+        {
+            bool isMine = fristNode.occupiedUser == Definitions.MY_INDEX;
+            AnimateNodes(nodes, isMine, callback);
 
-        if (isMine)
-            GameManager.Instance.UpdateMyScore(score);
-        else
-            GameManager.Instance.UpdateOtherScore(score);
-
+            if (isMine)
+                GameManager.Instance.UpdateMyScore(score);
+            else
+                GameManager.Instance.UpdateOtherScore(score);
+        });
     }
 
     public void AnimateNodes(List<Node> nodes, bool isMine, Action callback)
     {
         Sequence sequence = DOTween.Sequence();
-        isAnimating = true;
+        SetIsAnimation(true);
 
         foreach (Node node in nodes)
         {
@@ -172,9 +192,14 @@ public class RuleManager : Singleton<RuleManager>
             sequence.AppendCallback(() => callback?.Invoke());
         }
 
-        sequence.AppendCallback(() => isAnimating = false);
+        sequence.AppendCallback(() => SetIsAnimation(false));
 
         sequence.Play();
+    }
+
+    public void Update()
+    {
+        Debug.Log($"anim : {isAnimating}");
     }
 
     #endregion
