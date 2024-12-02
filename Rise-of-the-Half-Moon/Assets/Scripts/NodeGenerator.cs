@@ -50,7 +50,7 @@ public class NodeGenerator : MonoBehaviour
         Random.InitState(seed); // 랜덤 시드 초기화
         GenerateGrid();
         GenerateRandomConnections();
-        //EnsureAllNodesConnected();
+        EnsureAllNodesConnected();
     }
 
     void GenerateGrid()
@@ -95,37 +95,18 @@ public class NodeGenerator : MonoBehaviour
         }
     }
 
-    // Ensure all nodes are connected (using DFS)
     void EnsureAllNodesConnected()
     {
-        HashSet<Node> visited = new HashSet<Node>();
-        Stack<Node> stack = new Stack<Node>();
-
-        visited.Add(nodes[0]);
-        stack.Push(nodes[0]);
-
-        while (stack.Count > 0)
-        {
-            Node currentNode = stack.Pop();
-
-            foreach (Edge edge in currentNode.connectedEdges)
-            {
-                Node neighbor = edge.GetOtherNode(currentNode);
-                if (!visited.Contains(neighbor))
-                {
-                    visited.Add(neighbor);
-                    stack.Push(neighbor);
-                }
-            }
-        }
-
         foreach (Node node in nodes)
         {
-            if (!visited.Contains(node))
+            if (node.connectedEdges.Count == 0)
             {
-                Node randomNode = nodes[Random.Range(0, nodes.Count)];
-                CreateEdge(node, randomNode);
-                visited.Add(node);
+                List<Node> neighbors = GetNeighbors(node);
+                if (neighbors.Count > 0)
+                {
+                    Node randomNeighbor = neighbors[Random.Range(0, neighbors.Count)];
+                    CreateEdge(node, randomNeighbor);
+                }
             }
         }
     }

@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a8152da077a04bc439cf45cbec924661, type: 3}
-  m_Name: moon_first_quarter
+  m_Name: moon_waning_crescent
   m_EditorClassIdentifier: 
-  phaseType: 6
-  phaseTexture: {fileID: 2800000, guid: 0bdd370c5021e6148be2dd7a00d56af6, type: 3}
+  phaseIndex: 1
+  phaseType: 1
+  phaseTexture: {fileID: 2800000, guid: 3fd90a6f8be9fe547accf89000886fbe, type: 3}
   cardBackSprite: {fileID: 21300000, guid: d273eee968fe82542872337bce4033b4, type: 3}
-  description: "\uC0C1\uD604\uB2EC"
+  description: "\uADF8\uBBD0\uB2EC"

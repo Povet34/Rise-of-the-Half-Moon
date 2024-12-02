@@ -48,38 +48,46 @@ public class RuleManager : Singleton<RuleManager>
             }
         }
 
-        AddAnimateQueue(myOccupiedNodes.First(), myOccupiedNodes, Definitions.SETTLEMENT_SCORE, settlementEndCallback);
-        AddAnimateQueue(otherOccupiedNodes.First(), otherOccupiedNodes, Definitions.SETTLEMENT_SCORE, settlementEndCallback);
+        AddAnimateQueue(true, myOccupiedNodes, Definitions.SETTLEMENT_SCORE, settlementEndCallback);
+        AddAnimateQueue(false, otherOccupiedNodes, Definitions.SETTLEMENT_SCORE, settlementEndCallback);
     }
 
 
-    public void OnCardPlaced(Node node)
+    public void OnCardPlaced(Node node, bool isMine)
     {
-        CheckAdjacentNodes(node);
-        CheckFullMoon(node);
-        CheckMoonCycle(node);
+        CheckAdjacentNodes(node, isMine);
+        CheckFullMoon(node, isMine);
+        CheckMoonCycle(node, isMine);
     }
 
-    private void CheckAdjacentNodes(Node node)
+    private void CheckAdjacentNodes(Node node, bool isMine)
     {
         foreach (Node adjacentNode in node.GetAdjacentNodes())
         {
             if (adjacentNode.moonPhaseData != null && adjacentNode.GetPhaseType() == node.GetPhaseType())
             {
-                AddAnimateQueue(node, new List<Node>() { node, adjacentNode }, Definitions.SAME_PHASE_SCORE);
+                AddAnimateQueue(isMine, new List<Node>() { node, adjacentNode }, Definitions.SAME_PHASE_SCORE);
             }
         }
     }
 
-    private void CheckFullMoon(Node node)
+    private void CheckFullMoon(Node node, bool isMine)
     {
         foreach (Node adjacentNode in node.GetAdjacentNodes())
         {
             if (adjacentNode.moonPhaseData != null && IsFullMoonCombination(node.GetPhaseType(), adjacentNode.GetPhaseType()))
             {
-                AddAnimateQueue(node, new List<Node>() { node, adjacentNode }, Definitions.FULL_MOON_SCORE);
+                AddAnimateQueue(isMine, new List<Node>() { node, adjacentNode }, Definitions.FULL_MOON_SCORE);
             }
         }
+    }
+
+    private void CheckMoonCycle(Node node, bool isMine)
+    {
+        List<List<Node>> cycles = nodeGenerator.GetSequentialPhaseNodes(node);
+
+        foreach (var cycle in cycles)
+            AddAnimateQueue(isMine, cycle, Definitions.PHASE_CYCLE_SCORE);
     }
 
     private bool IsFullMoonCombination(MoonPhaseData.PhaseType type1, MoonPhaseData.PhaseType type2)
@@ -94,15 +102,6 @@ public class RuleManager : Singleton<RuleManager>
                (type1 == MoonPhaseData.PhaseType.WaningGibbous && type2 == MoonPhaseData.PhaseType.WaxingCrescent) ||
                (type1 == MoonPhaseData.PhaseType.WaxingCrescent && type2 == MoonPhaseData.PhaseType.WaningGibbous);
     }
-
-    private void CheckMoonCycle(Node node)
-    {
-        List<List<Node>> cycles = nodeGenerator.GetSequentialPhaseNodes(node);
-
-        foreach(var cycle in cycles)
-            AddAnimateQueue(node, cycle, Definitions.PHASE_CYCLE_SCORE);
-    }
-
 
     #endregion
 
@@ -153,18 +152,16 @@ public class RuleManager : Singleton<RuleManager>
 
             if (!isAnimating && animationQueue.Count > 0)
             {
-                Debug.Log($"AnimationQueue Count : {animationQueue.Count}");
                 animationQueue.Dequeue().Invoke();
             }
         }
     }
 
-    private void AddAnimateQueue(Node fristNode, List<Node> nodes, int score, Action callback = null)
+    private void AddAnimateQueue(bool isMine, List<Node> nodes, int score, Action endCallback = null)
     {
         animationQueue.Enqueue(() => 
         {
-            bool isMine = fristNode.occupiedUser == Definitions.MY_INDEX;
-            AnimateNodes(nodes, isMine, callback);
+            AnimateNodes(nodes, isMine, endCallback);
 
             if (isMine)
                 GameManager.Instance.UpdateMyScore(score);
@@ -173,7 +170,7 @@ public class RuleManager : Singleton<RuleManager>
         });
     }
 
-    public void AnimateNodes(List<Node> nodes, bool isMine, Action callback)
+    public void AnimateNodes(List<Node> nodes, bool isMine, Action endCallback)
     {
         Sequence sequence = DOTween.Sequence();
         SetIsAnimation(true);
@@ -189,17 +186,12 @@ public class RuleManager : Singleton<RuleManager>
             sequence.AppendInterval(0.5f);
             sequence.Append(node.transform.DOScale(originalScale, 0.5f));
             sequence.AppendCallback(() => node.transform.localScale = originalScale);
-            sequence.AppendCallback(() => callback?.Invoke());
         }
 
         sequence.AppendCallback(() => SetIsAnimation(false));
+        sequence.AppendCallback(() => endCallback?.Invoke());
 
         sequence.Play();
-    }
-
-    public void Update()
-    {
-        Debug.Log($"anim : {isAnimating}");
     }
 
     #endregion

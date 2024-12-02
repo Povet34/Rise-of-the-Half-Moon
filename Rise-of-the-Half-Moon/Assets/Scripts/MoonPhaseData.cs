@@ -14,22 +14,40 @@ public class MoonPhaseData : ScriptableObject
         FullMoon = 4,           // 보름달
         WaxingGibbous = 5,      // 상현망
         FirstQuarter = 6,       // 상현달
-        WaxingCrescent = 7      // 초승달
+        WaxingCrescent = 7,     // 초승달
+        Count = 8,
     }
 
+    public int phaseIndex;
     public PhaseType phaseType;  
+
     public Texture2D phaseTexture;
+    public Sprite phaseSprite;
+    
     public Sprite cardBackSprite;
     public string description;
 
     public Sprite GetSprite(bool isMine)
     {
-        if (phaseTexture == null) return null;
+        if (phaseTexture == null && phaseSprite == null) return null;
 
-        if (isMine)
-            return Sprite.Create(phaseTexture, new Rect(0, 0, phaseTexture.width, phaseTexture.height), new Vector2(0.5f, 0.5f));
-        else
-            return cardBackSprite;
+        if (phaseTexture)
+        {
+            if (isMine)
+                return Sprite.Create(phaseTexture, new Rect(0, 0, phaseTexture.width, phaseTexture.height), new Vector2(0.5f, 0.5f));
+            else
+                return cardBackSprite;
+        }
+
+        if (phaseSprite)
+        {
+            if (isMine)
+                return phaseSprite;
+            else
+                return cardBackSprite;
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -46,14 +64,14 @@ public class MoonPhaseData : ScriptableObject
     public static PhaseType GetPreviousPhaseType(PhaseType currentType)
     {
         int currentIndex = (int)currentType;
-        int previousIndex = (currentIndex - 1 + 8) % 8; // 8은 PhaseType의 개수
+        int previousIndex = (currentIndex - 1 + (int)PhaseType.Count) % (int)PhaseType.Count; 
         return (PhaseType)previousIndex;
     }
 
     public static PhaseType GetNextPhaseType(PhaseType currentType)
     {
         int currentIndex = (int)currentType;
-        int nextIndex = (currentIndex + 1) % 8; // 8은 PhaseType의 개수
+        int nextIndex = (currentIndex + 1) % (int)PhaseType.Count;
         return (PhaseType)nextIndex;
     }
 }

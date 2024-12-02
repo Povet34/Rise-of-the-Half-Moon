@@ -72,7 +72,7 @@ public class Bot : MonoBehaviour
 
     private IEnumerator DelayPlaceCardBody(float delay)
     {
-        yield return new WaitUntil(()=> RuleManager.Instance.IsRemainScoreSettlement());
+        yield return new WaitUntil(()=> !RuleManager.Instance.IsRemainScoreSettlement());
         yield return new WaitForSeconds(delay);
 
         if (defficulity == -1 || randomCount > 0)

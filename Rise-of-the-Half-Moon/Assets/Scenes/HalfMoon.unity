@@ -406,7 +406,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &493918779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2608,6 +2608,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2a9b5adaac120f343aff9cebdaee52b0, type: 2}
   - {fileID: 11400000, guid: 26de6e8d76802b147b0b93e252093602, type: 2}
   - {fileID: 11400000, guid: 18ea6bb07bd15754d9458f8d40803914, type: 2}
+  isPlayerTurn: 0
   myScore: 0
   myCards: []
   bot: {fileID: 2039672712}

@@ -24,6 +24,7 @@ public class Node : MonoBehaviour
 
     public void Init(Vector3 position, GameObject nodeObject)
     {
+        occupiedUser = Definitions.EMPTY_NODE;
         this.position = position;
         nodeRenderer = nodeObject.GetComponent<Renderer>(); // Get the Renderer component
 

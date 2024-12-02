@@ -45,7 +45,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     private bool CanInput()
     {
-        return isMine && !RuleManager.Instance.IsRemainScoreSettlement();
+        return isMine && !RuleManager.Instance.IsRemainScoreSettlement() && !CardDrawer.isDrawing && GameManager.Instance.isPlayerTurn;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -111,7 +111,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         data.moonPhaseData = moonPhaseData;
 
         node.PutCard(data);
-        RuleManager.Instance.OnCardPlaced(node);
+        RuleManager.Instance.OnCardPlaced(node, isMine);
 
         nextTurnCallback?.Invoke(this);
         replaceCallback?.Invoke();

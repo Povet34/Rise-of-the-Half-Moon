@@ -1,9 +1,15 @@
 using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class CardDrawer : MonoBehaviour
 {
+    /// <summary>
+    /// Draw중인지 아닌지 판단
+    /// </summary>
+    public static bool isDrawing;
+
     private GameObject cardPrefab;
     private Transform canvasTransform;
     private MoonPhaseData[] moonPhaseDataArray;
@@ -58,10 +64,16 @@ public class CardDrawer : MonoBehaviour
 
         targetCards.Add(card);
 
-        RectTransform cardRt = card.GetComponent<RectTransform>();
-        cardRt.DOAnchorPos(positions[targetCards.Count - 1], Definitions.CardMoveDuration).SetEase(Ease.OutQuint);
 
-        RepositionCards(targetCards, positions);
+        //Draw Animation
+        {
+            Sequence sequence = DOTween.Sequence();
+
+            sequence.AppendCallback(() => { isDrawing = true; });
+            sequence.AppendCallback(() => { card.GetComponent<RectTransform>().DOAnchorPos(positions[targetCards.Count - 1], Definitions.CardMoveDuration).SetEase(Ease.OutQuint); });
+            sequence.AppendCallback(() => { isDrawing = false; });
+            sequence.AppendCallback(() => { RepositionCards(targetCards, positions); });
+        }
     }
 
     private void RepositionCards(List<Card> cards, Vector2[] positions)

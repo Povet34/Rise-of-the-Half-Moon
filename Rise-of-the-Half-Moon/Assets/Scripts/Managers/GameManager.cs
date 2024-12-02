@@ -7,9 +7,10 @@ public class GameManager : Singleton<GameManager>
     public GameObject cardPrefab;
     public Transform canvasTransform;
     public MoonPhaseData[] moonPhaseDataArray;
+    public bool isPlayerTurn;
+
     private System.Random random;
     private NodeGenerator nodeGenerator;
-    private bool isPlayerTurn;
 
     [Header("Me")]
     public int myScore;
