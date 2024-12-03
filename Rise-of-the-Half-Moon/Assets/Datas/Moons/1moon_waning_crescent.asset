@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ec3f7c8ef0636844681cef304f91b477, type: 3}
-  m_Name: moon_waning_gibbous
+  m_Name: 1moon_waning_crescent
   m_EditorClassIdentifier: 
   contentType: 1
-  phaseIndex: 0
-  phaseTexture: {fileID: 0}
-  phaseSprite: {fileID: 0}
-  cardBackSprite: {fileID: 0}
+  phaseIndex: 1
+  phaseTexture: {fileID: 2800000, guid: 3fd90a6f8be9fe547accf89000886fbe, type: 3}
+  phaseSprite: {fileID: 21300000, guid: 3fd90a6f8be9fe547accf89000886fbe, type: 3}
+  cardBackSprite: {fileID: 21300000, guid: d273eee968fe82542872337bce4033b4, type: 3}
   description: 

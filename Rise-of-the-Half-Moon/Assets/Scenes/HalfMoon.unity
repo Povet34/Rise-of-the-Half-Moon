@@ -2600,7 +2600,7 @@ MonoBehaviour:
   cardPrefab: {fileID: 3586522914320000660, guid: b9220765599354e4eb6bcd91a2626f23, type: 3}
   canvasTransform: {fileID: 773000724}
   isPlayerTurn: 0
-  contentType: 2
+  contentType: 1
   myScore: 0
   myCards: []
   bot: {fileID: 2039672712}
@@ -2660,15 +2660,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moonPhaseDatas:
-  - {fileID: 11400000, guid: 9bc20959ad793704086f4cc91ab0242b, type: 2}
-  - {fileID: 11400000, guid: c92dd8b94051fc6408e356f2b2ac69e7, type: 2}
   - {fileID: 11400000, guid: 465b6843d2cc8e048b51669d302e8367, type: 2}
-  - {fileID: 11400000, guid: 4f2293edc2e2c7a4d9c39b09beba5910, type: 2}
   - {fileID: 11400000, guid: db066b77385542b4bb40d3573c2ffc4b, type: 2}
+  - {fileID: 11400000, guid: 4f2293edc2e2c7a4d9c39b09beba5910, type: 2}
   - {fileID: 11400000, guid: 2a9b5adaac120f343aff9cebdaee52b0, type: 2}
-  - {fileID: 11400000, guid: 26de6e8d76802b147b0b93e252093602, type: 2}
+  - {fileID: 11400000, guid: c92dd8b94051fc6408e356f2b2ac69e7, type: 2}
   - {fileID: 11400000, guid: 18ea6bb07bd15754d9458f8d40803914, type: 2}
-  NumberPhaseDatas:
+  - {fileID: 11400000, guid: 9bc20959ad793704086f4cc91ab0242b, type: 2}
+  - {fileID: 11400000, guid: 26de6e8d76802b147b0b93e252093602, type: 2}
+  numberPhaseDatas:
   - {fileID: 11400000, guid: 8714f55928798ec48a9eff4f2014b183, type: 2}
   - {fileID: 11400000, guid: a4e75ba6a68be47419621952a541a899, type: 2}
   - {fileID: 11400000, guid: f8baeb6b0c7c4754db1ed31ec8ed097c, type: 2}

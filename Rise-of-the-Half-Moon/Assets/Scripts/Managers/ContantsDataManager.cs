@@ -17,11 +17,11 @@ public class ContantsDataManager : Singleton<ContantsDataManager>
                 rule = gameObject.AddComponent<MoonRule>();
                 return moonPhaseDatas;
             case PhaseData.ContentType.Dice:
-                rule = gameObject.AddComponent<MoonRule>();
-                return numberPhaseDatas;
-            case PhaseData.ContentType.Number:
-                rule = gameObject.AddComponent<MoonRule>();
+                //rule = gameObject.AddComponent<MoonRule>();
                 return dicePhaseDatas;
+            case PhaseData.ContentType.Number:
+                rule = gameObject.AddComponent<NumberRule>();
+                return numberPhaseDatas;
             default:
                 return null;
         }
