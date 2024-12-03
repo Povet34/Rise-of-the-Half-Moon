@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e171b8309f3b1f6488cb9df96d80364e
+guid: 93a40523724dccd4082e1a9cb2e32813
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,13 +110,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: dice_0
+      name: numbers_0
       rect:
         serializedVersion: 2
-        x: 43
-        y: 582
-        width: 416
-        height: 416
+        x: 0
+        y: 2041
+        width: 713
+        height: 712
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -124,20 +124,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6d47a3e4cb235d84085afba52edb3da3
-      internalID: 1126781904
+      spriteID: 95e3d7d599d2c2e4aafdb992b77a4e90
+      internalID: 1736162037
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: dice_1
+      name: numbers_1
       rect:
         serializedVersion: 2
-        x: 508
-        y: 582
-        width: 415
-        height: 416
+        x: 947
+        y: 2041
+        width: 714
+        height: 712
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,20 +145,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e8ab8c36bb3ec894fb44ee8ae9091561
-      internalID: -1339142784
+      spriteID: fc72ecd5ad819304599593ddf58f38d6
+      internalID: 1340311951
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: dice_2
+      name: numbers_2
       rect:
         serializedVersion: 2
-        x: 995
-        y: 584
-        width: 416
-        height: 416
+        x: 1896
+        y: 2041
+        width: 712
+        height: 712
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -166,20 +166,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7e89dbfd9b1dccd4692cce0d32a65dd8
-      internalID: 1877844671
+      spriteID: 90a7ba9bf03314e4d81d625ad3b38e50
+      internalID: 823585934
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: dice_3
+      name: numbers_6
       rect:
         serializedVersion: 2
-        x: 31
-        y: 32
-        width: 415
-        height: 416
+        x: 0
+        y: 1069
+        width: 713
+        height: 714
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -187,20 +187,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ff64cefcf8553c74daaa7fa48f35e038
-      internalID: 1996221845
+      spriteID: 57aec74ccdd0138438c128af03010a9f
+      internalID: 1614873458
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: dice_4
+      name: numbers_7
       rect:
         serializedVersion: 2
-        x: 508
-        y: 34
-        width: 415
-        height: 416
+        x: 947
+        y: 1069
+        width: 714
+        height: 714
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -208,20 +208,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 09ed25b31fadc95458632be64476dead
-      internalID: -172378292
+      spriteID: 8297befcb5b3dd84184b7cd1298c7f76
+      internalID: -1841141972
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: dice_5
+      name: numbers_8
       rect:
         serializedVersion: 2
-        x: 995
-        y: 34
-        width: 416
-        height: 416
+        x: 1896
+        y: 1069
+        width: 712
+        height: 714
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -229,8 +229,71 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ebda63429cc4d7644b821e71fd5e8378
-      internalID: 1683844340
+      spriteID: ff55ad0d4b0e8654abd6efe48d87987d
+      internalID: -1889008395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: numbers_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 99
+        width: 713
+        height: 715
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24154f17969bf264b92d41affcdc2607
+      internalID: 192257491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: numbers_13
+      rect:
+        serializedVersion: 2
+        x: 947
+        y: 99
+        width: 714
+        height: 715
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f146af140e2d9442a7e869fd33f6955
+      internalID: 1288251856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: numbers_14
+      rect:
+        serializedVersion: 2
+        x: 1896
+        y: 99
+        width: 712
+        height: 715
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f7931c3e46a6ba43b0c5f2cf7b9da5a
+      internalID: 2107410734
       vertices: []
       indices: 
       edges: []
@@ -238,7 +301,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: b8e5e64ad8ca8a34cac48c7e54b974d0
+    spriteID: 3d364efba35f81e4db1dd6e9f3b74979
     internalID: 0
     vertices: []
     indices: 
@@ -246,12 +309,24 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      dice_0: 1126781904
-      dice_1: -1339142784
-      dice_2: 1877844671
-      dice_3: 1996221845
-      dice_4: -172378292
-      dice_5: 1683844340
+      numbers_0: 1736162037
+      numbers_1: 1340311951
+      numbers_10: 424743163
+      numbers_11: 1134397663
+      numbers_12: 192257491
+      numbers_13: 1288251856
+      numbers_14: 2107410734
+      numbers_15: 877948408
+      numbers_16: -1061832609
+      numbers_17: 587906656
+      numbers_2: 823585934
+      numbers_3: 2108722823
+      numbers_4: -1458926949
+      numbers_5: -349503832
+      numbers_6: 1614873458
+      numbers_7: -1841141972
+      numbers_8: -1889008395
+      numbers_9: -1171701061
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -2,6 +2,22 @@ using UnityEngine;
 
 public static class Definitions
 {
+    #region Contants Data Def
+
+    public enum ContentType
+    {
+        Dice,
+        MoonPhase,
+        Number,
+    }
+
+
+    public const int DiceDataCount = 6;
+    public const int MoonPhaseDataCount = 8;
+    public const int NumberDataCount = 9;
+
+    #endregion
+
     public const int EMPTY_NODE = 0;
     public const int NOT_OCCUPIED_NODE = 1;
     public const int MY_INDEX = 2;

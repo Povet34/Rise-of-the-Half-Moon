@@ -5,33 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class RuleManager : Singleton<RuleManager>
+public class MoonRule : ContentRule
 {
-    private bool isAnimating = false;
-
-    NodeGenerator nodeGenerator;
-    Queue<Action> animationQueue = new Queue<Action>();
 
     #region Calc Score
 
-    private void Awake()
-    {
-        nodeGenerator = FindObjectOfType<NodeGenerator>();
-        StartCoroutine(DelayAnimation());
-    }
-
-
-    public bool IsRemainScoreSettlement()
-    {
-        return animationQueue.Count > 0 || isAnimating;
-    }
-
-    public void SetIsAnimation(bool isOn)
-    {
-        isAnimating = isOn;
-    }
-
-    public void SettlementOccupiedNodes(Action settlementEndCallback)
+    public override void SettlementOccupiedNodes(Action settlementEndCallback)
     {
         List<Node> myOccupiedNodes = new List<Node>();
         List<Node> otherOccupiedNodes = new List<Node>();
@@ -53,36 +32,36 @@ public class RuleManager : Singleton<RuleManager>
     }
 
 
-    public void OnCardPlaced(Node node, bool isMine)
+    public override void OnCardPlaced(Node node, bool isMine)
     {
         CheckAdjacentNodes(node, isMine);
         CheckFullMoon(node, isMine);
-        CheckMoonCycle(node, isMine);
+        CheckCycle(node, isMine);
     }
 
-    private void CheckAdjacentNodes(Node node, bool isMine)
+    protected override void CheckAdjacentNodes(Node node, bool isMine)
     {
         foreach (Node adjacentNode in node.GetAdjacentNodes())
         {
-            if (adjacentNode.moonPhaseData != null && adjacentNode.GetPhaseType() == node.GetPhaseType())
+            if (adjacentNode.phaseData != null && adjacentNode.GetPhaseType() == node.GetPhaseType())
             {
                 AddAnimateQueue(isMine, new List<Node>() { node, adjacentNode }, Definitions.SAME_PHASE_SCORE);
             }
         }
     }
 
-    private void CheckFullMoon(Node node, bool isMine)
+    protected override void CheckFullMoon(Node node, bool isMine)
     {
         foreach (Node adjacentNode in node.GetAdjacentNodes())
         {
-            if (adjacentNode.moonPhaseData != null && IsFullMoonCombination(node.GetPhaseType(), adjacentNode.GetPhaseType()))
+            if (adjacentNode.phaseData != null && IsCombination(node.GetPhaseType(), adjacentNode.GetPhaseType()))
             {
                 AddAnimateQueue(isMine, new List<Node>() { node, adjacentNode }, Definitions.FULL_MOON_SCORE);
             }
         }
     }
 
-    private void CheckMoonCycle(Node node, bool isMine)
+    protected override void CheckCycle(Node node, bool isMine)
     {
         List<List<Node>> cycles = nodeGenerator.GetSequentialPhaseNodes(node);
 
@@ -90,31 +69,31 @@ public class RuleManager : Singleton<RuleManager>
             AddAnimateQueue(isMine, cycle, Definitions.PHASE_CYCLE_SCORE);
     }
 
-    private bool IsFullMoonCombination(MoonPhaseData.PhaseType type1, MoonPhaseData.PhaseType type2)
+    protected override bool IsCombination(int index1, int index2)
     {
-        // Implement the logic to check if the combination of type1 and type2 can form a full moon
-        return (type1 == MoonPhaseData.PhaseType.NewMoon && type2 == MoonPhaseData.PhaseType.FullMoon) ||
-               (type1 == MoonPhaseData.PhaseType.FullMoon && type2 == MoonPhaseData.PhaseType.NewMoon) ||
-               (type1 == MoonPhaseData.PhaseType.WaningCrescent && type2 == MoonPhaseData.PhaseType.WaxingGibbous) ||
-               (type1 == MoonPhaseData.PhaseType.WaxingGibbous && type2 == MoonPhaseData.PhaseType.WaningCrescent) ||
-               (type1 == MoonPhaseData.PhaseType.ThirdQuarter && type2 == MoonPhaseData.PhaseType.FirstQuarter) ||
-               (type1 == MoonPhaseData.PhaseType.FirstQuarter && type2 == MoonPhaseData.PhaseType.ThirdQuarter) ||
-               (type1 == MoonPhaseData.PhaseType.WaningGibbous && type2 == MoonPhaseData.PhaseType.WaxingCrescent) ||
-               (type1 == MoonPhaseData.PhaseType.WaxingCrescent && type2 == MoonPhaseData.PhaseType.WaningGibbous);
+        // index1과 index2가 특정 조합을 이루는지 확인하여 true를 반환
+        return (index1 == 0 && index2 == 3) || // NewMoon (0) - FullMoon (3)
+               (index1 == 3 && index2 == 0) || // FullMoon (3) - NewMoon (0)
+               (index1 == 1 && index2 == 4) || // WaningCrescent (1) - WaxingGibbous (4)
+               (index1 == 4 && index2 == 1) || // WaxingGibbous (4) - WaningCrescent (1)
+               (index1 == 2 && index2 == 5) || // ThirdQuarter (2) - FirstQuarter (5)
+               (index1 == 5 && index2 == 2) || // FirstQuarter (5) - ThirdQuarter (2)
+               (index1 == 6 && index2 == 7) || // WaningGibbous (6) - WaxingCrescent (7)
+               (index1 == 7 && index2 == 6);   // WaxingCrescent (7) - WaningGibbous (6)
     }
 
     #endregion
 
     #region Infer Score
 
-    public int PredictScoreForCard(Node node, Card card)
+    public override int PredictScoreForCard(Node node, Card card)
     {
         int totalScore = 0;
 
         // Check adjacent nodes for same phase type
         foreach (Node adjacentNode in node.GetAdjacentNodes())
         {
-            if (adjacentNode.moonPhaseData != null && adjacentNode.GetPhaseType() == card.moonPhaseData.phaseType)
+            if (adjacentNode.phaseData != null && adjacentNode.GetPhaseType() == card.phaseData.phaseIndex)
             {
                 totalScore += Definitions.SAME_PHASE_SCORE;
             }
@@ -123,7 +102,7 @@ public class RuleManager : Singleton<RuleManager>
         // Check adjacent nodes for full moon combination
         foreach (Node adjacentNode in node.GetAdjacentNodes())
         {
-            if (adjacentNode.moonPhaseData != null && IsFullMoonCombination(card.moonPhaseData.phaseType, adjacentNode.GetPhaseType()))
+            if (adjacentNode.phaseData != null && IsCombination(card.phaseData.phaseIndex, adjacentNode.GetPhaseType()))
             {
                 totalScore += Definitions.FULL_MOON_SCORE;
             }
@@ -144,7 +123,7 @@ public class RuleManager : Singleton<RuleManager>
 
     #region Animation
 
-    private IEnumerator DelayAnimation()
+    protected override IEnumerator DelayAnimation()
     {
         while(true)
         {
@@ -157,7 +136,7 @@ public class RuleManager : Singleton<RuleManager>
         }
     }
 
-    private void AddAnimateQueue(bool isMine, List<Node> nodes, int score, Action endCallback = null)
+    protected override void AddAnimateQueue(bool isMine, List<Node> nodes, int score, Action endCallback = null)
     {
         animationQueue.Enqueue(() => 
         {
@@ -170,7 +149,7 @@ public class RuleManager : Singleton<RuleManager>
         });
     }
 
-    public void AnimateNodes(List<Node> nodes, bool isMine, Action endCallback)
+    protected override void AnimateNodes(List<Node> nodes, bool isMine, Action endCallback)
     {
         Sequence sequence = DOTween.Sequence();
         SetIsAnimation(true);

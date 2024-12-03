@@ -6,9 +6,13 @@ public class GameManager : Singleton<GameManager>
     [Header("Data")]
     public GameObject cardPrefab;
     public Transform canvasTransform;
-    public MoonPhaseData[] moonPhaseDataArray;
     public bool isPlayerTurn;
+    public PhaseData.ContentType contentType;
 
+    private ContentRule rule;
+    public ContentRule Rule => rule;
+
+    private List<PhaseData> phaseDatas;
     private System.Random random;
     private NodeGenerator nodeGenerator;
 
@@ -35,7 +39,9 @@ public class GameManager : Singleton<GameManager>
 
     public void StartPlay()
     {
-        foreach(var card in otherCards)
+        phaseDatas = ContantsDataManager.Instance.GetPhaseDatas(contentType, ref rule);
+
+        foreach (var card in otherCards)
         {
             card.Destroy();
         }
@@ -52,7 +58,7 @@ public class GameManager : Singleton<GameManager>
 
         random = new System.Random();
         cardDrawer = gameObject.AddComponent<CardDrawer>();
-        cardDrawer.Init(cardPrefab, canvasTransform, moonPhaseDataArray, random);
+        cardDrawer.Init(cardPrefab, canvasTransform, phaseDatas, random);
 
         InitCards(2, myCards, true);
         InitCards(2, otherCards, false);
@@ -100,7 +106,7 @@ public class GameManager : Singleton<GameManager>
 
     private void SettlementPlay()
     {
-        RuleManager.Instance.SettlementOccupiedNodes(
+        Rule.SettlementOccupiedNodes(
             () => 
             {
                 if (myScore > otherScore)

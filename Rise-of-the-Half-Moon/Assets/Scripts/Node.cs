@@ -7,7 +7,7 @@ public class Node : MonoBehaviour
     public class PutData
     {
         public int occupiedUser;   //occupied user index
-        public MoonPhaseData moonPhaseData; //moon phase data
+        public PhaseData moonPhaseData; //moon phase data
     }
 
     public List<Edge> connectedEdges = new List<Edge>();
@@ -18,7 +18,7 @@ public class Node : MonoBehaviour
 
     public int occupiedUser;
 
-    public MoonPhaseData moonPhaseData;
+    public PhaseData phaseData;
 
     [SerializeField] private TextMeshProUGUI pointValueNotifier;
 
@@ -32,12 +32,12 @@ public class Node : MonoBehaviour
         propertyBlock = new MaterialPropertyBlock();
     }
 
-    public MoonPhaseData.PhaseType GetPhaseType()
+    public int GetPhaseType()
     {
-        if (null != moonPhaseData)
-            return moonPhaseData.phaseType;
+        if (null != phaseData)
+            return phaseData.phaseIndex;
         else
-            return MoonPhaseData.PhaseType.None;
+            return -100;
     }
 
     public List<Node> GetAdjacentNodes()
@@ -58,11 +58,11 @@ public class Node : MonoBehaviour
     {
         if (null != data)
         {
-            moonPhaseData = data.moonPhaseData;
+            phaseData = data.moonPhaseData;
             occupiedUser = data.occupiedUser;
 
             nodeRenderer.GetPropertyBlock(propertyBlock); // Retrieve current properties
-            propertyBlock.SetTexture("_BaseMap", moonPhaseData.phaseTexture); // Change texture
+            propertyBlock.SetTexture("_BaseMap", phaseData.GetTexture()); // Change texture
             nodeRenderer.SetPropertyBlock(propertyBlock); // Apply changes
         }
     }

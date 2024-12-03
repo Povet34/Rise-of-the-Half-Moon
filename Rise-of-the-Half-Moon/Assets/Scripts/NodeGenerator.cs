@@ -185,8 +185,6 @@ public class NodeGenerator : MonoBehaviour
 
     #region Moon Cycle
 
-
-    // Generate moon cycles
     void GenerateMoonCycles()
     {
         HashSet<Node> visited = new HashSet<Node>();
@@ -206,16 +204,16 @@ public class NodeGenerator : MonoBehaviour
                 {
                     Node currentNode = queue.Dequeue();
                     phaseGroup.Add(currentNode);
-                    MoonPhaseData.PhaseType currentPhase = currentNode.GetPhaseType();
+                    int currentPhase = currentNode.GetPhaseType();
 
                     foreach (Node neighbor in currentNode.GetAdjacentNodes())
                     {
                         if (!visited.Contains(neighbor))
                         {
-                            MoonPhaseData.PhaseType neighborPhase = neighbor.GetPhaseType();
+                            int neighborPhase = neighbor.GetPhaseType();
 
-                            if (MoonPhaseData.GetPreviousPhaseType(currentPhase) == neighborPhase ||
-                                MoonPhaseData.GetNextPhaseType(currentPhase) == neighborPhase)
+                            if (PhaseData.GetPreviousPhaseType(currentPhase, PhaseData.ContentType.Moon) == neighborPhase ||
+                                PhaseData.GetNextPhaseType(currentPhase, PhaseData.ContentType.Moon) == neighborPhase)
                             {
                                 queue.Enqueue(neighbor);
                                 visited.Add(neighbor);

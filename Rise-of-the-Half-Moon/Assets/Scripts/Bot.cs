@@ -31,7 +31,7 @@ public class Bot : MonoBehaviour
         {
             foreach (Node node in emptyNodes)
             {
-                int score = RuleManager.Instance.PredictScoreForCard(node, card) + BotHandicap();
+                int score = GameManager.Instance.Rule.PredictScoreForCard(node, card) + BotHandicap();
                 if (score > highestScore)
                 {
                     highestScore = score;
@@ -72,7 +72,7 @@ public class Bot : MonoBehaviour
 
     private IEnumerator DelayPlaceCardBody(float delay)
     {
-        yield return new WaitUntil(()=> !RuleManager.Instance.IsRemainScoreSettlement());
+        yield return new WaitUntil(()=> !GameManager.Instance.Rule.IsRemainScoreSettlement());
         yield return new WaitForSeconds(delay);
 
         if (defficulity == -1 || randomCount > 0)

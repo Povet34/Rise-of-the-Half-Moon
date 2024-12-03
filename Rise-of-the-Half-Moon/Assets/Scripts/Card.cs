@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public bool isMine;
-    public MoonPhaseData moonPhaseData; // MoonPhaseData를 참조
+    public PhaseData phaseData; // MoonPhaseData를 참조
     private CanvasGroup canvasGroup;
     private RectTransform rectTransform;
 
@@ -27,10 +27,9 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     void Start()
     {
-        if (moonPhaseData != null)
+        if (phaseData != null)
         {
-            cardImage.sprite = moonPhaseData.GetSprite(isMine);
-            cardImage.transform.localScale = new Vector3(-1, 1, 1);
+            cardImage.sprite = phaseData.GetSprite(isMine);
         }
     }
 
@@ -45,7 +44,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     private bool CanInput()
     {
-        return isMine && !RuleManager.Instance.IsRemainScoreSettlement() && !CardDrawer.isDrawing && GameManager.Instance.isPlayerTurn;
+        return isMine && !GameManager.Instance.Rule.IsRemainScoreSettlement() && !CardDrawer.isDrawing && GameManager.Instance.isPlayerTurn;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -108,10 +107,10 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     {
         Node.PutData data = new Node.PutData();
         data.occupiedUser = Definitions.NOT_OCCUPIED_NODE;
-        data.moonPhaseData = moonPhaseData;
+        data.moonPhaseData = phaseData;
 
         node.PutCard(data);
-        RuleManager.Instance.OnCardPlaced(node, isMine);
+        GameManager.Instance.Rule.OnCardPlaced(node, isMine);
 
         nextTurnCallback?.Invoke(this);
         replaceCallback?.Invoke();

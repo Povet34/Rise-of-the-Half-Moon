@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
-    private static T instance;
-    private static readonly object lockObject = new object();
-    private static bool applicationIsQuitting = false;
+    protected static T instance;
+    protected static readonly object lockObject = new object();
+    protected static bool applicationIsQuitting = false;
 
     public static T Instance
     {
@@ -39,7 +39,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    protected void OnDestroy()
     {
         applicationIsQuitting = true;
     }
