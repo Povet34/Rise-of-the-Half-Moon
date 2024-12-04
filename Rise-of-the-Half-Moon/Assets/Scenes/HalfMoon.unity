@@ -2600,7 +2600,7 @@ MonoBehaviour:
   cardPrefab: {fileID: 3586522914320000660, guid: b9220765599354e4eb6bcd91a2626f23, type: 3}
   canvasTransform: {fileID: 773000724}
   isPlayerTurn: 0
-  contentType: 1
+  contentType: 2
   myScore: 0
   myCards: []
   bot: {fileID: 2039672712}

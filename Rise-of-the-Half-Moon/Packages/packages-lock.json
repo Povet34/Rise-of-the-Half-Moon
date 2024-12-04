@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.stgame.multiplespriteextractor": {
+      "version": "https://github.com/nmtoan91/Unity-Plugin-Extract-Multiple-Sprite.git?path=/Assets/MultiSpriteExtractTool",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "f18a57f3eb68dc0f0c198c8930c7c52fbc1b1d24"
+    },
     "com.unity.2d.animation": {
       "version": "9.1.2",
       "depth": 1,

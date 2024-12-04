@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public bool isMine;
-    public PhaseData phaseData; // MoonPhaseData¸¦ ÂüÁ¶
+    public PhaseData phaseData;
     private CanvasGroup canvasGroup;
     private RectTransform rectTransform;
 
@@ -25,19 +25,16 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         rectTransform = GetComponent<RectTransform>();
     }
 
-    void Start()
-    {
-        if (phaseData != null)
-        {
-            cardImage.sprite = phaseData.GetSprite(isMine);
-        }
-    }
-
     public void Init(Action<Card> nextTurnCallback, Action replaceCallback, Action selectCallback)
     {
         this.nextTurnCallback = nextTurnCallback;
         this.replaceCallback = replaceCallback;
         this.selectCallback = selectCallback;
+
+        if (phaseData != null)
+        {
+            cardImage.sprite = phaseData.GetSprite(isMine);
+        }
     }
 
     #region Player Input
