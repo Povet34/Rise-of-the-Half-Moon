@@ -7,3 +7,8 @@
 2.	드래그 앤 드롭
 3.	노드와의 상호작용
 4.	카드 제거
+
+---
+
+### Extract-Multiple-Sprite
+https://github.com/nmtoan91/Unity-Plugin-Extract-Multiple-Sprite
