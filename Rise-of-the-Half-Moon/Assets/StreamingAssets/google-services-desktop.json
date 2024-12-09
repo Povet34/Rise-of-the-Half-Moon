@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "280826413127",
+    "project_id": "ljs-rothm",
+    "storage_bucket": "ljs-rothm.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:280826413127:android:5700bd063f3e0d52eab162",
+        "android_client_info": {
+          "package_name": "com.LJS.ROTHM"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDggXfLzFzpeob4_HpJ8XXh6h-0oj_gchQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
