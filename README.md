@@ -3,6 +3,8 @@
 ## 사용된 플러그인
 ### Extract-Multiple-Sprite
 https://github.com/nmtoan91/Unity-Plugin-Extract-Multiple-Sprite
+### play-games-plugin-for-unity
+https://github.com/playgameservices/play-games-plugin-for-unity
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 ## Code
