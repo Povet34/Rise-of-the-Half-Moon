@@ -35,7 +35,7 @@ public class MoonRule : ContentRule
     public override void OnCardPlaced(Node node, bool isMine)
     {
         CheckAdjacentNodes(node, isMine);
-        CheckFullMoon(node, isMine);
+        CheckCombineNodes(node, isMine);
         CheckCycle(node, isMine);
     }
 
@@ -50,7 +50,7 @@ public class MoonRule : ContentRule
         }
     }
 
-    protected override void CheckFullMoon(Node node, bool isMine)
+    protected override void CheckCombineNodes(Node node, bool isMine)
     {
         foreach (Node adjacentNode in node.GetAdjacentNodes())
         {
@@ -66,7 +66,9 @@ public class MoonRule : ContentRule
         List<List<Node>> cycles = nodeGenerator.GetSequentialPhaseNodes(node);
 
         foreach (var cycle in cycles)
+        {
             AddAnimateQueue(isMine, cycle, Definitions.PHASE_CYCLE_SCORE);
+        }
     }
 
     protected override bool IsCombination(int index1, int index2)

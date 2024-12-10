@@ -23,7 +23,7 @@ public class ContentRule : MonoBehaviour
 
     protected virtual void CheckAdjacentNodes(Node node, bool isMine) { }
 
-    protected virtual void CheckFullMoon(Node node, bool isMine) { }
+    protected virtual void CheckCombineNodes(Node node, bool isMine) { }
 
     protected virtual void CheckCycle(Node node, bool isMine) { }
 

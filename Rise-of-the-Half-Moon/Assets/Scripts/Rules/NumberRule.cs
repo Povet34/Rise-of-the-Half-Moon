@@ -32,7 +32,8 @@ public class NumberRule : ContentRule
     public override void OnCardPlaced(Node node, bool isMine)
     {
         CheckAdjacentNodes(node, isMine);
-        CheckNumberCombination(node, isMine);
+        CheckCombineNodes(node, isMine);
+        CheckCycle(node, isMine);
     }
 
     protected override void CheckAdjacentNodes(Node node, bool isMine)
@@ -46,7 +47,7 @@ public class NumberRule : ContentRule
         }
     }
 
-    protected void CheckNumberCombination(Node node, bool isMine)
+    protected override void CheckCombineNodes(Node node, bool isMine)
     {
         foreach (Node adjacentNode in node.GetAdjacentNodes())
         {
@@ -59,8 +60,15 @@ public class NumberRule : ContentRule
 
     protected override bool IsCombination(int index1, int index2)
     {
-        // index1과 index2가 특정 조합을 이루는지 확인하여 true를 반환
-        return (index1 + index2) % 2 == 0; // 예시: 두 숫자의 합이 짝수인 경우
+        return (index1 + index2) == 10;
+    }
+
+    protected override void CheckCycle(Node node, bool isMine)
+    {
+        List<List<Node>> cycles = nodeGenerator.GetSequentialPhaseNodes(node);
+
+        foreach (var cycle in cycles)
+            AddAnimateQueue(isMine, cycle, Definitions.PHASE_CYCLE_SCORE);
     }
 
     #endregion

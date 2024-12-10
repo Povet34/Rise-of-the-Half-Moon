@@ -18,7 +18,7 @@ public class NodeGenerator : MonoBehaviour
     public List<GameObject> nodeObjects = new List<GameObject>();
     public List<GameObject> edgeObjects = new List<GameObject>();
 
-    private Dictionary<int, List<Node>> mooncycles = new Dictionary<int, List<Node>>(); // Dictionary to store moon cycles
+    private Dictionary<int, List<Node>> cycles = new Dictionary<int, List<Node>>(); // Dictionary to store moon cycles
 
     public List<Node> Nodes => nodes;
 
@@ -55,15 +55,16 @@ public class NodeGenerator : MonoBehaviour
 
     void GenerateGrid()
     {
+        int order = 0;
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < cols; j++)
             {
                 Vector3 position = new Vector3(j * spacing, i * spacing, 0);
-                GameObject nodeObject = Instantiate(nodePrefab, position, Quaternion.identity, transform);
+                GameObject nodeObject = Instantiate(nodePrefab, position, Quaternion.Euler(0,0,180), transform);
 
                 Node newNode = nodeObject.GetComponent<Node>();
-                newNode.Init(position, nodeObject);
+                newNode.Init(order++, position, nodeObject);
 
                 nodes.Add(newNode);
                 nodeObjects.Add(nodeObject);
@@ -185,7 +186,7 @@ public class NodeGenerator : MonoBehaviour
 
     #region Moon Cycle
 
-    void GenerateMoonCycles()
+    void GenerateCycles()
     {
         HashSet<Node> visited = new HashSet<Node>();
         int cycleId = 0;
@@ -212,8 +213,8 @@ public class NodeGenerator : MonoBehaviour
                         {
                             int neighborPhase = neighbor.GetPhaseType();
 
-                            if (PhaseData.GetPreviousPhaseType(currentPhase, PhaseData.ContentType.Moon) == neighborPhase ||
-                                PhaseData.GetNextPhaseType(currentPhase, PhaseData.ContentType.Moon) == neighborPhase)
+                            if (PhaseData.GetPreviousPhaseType(currentPhase, GameManager.Instance.contentType) == neighborPhase ||
+                                PhaseData.GetNextPhaseType(currentPhase, GameManager.Instance.contentType) == neighborPhase)
                             {
                                 queue.Enqueue(neighbor);
                                 visited.Add(neighbor);
@@ -224,7 +225,7 @@ public class NodeGenerator : MonoBehaviour
 
                 if (phaseGroup.Count > 2)
                 {
-                    mooncycles[cycleId++] = phaseGroup;
+                    cycles[cycleId++] = phaseGroup;
                 }
             }
         }
@@ -232,15 +233,18 @@ public class NodeGenerator : MonoBehaviour
 
     public List<List<Node>> GetSequentialPhaseNodes(Node startNode)
     {
-        GenerateMoonCycles();
+        GenerateCycles();
 
         List<List<Node>> includedStartNodeCycles = new List<List<Node>>();
 
-        foreach (var cycle in mooncycles)
+        foreach (var cycle in cycles)
         {
             if (cycle.Value.Contains(startNode))
             {
-                includedStartNodeCycles.Add(cycle.Value);
+                List<Node> sortedCycle = new List<Node>(cycle.Value);
+                sortedCycle.Sort((node1, node2) => node2.GetPhaseType().CompareTo(node1.GetPhaseType()));
+
+                includedStartNodeCycles.Add(sortedCycle);
             }
         }
 

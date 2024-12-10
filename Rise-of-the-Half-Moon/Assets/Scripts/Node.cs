@@ -10,6 +10,7 @@ public class Node : MonoBehaviour
         public PhaseData moonPhaseData; //moon phase data
     }
 
+    public int index;
     public List<Edge> connectedEdges = new List<Edge>();
     public Vector3 position;
 
@@ -22,8 +23,9 @@ public class Node : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI pointValueNotifier;
 
-    public void Init(Vector3 position, GameObject nodeObject)
+    public void Init(int index, Vector3 position, GameObject nodeObject)
     {
+        this.index = index;
         occupiedUser = Definitions.EMPTY_NODE;
         this.position = position;
         nodeRenderer = nodeObject.GetComponent<Renderer>(); // Get the Renderer component
