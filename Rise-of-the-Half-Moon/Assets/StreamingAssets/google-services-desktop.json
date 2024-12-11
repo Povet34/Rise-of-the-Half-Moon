@@ -12,7 +12,20 @@
           "package_name": "com.LJS.ROTHM"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "280826413127-08jlbmpjpmmtavhn57v88t7uh7dpoe7b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.LJS.ROTHM",
+            "certificate_hash": "49a510af45c4b811c4ff3f7e90c236dd248c8b62"
+          }
+        },
+        {
+          "client_id": "280826413127-uotcphrkd8rictnid8hadd0p0gn87ihl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDggXfLzFzpeob4_HpJ8XXh6h-0oj_gchQ"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "280826413127-uotcphrkd8rictnid8hadd0p0gn87ihl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

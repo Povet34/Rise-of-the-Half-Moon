@@ -1,9 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/gcm_defaultSenderId,@string/google_storage_bucket,@string/project_id,@string/google_api_key,@string/google_crash_reporting_api_key,@string/google_app_id">
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/gcm_defaultSenderId,@string/google_storage_bucket,@string/project_id,@string/google_api_key,@string/google_crash_reporting_api_key,@string/google_app_id,@string/default_android_client_id,@string/default_web_client_id">
   <string name="gcm_defaultSenderId" translatable="false">280826413127</string>
   <string name="google_storage_bucket" translatable="false">ljs-rothm.firebasestorage.app</string>
   <string name="project_id" translatable="false">ljs-rothm</string>
   <string name="google_api_key" translatable="false">AIzaSyDggXfLzFzpeob4_HpJ8XXh6h-0oj_gchQ</string>
   <string name="google_crash_reporting_api_key" translatable="false">AIzaSyDggXfLzFzpeob4_HpJ8XXh6h-0oj_gchQ</string>
   <string name="google_app_id" translatable="false">1:280826413127:android:5700bd063f3e0d52eab162</string>
+  <string name="default_android_client_id" translatable="false">280826413127-08jlbmpjpmmtavhn57v88t7uh7dpoe7b.apps.googleusercontent.com</string>
+  <string name="default_web_client_id" translatable="false">280826413127-uotcphrkd8rictnid8hadd0p0gn87ihl.apps.googleusercontent.com</string>
 </resources>
