@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "280826413127-08jlbmpjpmmtavhn57v88t7uh7dpoe7b.apps.googleusercontent.com",
+          "client_id": "280826413127-it9a7m23jleghcodi9r6792pss5upajb.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.LJS.ROTHM",
-            "certificate_hash": "49a510af45c4b811c4ff3f7e90c236dd248c8b62"
+            "certificate_hash": "df6b656bd7f212c93e7783d4be570bd7cdba2247"
           }
         },
         {
