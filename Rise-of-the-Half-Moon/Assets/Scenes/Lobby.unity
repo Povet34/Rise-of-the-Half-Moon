@@ -971,9 +971,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e25c38865b134964c882f0d160374729, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GoogleWebAPI: 
-  UsernameTxt: {fileID: 0}
-  UserEmailTxt: {fileID: 0}
+  GoogleWebAPI: 280826413127-uotcphrkd8rictnid8hadd0p0gn87ihl.apps.googleusercontent.com
+  UsernameTxt: {fileID: 1780933403}
+  UserEmailTxt: {fileID: 94271804}
   UserProfilePic: {fileID: 2122575283}
   imageUrl: 
   loginScreen: {fileID: 1827392414}

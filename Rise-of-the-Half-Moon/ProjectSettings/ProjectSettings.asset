@@ -944,7 +944,13 @@ PlayerSettings:
   XboxOneOverrideIdentityPublisher: 
   vrEditorSettings: {}
   cloudServicesEnabled:
+    Build: 0
+    Game Performance: 0
+    Legacy Analytics: 0
+    Purchasing: 0
+    UDP: 0
     UNet: 1
+    Unity Ads: 0
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
@@ -964,11 +970,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 61871637-b67d-4f71-af89-85dda5279f12
+  cloudProjectId: 26a7e370-c93d-41a6-ada4-8e3b4b3fbef0
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Rise-of-the-Half-Moon
-  organizationId: povet34
+  projectName: ROTHM
+  organizationId: wotkd34_unity
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
