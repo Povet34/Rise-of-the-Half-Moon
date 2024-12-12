@@ -2,6 +2,14 @@ using UnityEngine;
 
 public static class Definitions
 {
+    #region Scebne Names
+
+    public const string LOBBY_SCENE = "Lobby";
+    public const string AUTH_SCENE = "Auth";
+    public const string INGAME_SCENE = "InGame";
+
+    #endregion
+
     #region Contants Data Def
 
     public enum ContentType
