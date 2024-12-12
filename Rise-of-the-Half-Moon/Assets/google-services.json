@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "280826413127",
+    "firebase_url": "https://ljs-rothm-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "ljs-rothm",
     "storage_bucket": "ljs-rothm.firebasestorage.app"
   },
