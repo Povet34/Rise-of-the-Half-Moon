@@ -112,12 +112,12 @@ public class FirebaseAuthManager : MonoBehaviour
                 loginScreen.SetActive(false);
                 ProfileScreen.SetActive(true);
 
-                CheckOrCreateUser(user.UserId, user.DisplayName, user.Email);
+                CheckOrCreateUser(user.UserId, user.DisplayName, user.Email, imageUrl);
             });
         }
     }
 
-    private void CheckOrCreateUser(string userId, string displayName, string email)
+    private void CheckOrCreateUser(string userId, string displayName, string email, string imgURL)
     {
         databaseReference.Child("users").Child(userId).GetValueAsync().ContinueWith(task =>
         {
@@ -133,19 +133,25 @@ public class FirebaseAuthManager : MonoBehaviour
                 // Retrieve existing user data
                 string existingName = task.Result.Child("displayName").Value?.ToString();
                 string existingEmail = task.Result.Child("email").Value?.ToString();
-                Debug.Log($"Name: {existingName}, Email: {existingEmail}");
+                string existingImgURL = task.Result.Child("imgURL").Value?.ToString();
+                int existingScore = int.Parse(task.Result.Child("score").Value?.ToString() ?? "0");
+                Debug.Log($"Name: {existingName}, Email: {existingEmail}, Image URL: {existingImgURL}, Score: {existingScore}");
             }
             else
             {
                 Debug.Log("User does not exist. Creating a new user...");
-                CreateUser(userId, displayName, email);
+                CreateUser(userId, displayName, email, imgURL);
             }
         });
     }
 
-    private void CreateUser(string userId, string displayName, string email)
+    private void CreateUser(string userId, string displayName, string email, string imgURL)
     {
-        User newUser = new User(displayName, email);
+        User newUser = new User(displayName, email)
+        {
+            imgURL = imgURL,
+            score = 0 // 초기 점수 설정
+        };
         string json = JsonUtility.ToJson(newUser);
 
         databaseReference.Child("users").Child(userId).SetRawJsonValueAsync(json).ContinueWith(task =>
@@ -172,18 +178,17 @@ public class FirebaseAuthManager : MonoBehaviour
 
     IEnumerator LoadProfilePic(string url)
     {
-        WWW www = new WWW(CheckImageURL(url));
-        yield return www;
-
         Texture2D texture = null;
 
-        if (!www.texture)
+        if (string.IsNullOrEmpty(url))
         {
             texture = defaultProfileTexture;
         }
         else
         {
-            texture = www.texture;  
+            WWW www = new WWW(CheckImageURL(url));
+            yield return www;
+            texture = www.texture;
         }
 
         UserProfilePic.sprite = Sprite.Create(texture, new Rect(0, 0, 400, 400), new Vector2(0, 0));
@@ -195,6 +200,8 @@ public class User
 {
     public string displayName;
     public string email;
+    public int score;
+    public string imgURL;
 
     public User(string displayName, string email)
     {

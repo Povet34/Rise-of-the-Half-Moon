@@ -10,8 +10,7 @@ public class DataServer : MonoBehaviour
     public class Data
     {
         public string name;
-        public int score;
-        public string imgURL;
+
     }
 
     public Data userData;
