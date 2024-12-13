@@ -2574,7 +2574,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1999131769}
-  - component: {fileID: 1999131768}
   - component: {fileID: 1999131770}
   - component: {fileID: 1999131772}
   - component: {fileID: 1999131773}
@@ -2585,27 +2584,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1999131768
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1999131767}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52960a7ea4bc58f4eac96d525ecce5a1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cardPrefab: {fileID: 3586522914320000660, guid: b9220765599354e4eb6bcd91a2626f23, type: 3}
-  canvasTransform: {fileID: 773000724}
-  isPlayerTurn: 0
-  contentType: 2
-  myScore: 0
-  myCards: []
-  bot: {fileID: 2039672712}
-  otherScore: 0
-  otherCards: []
 --- !u!4 &1999131769
 Transform:
   m_ObjectHideFlags: 0
@@ -2656,35 +2634,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 1999131767}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a567ee0ca29c5eb43924363d23e4e06d, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f99c78db9b5751479f439c545b39bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moonPhaseDatas:
-  - {fileID: 11400000, guid: 465b6843d2cc8e048b51669d302e8367, type: 2}
-  - {fileID: 11400000, guid: db066b77385542b4bb40d3573c2ffc4b, type: 2}
-  - {fileID: 11400000, guid: 4f2293edc2e2c7a4d9c39b09beba5910, type: 2}
-  - {fileID: 11400000, guid: 2a9b5adaac120f343aff9cebdaee52b0, type: 2}
-  - {fileID: 11400000, guid: c92dd8b94051fc6408e356f2b2ac69e7, type: 2}
-  - {fileID: 11400000, guid: 18ea6bb07bd15754d9458f8d40803914, type: 2}
-  - {fileID: 11400000, guid: 9bc20959ad793704086f4cc91ab0242b, type: 2}
-  - {fileID: 11400000, guid: 26de6e8d76802b147b0b93e252093602, type: 2}
-  numberPhaseDatas:
-  - {fileID: 11400000, guid: 8714f55928798ec48a9eff4f2014b183, type: 2}
-  - {fileID: 11400000, guid: a4e75ba6a68be47419621952a541a899, type: 2}
-  - {fileID: 11400000, guid: f8baeb6b0c7c4754db1ed31ec8ed097c, type: 2}
-  - {fileID: 11400000, guid: 2064a7d1f90eb4e47a65eb1dcef4cb14, type: 2}
-  - {fileID: 11400000, guid: 91605a56fb3538946a6a73a0665f4c13, type: 2}
-  - {fileID: 11400000, guid: 588f388fa5a55ef47b6b8445f0991a54, type: 2}
-  - {fileID: 11400000, guid: ac156766dba260541920bebc31399f3b, type: 2}
-  - {fileID: 11400000, guid: d8266732560a1714c92c04a72279cf70, type: 2}
-  - {fileID: 11400000, guid: 1f378c20dd7550543a668afa4ef40c09, type: 2}
-  dicePhaseDatas:
-  - {fileID: 11400000, guid: 07d1a298c0eaa7e479df196226c1f7d5, type: 2}
-  - {fileID: 11400000, guid: 0a8c02ac4814ea34c82675af015ee7f9, type: 2}
-  - {fileID: 11400000, guid: b5b722a70cf85ac47b4d92f4078a7e1e, type: 2}
-  - {fileID: 11400000, guid: 230d965a1bfdc5246b1bd5974704ad23, type: 2}
-  - {fileID: 11400000, guid: c1ba171a98cbd1346b222fa75dbd2743, type: 2}
-  - {fileID: 11400000, guid: b3cb3f0d11cd8664593926649d7bf772, type: 2}
+  cardPrefab: {fileID: 0}
+  canvasTransform: {fileID: 0}
+  isPlayerTurn: 0
+  contentType: 0
+  myScore: 0
+  myCards: []
+  bot: {fileID: 0}
+  otherScore: 0
+  otherCards: []
 --- !u!1 &2022834424
 GameObject:
   m_ObjectHideFlags: 0
@@ -2863,8 +2824,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a8b725a6481a44489386e7b334a4255, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defficulity: 1
-  initRandomCount: 3
   cards: []
 --- !u!1 &2041589264
 GameObject:

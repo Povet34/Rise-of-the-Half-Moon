@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Firebase;
 using Firebase.Auth;
@@ -6,24 +7,16 @@ using Firebase.Extensions;
 using Google;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class FirebaseAuthManager : MonoBehaviour
+public class FirebaseAuth : MonoBehaviour
 {
-    private FirebaseAuth auth;
+    public Firebase.Auth.FirebaseAuth auth;
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
 
     public string GoogleWebAPI = "280826413127-uotcphrkd8rictnid8hadd0p0gn87ihl.apps.googleusercontent.com";
     private GoogleSignInConfiguration configuration;
-
-    public Text UsernameTxt, UserEmailTxt;
-    public Image UserProfilePic;
-    public string imageUrl;
-    public GameObject loginScreen, ProfileScreen;
-
-    [SerializeField] private Texture2D defaultProfileTexture;
 
     private void Awake()
     {
@@ -51,22 +44,27 @@ public class FirebaseAuthManager : MonoBehaviour
 
     private void InitializeFirebase()
     {
-        auth = FirebaseAuth.DefaultInstance;
+        auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
         database = FirebaseDatabase.DefaultInstance;
         databaseReference = database.RootReference;
     }
 
-    public void GoogleSignInClick()
+    public void GoogleSignInClick(Action<FirebaseUser> callback)
     {
+#if UNITY_ANDROID || UNITY_IOS
         GoogleSignIn.Configuration = configuration;
         GoogleSignIn.Configuration.UseGameSignIn = false;
         GoogleSignIn.Configuration.RequestIdToken = true;
         GoogleSignIn.Configuration.RequestEmail = true;
         GoogleSignIn.Configuration.RequestProfile = true;
-        GoogleSignIn.DefaultInstance.SignIn().ContinueWith(OnAuthenticationFinished);
+        GoogleSignIn.DefaultInstance.SignIn().ContinueWith(task => OnAuthenticationFinished(task, callback));
+#else
+        Debug.LogWarning("Google Sign-In is only supported on Android and iOS platforms.");
+        callback?.Invoke(null);
+#endif
     }
 
-    void OnAuthenticationFinished(Task<GoogleSignInUser> task)
+    void OnAuthenticationFinished(Task<GoogleSignInUser> task, Action<FirebaseUser> callback)
     {
         if (task.IsFaulted)
         {
@@ -95,29 +93,92 @@ public class FirebaseAuthManager : MonoBehaviour
                 if (task.IsCanceled)
                 {
                     Debug.LogError("SignInWithCredentialAsync was canceled.");
+                    callback?.Invoke(null);
                     return;
                 }
                 if (task.IsFaulted)
                 {
                     Debug.LogError("SignInWithCredentialAsync encountered an error: " + task.Exception);
+                    callback?.Invoke(null);
                     return;
                 }
 
                 FirebaseUser user = auth.CurrentUser;
                 Debug.LogFormat("User signed in successfully: {0} ({1})", user.DisplayName, user.UserId);
-                UsernameTxt.text = user.DisplayName;
-                UserEmailTxt.text = user.Email;
-                imageUrl = user.PhotoUrl.ToString();
-                StartCoroutine(LoadProfilePic(imageUrl));
-                loginScreen.SetActive(false);
-                ProfileScreen.SetActive(true);
-
-                CheckOrCreateUser(user.UserId, user.DisplayName, user.Email, imageUrl);
+                callback?.Invoke(user);
             });
         }
     }
 
-    private void CheckOrCreateUser(string userId, string displayName, string email, string imgURL)
+    public void SignInAnonymously(Action<FirebaseUser> callback)
+    {
+        auth.SignInAnonymouslyAsync().ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled)
+            {
+                Debug.LogError("SignInAnonymouslyAsync was canceled.");
+                callback?.Invoke(null);
+                return;
+            }
+            if (task.IsFaulted)
+            {
+                Debug.LogError("SignInAnonymouslyAsync encountered an error: " + task.Exception);
+                callback?.Invoke(null);
+                return;
+            }
+
+            FirebaseUser user = auth.CurrentUser;
+            string guestName = GenerateGuestName();
+            UpdateUserProfile(user, guestName, callback);
+        });
+    }
+
+    private string GenerateGuestName()
+    {
+        return $"guest{DateTime.Now.Ticks}";
+    }
+
+    private void UpdateUserProfile(FirebaseUser user, string displayName, Action<FirebaseUser> callback)
+    {
+        UserProfile profile = new UserProfile { DisplayName = displayName };
+        user.UpdateUserProfileAsync(profile).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled || task.IsFaulted)
+            {
+                Debug.LogError("UpdateUserProfileAsync encountered an error: " + task.Exception);
+                callback?.Invoke(null);
+                return;
+            }
+
+            Debug.LogFormat("User profile updated successfully: {0}", user.DisplayName);
+            callback?.Invoke(user);
+        });
+    }
+
+    public void SignInWithEmailAndPassword(string email, string password, Action<FirebaseUser> callback)
+    {
+        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled)
+            {
+                Debug.LogError("SignInWithEmailAndPasswordAsync was canceled.");
+                callback?.Invoke(null);
+                return;
+            }
+            if (task.IsFaulted)
+            {
+                Debug.LogError("SignInWithEmailAndPasswordAsync encountered an error: " + task.Exception);
+                callback?.Invoke(null);
+                return;
+            }
+
+            FirebaseUser user = auth.CurrentUser;
+            Debug.LogFormat("User signed in successfully: {0} ({1})", user.DisplayName, user.UserId);
+            callback?.Invoke(user);
+        });
+    }
+
+    public void CheckOrCreateUser(string userId, string displayName, string email, string imgURL)
     {
         databaseReference.Child("users").Child(userId).GetValueAsync().ContinueWith(task =>
         {
@@ -164,34 +225,6 @@ public class FirebaseAuthManager : MonoBehaviour
 
             Debug.Log($"User created successfully: {userId}");
         });
-    }
-
-    private string CheckImageURL(string url)
-    {
-        if (!string.IsNullOrEmpty(url))
-        {
-            return url;
-        }
-
-        return imageUrl;
-    }
-
-    IEnumerator LoadProfilePic(string url)
-    {
-        Texture2D texture = null;
-
-        if (string.IsNullOrEmpty(url))
-        {
-            texture = defaultProfileTexture;
-        }
-        else
-        {
-            WWW www = new WWW(CheckImageURL(url));
-            yield return www;
-            texture = www.texture;
-        }
-
-        UserProfilePic.sprite = Sprite.Create(texture, new Rect(0, 0, 400, 400), new Vector2(0, 0));
     }
 }
 

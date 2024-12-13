@@ -4,17 +4,22 @@ using UnityEngine;
 
 public class Bot : MonoBehaviour
 {
-    [SerializeField] int defficulity = -1; // Bot의 난이도
-    [SerializeField] int initRandomCount;
-    private int randomCount;
+    int accuracy = -1; // Bot의 난이도
+    int initRandomPutCount;
+    int putCount;
+    NodeGenerator nodeGenerator;
+    
     public List<Card> cards; // Bot이 가지고 있는 카드 리스트
-    private NodeGenerator nodeGenerator;
 
-    public void Init(List<Card> cards)
+    public void Init(BotLevelData levelData, List<Card> cards)
     {
-        randomCount = initRandomCount;
-        this.cards = cards;
+        putCount = initRandomPutCount;
         nodeGenerator = FindObjectOfType<NodeGenerator>();
+
+        accuracy = levelData.accuracy;
+        initRandomPutCount = levelData.initRandomPutCount;
+
+        this.cards = cards;
     }
 
     private void PlaceCardByPriority()
@@ -31,7 +36,7 @@ public class Bot : MonoBehaviour
         {
             foreach (Node node in emptyNodes)
             {
-                int score = GameManager.Instance.Rule.PredictScoreForCard(node, card) + BotHandicap();
+                int score = PVEGameManager.Instance.Rule.PredictScoreForCard(node, card) + BotHandicap();
                 if (score > highestScore)
                 {
                     highestScore = score;
@@ -72,13 +77,13 @@ public class Bot : MonoBehaviour
 
     private IEnumerator DelayPlaceCardBody(float delay)
     {
-        yield return new WaitUntil(()=> !GameManager.Instance.Rule.IsRemainScoreSettlement());
+        yield return new WaitUntil(()=> !PVEGameManager.Instance.Rule.IsRemainScoreSettlement());
         yield return new WaitForSeconds(delay);
 
-        if (defficulity == -1 || randomCount > 0)
+        if (accuracy == -1 || putCount > initRandomPutCount)
         {
             PlaceCardRandom();
-            randomCount--;
+            putCount++;
         }
         else
             PlaceCardByPriority();
@@ -86,6 +91,6 @@ public class Bot : MonoBehaviour
 
     private int BotHandicap()
     {
-        return Random.Range(0, defficulity);
+        return Random.Range(0, accuracy);
     }
 }

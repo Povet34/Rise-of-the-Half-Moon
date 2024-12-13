@@ -1,8 +1,15 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class GameManager : Singleton<GameManager>
+public class PVEGameManager : VolatilitySingleton<PVEGameManager>
 {
+    public class GameInitData
+    {
+        public PhaseData.ContentType contentType;
+        public int initBotLevel;
+    }
+
     [Header("Data")]
     public GameObject cardPrefab;
     public Transform canvasTransform;
@@ -13,6 +20,8 @@ public class GameManager : Singleton<GameManager>
     public ContentRule Rule => rule;
 
     private List<PhaseData> phaseDatas;
+    private BotLevelData initBotLevelData;
+
     private System.Random random;
     private NodeGenerator nodeGenerator;
 
@@ -25,22 +34,30 @@ public class GameManager : Singleton<GameManager>
     public int otherScore;
     public List<Card> otherCards;
 
+    private PVEGameUI pveGameUI;
     private CardDrawer cardDrawer;
 
     private void Awake()
     {
         nodeGenerator = FindObjectOfType<NodeGenerator>();
+        pveGameUI.AddComponent<PVEGameUI>();
     }
 
-    private void Start()
+    public void GameInit(GameInitData initData)
     {
+        if (null == initData)
+            return;
+
+        contentType = initData.contentType;
+
+        phaseDatas = ContentsDataManager.Instance.GetPhaseDatas(contentType, ref rule);
+        initBotLevelData = ContentsDataManager.Instance.GetBotLevelData(initData.initBotLevel);
+
         StartPlay();
     }
 
-    public void StartPlay()
+    private void StartPlay()
     {
-        phaseDatas = ContantsDataManager.Instance.GetPhaseDatas(contentType, ref rule);
-
         foreach (var card in otherCards)
         {
             card.Destroy();
@@ -63,7 +80,7 @@ public class GameManager : Singleton<GameManager>
         InitCards(2, myCards, true);
         InitCards(2, otherCards, false);
 
-        bot.Init(otherCards);
+        bot.Init(initBotLevelData, otherCards);
 
         isPlayerTurn = true; // 플레이어가 먼저 시작
         cardDrawer.DrawCard(isPlayerTurn, myCards, NextTurn);
@@ -111,15 +128,15 @@ public class GameManager : Singleton<GameManager>
             {
                 if (myScore > otherScore)
                 {
-                    UIManager.Instance.ShowWin();
+                    pveGameUI.ShowWin();
                 }
                 else if (myScore < otherScore)
                 {
-                    UIManager.Instance.ShowLose();
+                    pveGameUI.ShowLose();
                 }
                 else
                 {
-                    UIManager.Instance.ShowDraw();
+                    pveGameUI.ShowDraw();
                 }
             });
     }
@@ -129,13 +146,13 @@ public class GameManager : Singleton<GameManager>
     public void UpdateMyScore(int score)
     {
         myScore += score;
-        UIManager.Instance.UpdateMyScore(myScore);
+        pveGameUI.UpdateMyScore(myScore);
     }
 
     public void UpdateOtherScore(int score)
     {
         otherScore += score;
-        UIManager.Instance.UpdateOtherScore(otherScore);
+        pveGameUI.UpdateOtherScore(otherScore);
     }
 
     #endregion

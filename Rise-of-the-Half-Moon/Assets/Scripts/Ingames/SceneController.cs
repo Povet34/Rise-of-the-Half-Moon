@@ -3,17 +3,17 @@ using UnityEngine.SceneManagement;
 
 public class SceneController : Singleton<SceneController>
 {
-    public void GoLobby(Action callback)
+    public void GoLobby()
     {
         SceneManager.LoadSceneAsync(Definitions.LOBBY_SCENE);
     }
 
-    public void GoAuth(Action callback)
+    public void GoAuth()
     {
         SceneManager.LoadSceneAsync(Definitions.AUTH_SCENE);
     }
 
-    public void GoGame(Action callback)
+    public void GoGame()
     {
         SceneManager.LoadSceneAsync(Definitions.INGAME_SCENE);
     }

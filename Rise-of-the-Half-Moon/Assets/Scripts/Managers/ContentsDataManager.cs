@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 
-public class ContantsDataManager : Singleton<ContantsDataManager>
+public class ContentsDataManager : Singleton<ContentsDataManager>
 {
     public List<PhaseData> moonPhaseDatas = new List<PhaseData>();
     public List<PhaseData> numberPhaseDatas = new List<PhaseData>();
     public List<PhaseData> dicePhaseDatas = new List<PhaseData>();
+    public List<BotLevelData> botlevelDatas = new List<BotLevelData>();
 
     public List<PhaseData> GetPhaseDatas(PhaseData.ContentType content, ref ContentRule rule)
     {
@@ -14,7 +15,7 @@ public class ContantsDataManager : Singleton<ContantsDataManager>
                 rule = gameObject.AddComponent<MoonRule>();
                 return moonPhaseDatas;
             case PhaseData.ContentType.Dice:
-                //rule = gameObject.AddComponent<DiceRule>();
+                rule = gameObject.AddComponent<DiceRule>();
                 return dicePhaseDatas;
             case PhaseData.ContentType.Number:
                 rule = gameObject.AddComponent<NumberRule>();
@@ -22,5 +23,10 @@ public class ContantsDataManager : Singleton<ContantsDataManager>
             default:
                 return null;
         }
+    }
+
+    public BotLevelData GetBotLevelData(int index)
+    {
+        return botlevelDatas[index];
     }
 }

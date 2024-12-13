@@ -1,8 +1,9 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIManager : Singleton<UIManager>
+public class PVEGameUI : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI myScore;
     [SerializeField] TextMeshProUGUI otherScore;
@@ -18,7 +19,8 @@ public class UIManager : Singleton<UIManager>
 
     private void RegistEvents()
     {
-        retryButton.onClick.AddListener(GameManager.Instance.StartPlay);
+        retryButton.onClick.AddListener(null);
+        //retryButton.onClick.AddListener(PVEGameManager.Instance.GameInit);
         retryButton.onClick.AddListener(() => { ActiveResult(false); });
     }
 

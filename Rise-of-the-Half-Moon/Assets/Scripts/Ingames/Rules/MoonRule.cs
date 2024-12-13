@@ -145,9 +145,9 @@ public class MoonRule : ContentRule
             AnimateNodes(nodes, isMine, endCallback);
 
             if (isMine)
-                GameManager.Instance.UpdateMyScore(score);
+                PVEGameManager.Instance.UpdateMyScore(score);
             else
-                GameManager.Instance.UpdateOtherScore(score);
+                PVEGameManager.Instance.UpdateOtherScore(score);
         });
     }
 

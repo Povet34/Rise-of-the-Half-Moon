@@ -9,12 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec3f7c8ef0636844681cef304f91b477, type: 3}
-  m_Name: dice_1
+  m_Script: {fileID: 11500000, guid: 091fb672f72b9f543a5b1ffb723745ce, type: 3}
+  m_Name: BotLevel 3
   m_EditorClassIdentifier: 
-  contentType: 0
-  phaseIndex: 0
-  phaseTexture: {fileID: 2800000, guid: da6fe30f7727cf84a9e9e4639f21b91d, type: 3}
-  phaseSprite: {fileID: 0}
-  cardBackSprite: {fileID: 0}
-  description: 
+  accuracy: 2
+  initRandomPutCount: 4
