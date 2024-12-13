@@ -35,11 +35,30 @@ public class Lobby : MonoBehaviour
     private IEnumerator LoadGameSceneAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
+
+        SetGameData();
+
         SceneManager.LoadScene(Definitions.INGAME_SCENE);
     }
 
     private void StartMatchMaring()
     {
 
+    }
+
+    private void SetGameData()
+    {
+        var data = new PVEGameManager.GameInitData();
+        data.contentType = (PhaseData.ContentType)Random.Range(0, (int)PhaseData.ContentType.Count);
+        data.initBotLevel = Random.Range(0, ContentsDataManager.Instance.botLevelDatas.Count);
+
+        SceneManager.sceneLoaded += (scene, mode) =>
+        {
+            if (scene.name == Definitions.INGAME_SCENE)
+            {
+                var gameManager = FindObjectOfType<PVEGameManager>();
+                gameManager.GameInit(data);
+            }
+        };
     }
 }

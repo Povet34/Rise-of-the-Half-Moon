@@ -40,7 +40,7 @@ public static class Definitions
     public const int SETTLEMENT_SCORE = 1;
     public const int NUMBER_COMBINATION_SCORE = 2;
 
-    public const float Card_Alignment_Y = 400f;
+    public const float Card_Alignment_Y = 0;
 
     public static readonly Vector2[] OtherTwoCardPositions = {
         new Vector2(-80, Card_Alignment_Y),

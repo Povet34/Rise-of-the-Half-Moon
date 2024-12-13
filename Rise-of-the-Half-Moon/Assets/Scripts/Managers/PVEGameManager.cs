@@ -40,7 +40,7 @@ public class PVEGameManager : VolatilitySingleton<PVEGameManager>
     private void Awake()
     {
         nodeGenerator = FindObjectOfType<NodeGenerator>();
-        pveGameUI.AddComponent<PVEGameUI>();
+        pveGameUI = GetComponent<PVEGameUI>();
     }
 
     public void GameInit(GameInitData initData)
@@ -74,8 +74,8 @@ public class PVEGameManager : VolatilitySingleton<PVEGameManager>
         nodeGenerator.Create();
 
         random = new System.Random();
-        cardDrawer = gameObject.AddComponent<CardDrawer>();
-        cardDrawer.Init(cardPrefab, canvasTransform, phaseDatas, random);
+        cardDrawer = GetComponent<CardDrawer>();
+        cardDrawer.Init(phaseDatas, random);
 
         InitCards(2, myCards, true);
         InitCards(2, otherCards, false);

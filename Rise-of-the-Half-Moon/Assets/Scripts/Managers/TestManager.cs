@@ -12,7 +12,5 @@ public class TestManager : Singleton<TestManager>
     {
         if (!Application.isEditor)
             isTest = false;
-
-        testCards.gameObject.SetActive(isTest);
     }
 }

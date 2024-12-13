@@ -1,11 +1,14 @@
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class ContentsDataManager : Singleton<ContentsDataManager>
 {
     public List<PhaseData> moonPhaseDatas = new List<PhaseData>();
     public List<PhaseData> numberPhaseDatas = new List<PhaseData>();
     public List<PhaseData> dicePhaseDatas = new List<PhaseData>();
-    public List<BotLevelData> botlevelDatas = new List<BotLevelData>();
+    public List<BotLevelData> botLevelDatas = new List<BotLevelData>();
+
+    public PVEGameManager.GameInitData gameInitData;
 
     public List<PhaseData> GetPhaseDatas(PhaseData.ContentType content, ref ContentRule rule)
     {
@@ -27,6 +30,6 @@ public class ContentsDataManager : Singleton<ContentsDataManager>
 
     public BotLevelData GetBotLevelData(int index)
     {
-        return botlevelDatas[index];
+        return botLevelDatas[index];
     }
 }

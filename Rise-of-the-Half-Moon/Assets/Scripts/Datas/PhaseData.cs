@@ -10,6 +10,8 @@ public class PhaseData : ScriptableObject
         Dice,
         Moon,
         Number,
+
+        Count,
     }
 
     public ContentType contentType;

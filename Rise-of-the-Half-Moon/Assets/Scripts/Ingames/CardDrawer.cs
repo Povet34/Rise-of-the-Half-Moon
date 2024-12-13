@@ -10,16 +10,17 @@ public class CardDrawer : MonoBehaviour
     /// </summary>
     public static bool isDrawing;
 
-    private GameObject cardPrefab;
-    private Transform canvasTransform;
+    [SerializeField] private GameObject cardPrefab;
+
+    [SerializeField] private Transform myCardArea;
+    [SerializeField] private Transform otherCardArea;
+    
     private List<PhaseData> phaseDatas;
     private System.Random random;
     private NodeGenerator nodeGenerator;
 
-    public void Init(GameObject cardPrefab, Transform canvasTransform, List<PhaseData> phaseDatas, System.Random random)
+    public void Init(List<PhaseData> phaseDatas, System.Random random)
     {
-        this.cardPrefab = cardPrefab;
-        this.canvasTransform = canvasTransform;
         this.phaseDatas = phaseDatas;
         this.random = random;
 
@@ -37,7 +38,7 @@ public class CardDrawer : MonoBehaviour
             return;
         }
 
-        GameObject go = Instantiate(cardPrefab, canvasTransform);
+        GameObject go = Instantiate(cardPrefab, isPlayerTurn ? myCardArea : otherCardArea);
         RectTransform rectTransform = go.GetComponent<RectTransform>();
 
         if (isTween)
