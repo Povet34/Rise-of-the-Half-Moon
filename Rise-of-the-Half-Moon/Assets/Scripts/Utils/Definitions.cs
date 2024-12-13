@@ -2,7 +2,10 @@ using UnityEngine;
 
 public static class Definitions
 {
-    #region Scebne Names
+
+    public static string GoogleWebAPI = "280826413127-uotcphrkd8rictnid8hadd0p0gn87ihl.apps.googleusercontent.com";
+
+    #region Scene Names
 
     public const string LOBBY_SCENE = "Lobby";
     public const string AUTH_SCENE = "Auth";

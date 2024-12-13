@@ -1,18 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Lobby : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] Button matchmarkingButton;
+    [SerializeField] Button playWithAIButton;
+    [SerializeField] Button SettingsButton;
 
-    // Update is called once per frame
-    void Update()
+    [SerializeField] Settings settings;
+
+    private void Awake()
     {
-        
+        matchmarkingButton.onClick.AddListener(null);
+        playWithAIButton.onClick.AddListener(null);
+        SettingsButton.onClick.AddListener(() => settings.gameObject.SetActive(true));
     }
 }

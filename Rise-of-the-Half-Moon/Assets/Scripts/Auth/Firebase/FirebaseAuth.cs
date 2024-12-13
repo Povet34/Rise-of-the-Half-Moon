@@ -9,14 +9,16 @@ using System.Threading.Tasks;
 using UnityEngine;
 using System.Collections.Generic;
 
-public class FirebaseAuth : MonoBehaviour
+public class FirebaseAuth : Singleton<FirebaseAuth>
 {
-    public Firebase.Auth.FirebaseAuth auth;
+    private Firebase.Auth.FirebaseAuth auth;
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
 
-    public string GoogleWebAPI = "280826413127-uotcphrkd8rictnid8hadd0p0gn87ihl.apps.googleusercontent.com";
+    private string GoogleWebAPI = Definitions.GoogleWebAPI;
     private GoogleSignInConfiguration configuration;
+
+    public FirebaseUser GetUser() => auth.CurrentUser;
 
     private void Awake()
     {
@@ -176,6 +178,12 @@ public class FirebaseAuth : MonoBehaviour
             Debug.LogFormat("User signed in successfully: {0} ({1})", user.DisplayName, user.UserId);
             callback?.Invoke(user);
         });
+    }
+
+    public void SignOut()
+    {
+        auth.SignOut();
+        Debug.Log("User signed out successfully.");
     }
 
     public void CheckOrCreateUser(string userId, string displayName, string email, string imgURL)
