@@ -5,18 +5,32 @@ using UnityEngine.UI;
 
 public class Lobby : MonoBehaviour
 {
-    [SerializeField] Button matchmarkingButton;
+    [SerializeField] Button matchmakingButton;
     [SerializeField] Button playWithAIButton;
     [SerializeField] Button SettingsButton;
 
     [SerializeField] Settings settings;
     [SerializeField] GlobalVolumeController globalVolumeController;
 
+    private PhotonLobby photonLobby;
+
     private void Awake()
     {
-        matchmarkingButton.onClick.AddListener(StartMatchMaring);
+        photonLobby = GetComponent<PhotonLobby>();
+        if (photonLobby == null)
+        {
+            Debug.LogError("PhotonLobby instance not found!");
+            return;
+        }
+
+        matchmakingButton.onClick.AddListener(StartMatchMaring);
         playWithAIButton.onClick.AddListener(PlayWithAI);
         SettingsButton.onClick.AddListener(() => settings.gameObject.SetActive(true));
+    }
+
+    public void SetMatchmakingButtonInteractable(bool interactable)
+    {
+        matchmakingButton.interactable = interactable;
     }
 
     private void PlayWithAI()
@@ -43,7 +57,14 @@ public class Lobby : MonoBehaviour
 
     private void StartMatchMaring()
     {
-
+        if (photonLobby != null)
+        {
+            photonLobby.StartMatchmaking();
+        }
+        else
+        {
+            Debug.LogError("PhotonLobby instance not found!");
+        }
     }
 
     private void SetGameData()
