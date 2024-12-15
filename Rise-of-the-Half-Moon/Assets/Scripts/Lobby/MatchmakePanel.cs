@@ -1,4 +1,3 @@
-using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,9 +9,16 @@ public class MatchmakePanel : MonoBehaviour
     [SerializeField] Image matchmakeLoadingImage;
     [SerializeField] float rotationSpeed = 100f;
 
+    private PhotonLobby photonLobby;
+
     private void Awake()
     {
         cancelButton.onClick.AddListener(ClosePanel);
+        photonLobby = FindObjectOfType<PhotonLobby>();
+        if (photonLobby == null)
+        {
+            Debug.LogError("PhotonLobby instance not found!");
+        }
     }
 
     private void Update()
@@ -22,8 +28,14 @@ public class MatchmakePanel : MonoBehaviour
 
     private void ClosePanel()
     {
-        gameObject.SetActive(false);
-        PhotonNetwork.LeaveRoom();
+        if (photonLobby != null)
+        {
+            photonLobby.CancelMatchmaking();
+        }
+        else
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     private void RotateLoadingImage()

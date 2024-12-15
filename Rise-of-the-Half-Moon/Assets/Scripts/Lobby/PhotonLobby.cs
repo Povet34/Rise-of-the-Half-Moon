@@ -88,4 +88,22 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
             SceneManager.LoadScene(Definitions.INGAME_SCENE);
         }
     }
+
+    public void CancelMatchmaking()
+    {
+        if (PhotonNetwork.InRoom)
+        {
+            if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+            {
+                // 방에 혼자 있는 경우 방을 파괴합니다.
+                PhotonNetwork.LeaveRoom();
+            }
+            else
+            {
+                // 방에 다른 플레이어가 있는 경우 방에서 나갑니다.
+                PhotonNetwork.LeaveRoom();
+            }
+        }
+        matchmakePanel.gameObject.SetActive(false);
+    }
 }
