@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PVEGameUI : MonoBehaviour
+public class GameUI : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI myScore;
     [SerializeField] TextMeshProUGUI otherScore;

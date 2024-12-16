@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class GoogleSignInManager : MonoBehaviour
@@ -12,7 +13,6 @@ public class GoogleSignInManager : MonoBehaviour
 
     private GoogleSignInConfiguration configuration;
 
-    Firebase.DependencyStatus dependencyStatus = Firebase.DependencyStatus.UnavailableOther;
     Firebase.Auth.FirebaseAuth auth;
     Firebase.Auth.FirebaseUser user;
 
@@ -77,7 +77,7 @@ public class GoogleSignInManager : MonoBehaviour
         else
         {
             Firebase.Auth.Credential credential = Firebase.Auth.GoogleAuthProvider.GetCredential(task.Result.IdToken, null);
-            auth.SignInWithCredentialAsync(credential).ContinueWithOnMainThread(task => 
+            auth.SignInWithCredentialAsync(credential).ContinueWithOnMainThread(task =>
             {
                 if (task.IsCanceled)
                 {
@@ -104,12 +104,6 @@ public class GoogleSignInManager : MonoBehaviour
 
     private string CheckImageURL(string url)
     {
-        //if (url.Contains("s96-c"))
-        //{
-        //    url = url.Replace("s96-c", "s400-c");
-        //}
-        //return url;
-
         if (!string.IsNullOrEmpty(url))
         {
             return url;
@@ -120,8 +114,19 @@ public class GoogleSignInManager : MonoBehaviour
 
     IEnumerator LoadProfilePic(string url)
     {
-        WWW www = new WWW(CheckImageURL(url));
-        yield return www;
-        UserProfilePic.sprite = Sprite.Create(www.texture, new Rect(0, 0, 400, 400), new Vector2(0, 0));
+        using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(CheckImageURL(url)))
+        {
+            yield return uwr.SendWebRequest();
+
+            if (uwr.result == UnityWebRequest.Result.ConnectionError || uwr.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.LogError("Failed to load profile image: " + uwr.error);
+            }
+            else
+            {
+                Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
+                UserProfilePic.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+            }
+        }
     }
 }

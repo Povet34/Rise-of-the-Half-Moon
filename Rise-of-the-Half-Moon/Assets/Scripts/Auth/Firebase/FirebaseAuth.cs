@@ -234,6 +234,20 @@ public class FirebaseAuth : Singleton<FirebaseAuth>
             Debug.Log($"User created successfully: {userId}");
         });
     }
+
+    public void GetAuthedUser(Action<FirebaseUser> callback)
+    {
+        FirebaseUser user = auth.CurrentUser;
+        if (user != null)
+        {
+            callback?.Invoke(user);
+        }
+        else
+        {
+            Debug.LogError("No user is signed in.");
+            callback?.Invoke(null);
+        }
+    }
 }
 
 [System.Serializable]

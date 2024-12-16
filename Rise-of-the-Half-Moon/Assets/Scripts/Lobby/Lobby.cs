@@ -14,6 +14,8 @@ public class Lobby : MonoBehaviour
 
     private PhotonLobby photonLobby;
 
+    [SerializeField] PVEGameManager pveGameManager;
+
     private void Awake()
     {
         photonLobby = GetComponent<PhotonLobby>();
@@ -69,7 +71,7 @@ public class Lobby : MonoBehaviour
 
     private void SetGameData()
     {
-        var data = new PVEGameManager.GameInitData();
+        PVEGameManager.GameInitData data = new PVEGameManager.GameInitData();
         data.contentType = (PhaseData.ContentType)Random.Range(0, (int)PhaseData.ContentType.Count);
         data.initBotLevel = Random.Range(0, ContentsDataManager.Instance.botLevelDatas.Count);
 
@@ -77,7 +79,7 @@ public class Lobby : MonoBehaviour
         {
             if (scene.name == Definitions.INGAME_SCENE)
             {
-                var gameManager = FindObjectOfType<PVEGameManager>();
+                PVEGameManager gameManager = Instantiate(pveGameManager);
                 gameManager.GameInit(data);
             }
         };

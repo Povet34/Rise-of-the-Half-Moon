@@ -70,7 +70,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 230d965a1bfdc5246b1bd5974704ad23, type: 2}
   - {fileID: 11400000, guid: c1ba171a98cbd1346b222fa75dbd2743, type: 2}
   - {fileID: 11400000, guid: b3cb3f0d11cd8664593926649d7bf772, type: 2}
-  botlevelDatas:
+  botLevelDatas:
   - {fileID: 11400000, guid: 76fe9777b1f9c02499e2071184779728, type: 2}
   - {fileID: 11400000, guid: 94c653374eec9694ebb5f82180aefff5, type: 2}
   - {fileID: 11400000, guid: 903c536671a4d304ea4244a1fa6d5977, type: 2}

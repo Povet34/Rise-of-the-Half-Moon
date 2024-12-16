@@ -74,6 +74,8 @@ public class CamTouch : MonoBehaviour
                 else if (touch.phase == TouchPhase.Moved && isDragging)
                 {
                     Vector2 touchDelta = touch.position - previousTouchPosition;
+                    touchDelta.y = 0;
+
                     RotateCamera(touchDelta);
                     previousTouchPosition = touch.position;
                 }

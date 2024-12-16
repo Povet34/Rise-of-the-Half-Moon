@@ -84,8 +84,29 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
         Debug.Log("A new player has entered the room.");
         if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
         {
-            // 정원이 2명이 되면 게임 씬으로 이동합니다.
+            // 정원이 2명이 되면 상대 유저의 데이터를 가져옵니다.
+            GetOpponentData(newPlayer);
+
+            // 게임 씬으로 이동합니다.
             SceneManager.LoadScene(Definitions.INGAME_SCENE);
+        }
+    }
+
+    private void GetOpponentData(Player player)
+    {
+        if (player.CustomProperties.TryGetValue("Name", out object name))
+        {
+            Debug.Log("Opponent Name: " + name);
+        }
+
+        if (player.CustomProperties.TryGetValue("Email", out object email))
+        {
+            Debug.Log("Opponent Email: " + email);
+        }
+
+        if (player.CustomProperties.TryGetValue("ImageUrl", out object imageUrl))
+        {
+            Debug.Log("Opponent Image URL: " + imageUrl);
         }
     }
 

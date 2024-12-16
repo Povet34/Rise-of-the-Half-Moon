@@ -1,14 +1,14 @@
+using Photon.Pun;
+using Photon.Realtime;
+using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-public class PVEGameManager : VolatilitySingleton<PVEGameManager>
+public class PVPGameManager : MonoBehaviourPunCallbacks
 {
     public class GameInitData
     {
         public PhaseData.ContentType contentType;
-        public int initBotLevel;
     }
 
     [Header("Data")]
@@ -19,7 +19,6 @@ public class PVEGameManager : VolatilitySingleton<PVEGameManager>
     public ContentRule Rule => rule;
 
     List<PhaseData> phaseDatas;
-    BotLevelData initBotLevelData;
 
     System.Random random;
     NodeGenerator nodeGenerator;
@@ -29,8 +28,6 @@ public class PVEGameManager : VolatilitySingleton<PVEGameManager>
     List<Card> myCards = new List<Card>();
 
     [Header("Other")]
-    [SerializeField] Bot botPrefab;
-    Bot bot;
     int otherScore;
     List<Card> otherCards = new List<Card>();
 
@@ -52,7 +49,6 @@ public class PVEGameManager : VolatilitySingleton<PVEGameManager>
         contentType = initData.contentType;
 
         phaseDatas = ContentsDataManager.Instance.GetPhaseDatas(contentType, ref rule);
-        initBotLevelData = ContentsDataManager.Instance.GetBotLevelData(initData.initBotLevel);
 
         StartPlay();
     }
@@ -80,11 +76,7 @@ public class PVEGameManager : VolatilitySingleton<PVEGameManager>
         InitCards(2, myCards, true);
         InitCards(2, otherCards, false);
 
-
-        bot = Instantiate(botPrefab);
-        bot.Init(initBotLevelData, otherCards);
-
-        isMyTurn = true; // 플레이어가 먼저 시작
+        isMyTurn = PhotonNetwork.IsMasterClient; // 마스터 클라이언트가 먼저 시작
         cardDrawer.DrawCard(isMyTurn, myCards, NextTurn);
     }
 
@@ -116,17 +108,29 @@ public class PVEGameManager : VolatilitySingleton<PVEGameManager>
         //드로우한다
         cardDrawer.DrawCard(isMyTurn, isMyTurn ? myCards : otherCards, NextTurn);
 
-        //만약 ai 턴이면, bot이 둘 수 있도록 한다.
+        //만약 상대 턴이면, 상대가 둘 수 있도록 한다.
         if (!isMyTurn)
         {
-            bot.StartPlaceCard(UnityEngine.Random.Range(1f, 4f));
+            photonView.RPC("RPC_StartPlaceCard", RpcTarget.Others, UnityEngine.Random.Range(1f, 4f));
         }
+    }
+
+    [PunRPC]
+    private void RPC_StartPlaceCard(float delay)
+    {
+        StartCoroutine(DelayPlaceCard(delay));
+    }
+
+    private IEnumerator DelayPlaceCard(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        // 상대 플레이어가 카드를 놓는 로직을 구현합니다.
     }
 
     private void SettlementPlay()
     {
         Rule.SettlementOccupiedNodes(
-            () => 
+            () =>
             {
                 if (myScore > otherScore)
                 {
