@@ -6,6 +6,11 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     protected static readonly object lockObject = new object();
     protected static bool applicationIsQuitting = false;
 
+    private void Start()
+    {
+        DontDestroyOnLoad(Instance.gameObject);
+    }
+
     public static T Instance
     {
         get
@@ -30,8 +35,6 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
                         instance = singletonObject.AddComponent<T>();
                         singletonObject.name = typeof(T).ToString() + " (Singleton)";
                     }
-
-                    DontDestroyOnLoad(instance.gameObject);
                 }
 
                 return instance;

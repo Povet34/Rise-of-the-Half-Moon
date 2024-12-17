@@ -1,24 +1,34 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class MatchUserProfile : MonoBehaviour
 {
     [SerializeField] Image profileImage;
     [SerializeField] Text profileName;
-    [SerializeField] TextMeshProUGUI score;
-
-    public void SetProfile(Sprite image, string name, int score)
-    {
-        profileImage.sprite = image;
-        profileName.text = name;
-        this.score.text = score.ToString();
-    }
+    [SerializeField] Text score;
 
     public void SetProfile(PhotonPlayerData playerData)
     {
-        profileImage.sprite = playerData.GetPlayerProfileSprite();
-        profileName.text = playerData.GetPlayerName();
-        score.text = playerData.GetScore().ToString();
+        if (playerData == null)
+        {
+            Debug.LogError("PlayerData is null");
+            return;
+        }
+
+        if (profileImage != null)
+        {
+            profileImage.sprite = playerData.PlayerProfileSprite;
+        }
+
+        if (profileName != null)
+        {
+            profileName.text = playerData.PlayerName;
+        }
+
+        if (score != null)
+        {
+            score.text = playerData.Score.ToString();
+        }
     }
 }

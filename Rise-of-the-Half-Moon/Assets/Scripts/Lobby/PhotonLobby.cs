@@ -1,6 +1,8 @@
 using Photon.Pun;
 using Photon.Realtime;
 using System;
+using System.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class PhotonLobby : MonoBehaviourPunCallbacks
@@ -11,6 +13,7 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
     public event Action<PhotonPlayerData> OnPlayerEnteredRoomCallback;
     public event Action<PhotonPlayerData> OnPlayerAlreadyInRoomCallback;
     public event Action OnJoinedRoomCallback;
+    public event Action<PVPGameManager.GameInitData> OnStartGameCallback;
 
     private void Start()
     {
@@ -79,7 +82,7 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
         // 이미 방에 있는 유저의 정보를 가져와 콜백 호출
         foreach (Player player in PhotonNetwork.PlayerListOthers)
         {
-            PhotonPlayerData opponentData = GetOpponentData(player);
+            PhotonPlayerData opponentData = PhotonPlayerData.FromCustomProperties(player.CustomProperties);
             OnPlayerAlreadyInRoomCallback?.Invoke(opponentData);
         }
     }
@@ -90,43 +93,37 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
         if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
         {
             // 정원이 2명이 되면 상대 유저의 데이터를 가져옵니다.
-            PhotonPlayerData opponentData = GetOpponentData(newPlayer);
+            PhotonPlayerData opponentData = PhotonPlayerData.FromCustomProperties(newPlayer.CustomProperties);
 
             // 콜백 호출
             OnPlayerEnteredRoomCallback?.Invoke(opponentData);
+
+            StartCoroutine(DelayStart());
         }
     }
 
-    private PhotonPlayerData GetOpponentData(Player player)
+    IEnumerator DelayStart()
     {
-        PhotonPlayerData opponentData = new PhotonPlayerData();
-
-        if (player.CustomProperties.TryGetValue("Name", out object name))
-        {
-            opponentData.SetPlayerName(name.ToString());
-            Debug.Log("Opponent Name: " + name);
-        }
-
-        if (player.CustomProperties.TryGetValue("Email", out object email))
-        {
-            opponentData.SetPlayerEmail(email.ToString());
-            Debug.Log("Opponent Email: " + email);
-        }
-
-        if (player.CustomProperties.TryGetValue("ImageUrl", out object imageUrl))
-        {
-            opponentData.SetPlayerImageUrl(imageUrl.ToString());
-            Debug.Log("Opponent Image URL: " + imageUrl);
-        }
-
-        if (player.CustomProperties.TryGetValue("Score", out object score))
-        {
-            opponentData.SetScore(int.Parse(score.ToString()));
-            Debug.Log("Opponent Score: " + score);
-        }
-
-        return opponentData;
+        yield return new WaitForSeconds(3f);
+        photonView.RPC(nameof(StartGame), RpcTarget.All);
     }
+
+    [PunRPC]
+    private void StartGame()
+    {
+        int contentType = UnityEngine.Random.Range(0, (int)PhaseData.ContentType.Count);
+
+        PhotonPlayerData myData = PhotonPlayerData.FromCustomProperties(PhotonNetwork.LocalPlayer.CustomProperties);
+        PVPGameManager.GameInitData initData = new PVPGameManager.GameInitData
+        {
+            contentType = (PhaseData.ContentType)contentType,
+            myPlayerData = myData,
+            otherPlayerData = PhotonPlayerData.FromCustomProperties(PhotonNetwork.PlayerListOthers[0].CustomProperties),
+            random = new System.Random()
+        };
+        OnStartGameCallback?.Invoke(initData);
+    }
+
 
     public void CancelMatchmaking()
     {

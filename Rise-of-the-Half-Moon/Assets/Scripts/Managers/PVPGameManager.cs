@@ -11,6 +11,7 @@ public class PVPGameManager : MonoBehaviourPunCallbacks
         public PhaseData.ContentType contentType;
         public PhotonPlayerData myPlayerData;
         public PhotonPlayerData otherPlayerData;
+        public System.Random random;
     }
 
     [Header("Data")]
@@ -43,12 +44,18 @@ public class PVPGameManager : MonoBehaviourPunCallbacks
         cardDrawer = FindAnyObjectByType<CardDrawer>();
     }
 
+    public System.Random GetRandom()
+    {
+        return random;
+    }
+
     public void GameInit(GameInitData initData)
     {
         if (null == initData)
             return;
 
         contentType = initData.contentType;
+        random = initData.random;
 
         phaseDatas = ContentsDataManager.Instance.GetPhaseDatas(contentType, ref rule);
 

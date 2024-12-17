@@ -19,7 +19,7 @@ public class MatchmakePanel : MonoBehaviour
     {
         cancelButton.onClick.AddListener(ClosePanel);
         photonLobby = FindObjectOfType<PhotonLobby>();
-        playerData = FindObjectOfType<PhotonPlayerData>();
+        playerData = new PhotonPlayerData();
 
         if (photonLobby == null)
         {
@@ -72,6 +72,8 @@ public class MatchmakePanel : MonoBehaviour
         if (opponentData != null)
         {
             otherProfile.SetProfile(opponentData);
+            matchmakeLoadingImage.gameObject.SetActive(false);
+            otherProfile.gameObject.SetActive(true);
         }
     }
 }

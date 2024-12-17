@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -34,6 +35,7 @@ public class Lobby : MonoBehaviour
         photonLobby.OnPlayerEnteredRoomCallback += OnPlayerEnteredRoom;
         photonLobby.OnPlayerAlreadyInRoomCallback += OnPlayerAlreadyInRoom;
         photonLobby.OnJoinedRoomCallback += OnJoinedRoom;
+        photonLobby.OnStartGameCallback += StartPVPGame;
     }
 
     private void OnDestroy()
@@ -43,6 +45,7 @@ public class Lobby : MonoBehaviour
             photonLobby.OnPlayerEnteredRoomCallback -= OnPlayerEnteredRoom;
             photonLobby.OnPlayerAlreadyInRoomCallback -= OnPlayerAlreadyInRoom;
             photonLobby.OnJoinedRoomCallback -= OnJoinedRoom;
+            photonLobby.OnStartGameCallback -= StartPVPGame;
         }
     }
 
@@ -68,7 +71,7 @@ public class Lobby : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        SetPVEGame();
+        StartPVEGame();
 
         SceneManager.LoadScene(Definitions.INGAME_SCENE);
     }
@@ -85,7 +88,7 @@ public class Lobby : MonoBehaviour
         }
     }
 
-    private void SetPVEGame()
+    private void StartPVEGame()
     {
         PVEGameManager.GameInitData data = new PVEGameManager.GameInitData();
         data.contentType = (PhaseData.ContentType)Random.Range(0, (int)PhaseData.ContentType.Count);
@@ -101,12 +104,18 @@ public class Lobby : MonoBehaviour
         };
     }
 
-    private void SetPVPGame(PhotonPlayerData data)
+    private void StartPVPGame(PVPGameManager.GameInitData data)
     {
-        if (matchmakePanel != null)
+        SceneManager.sceneLoaded += (scene, mode) =>
         {
-            matchmakePanel.SetOtherProfile(data);
-        }
+            if (scene.name == Definitions.INGAME_SCENE)
+            {
+                PVPGameManager gameManager = Instantiate(pvpGameManager);
+                gameManager.GameInit(data);
+            }
+        };
+
+        SceneManager.LoadScene(Definitions.INGAME_SCENE);
     }
 
     private void OnPlayerEnteredRoom(PhotonPlayerData opponentData)
