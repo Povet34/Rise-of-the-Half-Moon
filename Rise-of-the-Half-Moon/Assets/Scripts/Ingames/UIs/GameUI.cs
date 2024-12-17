@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +11,9 @@ public class GameUI : MonoBehaviour
     [SerializeField] TextMeshProUGUI resultText;
     [SerializeField] Button retryButton;
 
+    [SerializeField] Button settingButton;
+    [SerializeField] IngameSettings ingameSettings;
+
     private void Start()
     {
         RegistEvents();
@@ -22,6 +24,7 @@ public class GameUI : MonoBehaviour
         retryButton.onClick.AddListener(null);
         //retryButton.onClick.AddListener(PVEGameManager.Instance.GameInit);
         retryButton.onClick.AddListener(() => { ActiveResult(false); });
+        settingButton.onClick.AddListener(ShowSettingPanel);
     }
 
     public void UpdateMyScore(int score)
@@ -55,5 +58,10 @@ public class GameUI : MonoBehaviour
     private void ActiveResult(bool isShow)
     {
         resultPanel.gameObject.SetActive(isShow);
+    }
+
+    private void ShowSettingPanel()
+    {
+        ingameSettings.gameObject.SetActive(true);
     }
 }

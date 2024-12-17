@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class GameManager : VolatilitySingleton<GameManager>
 {
-
-    protected ContentRule rule;
     public virtual ContentRule Rule => rule;
+    public bool IsNetworkGame { get; protected set; }
 
     [Header("Data")]
+    protected ContentRule rule;
     public bool isMyTurn;
     public PhaseData.ContentType contentType;
     protected System.Random random;

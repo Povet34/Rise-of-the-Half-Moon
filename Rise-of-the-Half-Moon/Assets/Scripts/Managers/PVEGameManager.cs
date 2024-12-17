@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public class PVEGameManager : GameManager
 {
@@ -10,11 +11,13 @@ public class PVEGameManager : GameManager
 
     BotLevelData initBotLevelData;
 
-    Bot botPrefab;
+    [SerializeField] Bot botPrefab;
     Bot bot;
 
     public void GameInit(GameInitData initData)
     {
+        IsNetworkGame = false;
+
         if (null == initData)
             return;
 

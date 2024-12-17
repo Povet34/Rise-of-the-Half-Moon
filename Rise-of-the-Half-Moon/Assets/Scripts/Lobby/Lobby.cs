@@ -10,7 +10,7 @@ public class Lobby : MonoBehaviour
     [SerializeField] Button playWithAIButton;
     [SerializeField] Button SettingsButton;
 
-    [SerializeField] Settings settings;
+    [SerializeField] LobbySettings settings;
     [SerializeField] GlobalVolumeController globalVolumeController;
 
     private PhotonLobby photonLobby;

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class Settings : MonoBehaviour
+public class LobbySettings : MonoBehaviour
 {
     [SerializeField] Button logoutButton;
     [SerializeField] Button exitButton;

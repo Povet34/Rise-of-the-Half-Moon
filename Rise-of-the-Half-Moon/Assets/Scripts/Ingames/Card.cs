@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    public static bool IsDraging { get; private set; }
+
     public bool isMine;
     public PhaseData phaseData;
     private CanvasGroup canvasGroup;
@@ -50,6 +52,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             return; 
 
         dragPos = transform.position;
+        IsDraging = true;
 
         canvasGroup.alpha = 0.6f; // 드래그 중 투명도 조절
         canvasGroup.blocksRaycasts = false; // 드래그 중 다른 UI 요소와의 상호작용 허용
@@ -96,6 +99,8 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
         transform.position = dragPos;
         dragPos = Vector2.zero;
+
+        IsDraging = false; 
     }
 
     #endregion

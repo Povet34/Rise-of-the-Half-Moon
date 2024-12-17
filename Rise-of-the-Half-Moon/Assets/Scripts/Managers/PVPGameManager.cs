@@ -15,6 +15,8 @@ public class PVPGameManager : GameManager
 
     public void GameInit(GameInitData initData)
     {
+        IsNetworkGame = true;
+
         if (null == initData)
             return;
 

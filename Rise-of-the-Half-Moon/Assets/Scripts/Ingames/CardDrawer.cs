@@ -11,6 +11,7 @@ public class CardDrawer : MonoBehaviour
     public static bool isDrawing;
 
     [SerializeField] private GameObject cardPrefab;
+    [SerializeField] private GameObject punCardPrefab;
 
     [SerializeField] private Transform myCardArea;
     [SerializeField] private Transform otherCardArea;
@@ -38,7 +39,7 @@ public class CardDrawer : MonoBehaviour
             return;
         }
 
-        GameObject go = Instantiate(cardPrefab, isPlayerTurn ? myCardArea : otherCardArea);
+        GameObject go = Instantiate(GameManager.Instance.IsNetworkGame ? punCardPrefab : cardPrefab, isPlayerTurn ? myCardArea : otherCardArea);
         RectTransform rectTransform = go.GetComponent<RectTransform>();
 
         if (isTween)
@@ -49,6 +50,7 @@ public class CardDrawer : MonoBehaviour
         Card card = go.GetComponent<Card>();
         card.phaseData = phaseDatas[random.Next(phaseDatas.Count)];
         card.isMine = isPlayerTurn;
+        targetCards.Add(card);
 
         card.Init(nextTurnCallback, 
             () => 
@@ -62,9 +64,6 @@ public class CardDrawer : MonoBehaviour
                     node.UpdatePointValue(GameManager.Instance.Rule.PredictScoreForCard(node, card));
                 }
             });
-
-        targetCards.Add(card);
-
 
         //Draw Animation
         {

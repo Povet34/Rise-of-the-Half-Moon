@@ -188,6 +188,8 @@ public class NodeGenerator : MonoBehaviour
 
     void GenerateCycles()
     {
+        cycles.Clear();
+
         HashSet<Node> visited = new HashSet<Node>();
         int cycleId = 0;
 

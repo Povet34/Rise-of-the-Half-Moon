@@ -72,4 +72,6 @@ public static class Definitions
 
     public static Color My_Occupied_Color = new Color(0.8f, 0.1f, 0.1f, 1f);
     public static Color Other_Occupied_Color = new Color(0.1f, 0.1f, 0.8f, 1f);
+
+    public const float CamRadius = 80f;
 }

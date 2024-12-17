@@ -7,6 +7,8 @@ using Photon.Pun;
 
 public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandler, IEndDragHandler, IPunObservable
 {
+    public static bool IsDraging { get; private set; }
+
     public bool isMine;
     public PhaseData phaseData;
     private CanvasGroup canvasGroup;
@@ -49,6 +51,8 @@ public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandle
     {
         if (!CanInput())
             return;
+
+        IsDraging = true;
 
         dragPos = transform.position;
 
@@ -97,6 +101,8 @@ public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandle
 
         transform.position = dragPos;
         dragPos = Vector2.zero;
+
+        IsDraging = false;
     }
 
     #endregion

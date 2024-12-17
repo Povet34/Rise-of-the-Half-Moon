@@ -41,9 +41,9 @@ public class CamTouch : MonoBehaviour
         float aspectRatio = screenWidth / screenHeight;
 
         // 해상도와 가로세로 비율에 따라 리그의 반경을 설정합니다.
-        float topRigRadius = CalculateRadius(aspectRatio, 50f);
-        float middleRigRadius = CalculateRadius(aspectRatio, 50f);
-        float bottomRigRadius = CalculateRadius(aspectRatio, 50f);
+        float topRigRadius = CalculateRadius(aspectRatio, Definitions.CamRadius);
+        float middleRigRadius = CalculateRadius(aspectRatio, Definitions.CamRadius);
+        float bottomRigRadius = CalculateRadius(aspectRatio, Definitions.CamRadius);
 
         // CinemachineFreeLook 카메라의 각 리그의 반경을 설정합니다.
         freeLookCam.m_Orbits[0].m_Radius = topRigRadius;
@@ -60,6 +60,11 @@ public class CamTouch : MonoBehaviour
 
     private void HandleTouchInput()
     {
+        if(Card.IsDraging || PUNCard.IsDraging)
+        {
+            return;
+        }
+
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
