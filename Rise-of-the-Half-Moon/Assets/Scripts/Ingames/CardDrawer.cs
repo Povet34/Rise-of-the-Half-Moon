@@ -59,7 +59,7 @@ public class CardDrawer : MonoBehaviour
             {
                 foreach (var node in nodeGenerator.Nodes)
                 {
-                    node.UpdatePointValue(PVEGameManager.Instance.Rule.PredictScoreForCard(node, card));
+                    node.UpdatePointValue(GameManager.Instance.Rule.PredictScoreForCard(node, card));
                 }
             });
 

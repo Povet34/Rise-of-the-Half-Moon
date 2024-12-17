@@ -124,9 +124,9 @@ public class NumberRule : ContentRule
             AnimateNodes(nodes, isMine, endCallback);
 
             if (isMine)
-                PVEGameManager.Instance.UpdateMyScore(score);
+                GameManager.Instance.UpdateMyScore(score);
             else
-                PVEGameManager.Instance.UpdateOtherScore(score);
+                GameManager.Instance.UpdateOtherScore(score);
         });
     }
 

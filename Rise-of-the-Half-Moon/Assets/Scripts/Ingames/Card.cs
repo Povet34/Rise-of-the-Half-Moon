@@ -41,7 +41,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     private bool CanInput()
     {
-        return isMine && !PVEGameManager.Instance.Rule.IsRemainScoreSettlement() && !CardDrawer.isDrawing && PVEGameManager.Instance.isMyTurn;
+        return isMine && !GameManager.Instance.Rule.IsRemainScoreSettlement() && !CardDrawer.isDrawing && GameManager.Instance.isMyTurn;
     }
 
     public void OnBeginDrag(PointerEventData eventData)

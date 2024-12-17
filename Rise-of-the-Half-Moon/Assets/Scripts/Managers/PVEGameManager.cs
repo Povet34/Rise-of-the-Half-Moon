@@ -3,7 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class PVEGameManager : VolatilitySingleton<PVEGameManager>
+public class PVEGameManager : GameManager
 {
     public class GameInitData
     {
@@ -11,17 +11,9 @@ public class PVEGameManager : VolatilitySingleton<PVEGameManager>
         public int initBotLevel;
     }
 
-    [Header("Data")]
-    public bool isMyTurn;
-    public PhaseData.ContentType contentType;
-
-    ContentRule rule;
-    public ContentRule Rule => rule;
-
     List<PhaseData> phaseDatas;
     BotLevelData initBotLevelData;
 
-    System.Random random;
     NodeGenerator nodeGenerator;
 
     [Header("Me")]
@@ -145,13 +137,13 @@ public class PVEGameManager : VolatilitySingleton<PVEGameManager>
 
     #region Update Score
 
-    public void UpdateMyScore(int score)
+    public override void UpdateMyScore(int score)
     {
         myScore += score;
         gameUI.UpdateMyScore(myScore);
     }
 
-    public void UpdateOtherScore(int score)
+    public override void UpdateOtherScore(int score)
     {
         otherScore += score;
         gameUI.UpdateOtherScore(otherScore);

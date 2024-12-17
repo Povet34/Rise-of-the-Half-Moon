@@ -9,8 +9,6 @@ public class ContentsDataManager : Singleton<ContentsDataManager>
     public List<PhaseData> dicePhaseDatas = new List<PhaseData>();
     public List<BotLevelData> botLevelDatas = new List<BotLevelData>();
 
-    public PVEGameManager.GameInitData gameInitData;
-
     public List<PhaseData> GetPhaseDatas(PhaseData.ContentType content, ref ContentRule rule)
     {
         switch (content)

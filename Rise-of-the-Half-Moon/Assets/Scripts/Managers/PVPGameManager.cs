@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PVPGameManager : MonoBehaviourPunCallbacks
+public class PVPGameManager : GameManager
 {
     public class GameInitData
     {
@@ -14,16 +14,7 @@ public class PVPGameManager : MonoBehaviourPunCallbacks
         public System.Random random;
     }
 
-    [Header("Data")]
-    public bool isMyTurn;
-    public PhaseData.ContentType contentType;
-
-    ContentRule rule;
-    public ContentRule Rule => rule;
-
     List<PhaseData> phaseDatas;
-
-    System.Random random;
     NodeGenerator nodeGenerator;
 
     [Header("Me")]
@@ -120,7 +111,7 @@ public class PVPGameManager : MonoBehaviourPunCallbacks
         //만약 상대 턴이면, 상대가 둘 수 있도록 한다.
         if (!isMyTurn)
         {
-            photonView.RPC("RPC_StartPlaceCard", RpcTarget.Others, UnityEngine.Random.Range(1f, 4f));
+            //photonView.RPC("RPC_StartPlaceCard", RpcTarget.Others, UnityEngine.Random.Range(1f, 4f));
         }
     }
 
@@ -158,13 +149,13 @@ public class PVPGameManager : MonoBehaviourPunCallbacks
 
     #region Update Score
 
-    public void UpdateMyScore(int score)
+    public override void UpdateMyScore(int score)
     {
         myScore += score;
         gameUI.UpdateMyScore(myScore);
     }
 
-    public void UpdateOtherScore(int score)
+    public override void UpdateOtherScore(int score)
     {
         otherScore += score;
         gameUI.UpdateOtherScore(otherScore);

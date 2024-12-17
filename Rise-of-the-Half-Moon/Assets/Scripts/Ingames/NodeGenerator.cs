@@ -213,8 +213,8 @@ public class NodeGenerator : MonoBehaviour
                         {
                             int neighborPhase = neighbor.GetPhaseType();
 
-                            if (PhaseData.GetPreviousPhaseType(currentPhase, PVEGameManager.Instance.contentType) == neighborPhase ||
-                                PhaseData.GetNextPhaseType(currentPhase, PVEGameManager.Instance.contentType) == neighborPhase)
+                            if (PhaseData.GetPreviousPhaseType(currentPhase, GameManager.Instance.contentType) == neighborPhase ||
+                                PhaseData.GetNextPhaseType(currentPhase, GameManager.Instance.contentType) == neighborPhase)
                             {
                                 queue.Enqueue(neighbor);
                                 visited.Add(neighbor);

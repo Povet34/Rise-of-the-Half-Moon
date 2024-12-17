@@ -36,7 +36,7 @@ public class Bot : MonoBehaviour
         {
             foreach (Node node in emptyNodes)
             {
-                int score = PVEGameManager.Instance.Rule.PredictScoreForCard(node, card) + BotHandicap();
+                int score = GameManager.Instance.Rule.PredictScoreForCard(node, card) + BotHandicap();
                 if (score > highestScore)
                 {
                     highestScore = score;
@@ -77,7 +77,7 @@ public class Bot : MonoBehaviour
 
     private IEnumerator DelayPlaceCardBody(float delay)
     {
-        yield return new WaitUntil(()=> !PVEGameManager.Instance.Rule.IsRemainScoreSettlement());
+        yield return new WaitUntil(()=> !GameManager.Instance.Rule.IsRemainScoreSettlement());
         yield return new WaitForSeconds(delay);
 
         if (accuracy == -1 || putCount > initRandomPutCount)
