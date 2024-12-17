@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class ContentsDataManager : Singleton<ContentsDataManager>
 {
@@ -14,13 +13,13 @@ public class ContentsDataManager : Singleton<ContentsDataManager>
         switch (content)
         {
             case PhaseData.ContentType.Moon:
-                rule = new GameObject("MoonRule").AddComponent<MoonRule>();
+                rule = new GameObject(Definitions.MoonRule).AddComponent<MoonRule>();
                 return moonPhaseDatas;
             case PhaseData.ContentType.Dice:
-                rule = new GameObject("DiceRule").AddComponent<DiceRule>();
+                rule = new GameObject(Definitions.DiceRule).AddComponent<DiceRule>();
                 return dicePhaseDatas;
             case PhaseData.ContentType.Number:
-                rule = new GameObject("NumberRule").AddComponent<NumberRule>();
+                rule = new GameObject(Definitions.NumberRule).AddComponent<NumberRule>();
                 return numberPhaseDatas;
             default:
                 return null;

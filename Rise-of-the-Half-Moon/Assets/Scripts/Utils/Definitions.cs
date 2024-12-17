@@ -22,6 +22,9 @@ public static class Definitions
         Number,
     }
 
+    public const string MoonRule = "MoonRule";
+    public const string DiceRule = "DiceRule";
+    public const string NumberRule = "NumberRule";
 
     public const int DiceDataCount = 6;
     public const int MoonPhaseDataCount = 8;

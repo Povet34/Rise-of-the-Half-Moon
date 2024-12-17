@@ -1,5 +1,4 @@
 using Photon.Pun;
-using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,32 +11,6 @@ public class PVPGameManager : GameManager
         public PhotonPlayerData myPlayerData;
         public PhotonPlayerData otherPlayerData;
         public System.Random random;
-    }
-
-    List<PhaseData> phaseDatas;
-    NodeGenerator nodeGenerator;
-
-    [Header("Me")]
-    int myScore;
-    List<Card> myCards = new List<Card>();
-
-    [Header("Other")]
-    int otherScore;
-    List<Card> otherCards = new List<Card>();
-
-    GameUI gameUI;
-    CardDrawer cardDrawer;
-
-    private void Awake()
-    {
-        nodeGenerator = FindAnyObjectByType<NodeGenerator>();
-        gameUI = FindAnyObjectByType<GameUI>();
-        cardDrawer = FindAnyObjectByType<CardDrawer>();
-    }
-
-    public System.Random GetRandom()
-    {
-        return random;
     }
 
     public void GameInit(GameInitData initData)

@@ -1,7 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PVEGameManager : GameManager
 {
@@ -11,30 +8,10 @@ public class PVEGameManager : GameManager
         public int initBotLevel;
     }
 
-    List<PhaseData> phaseDatas;
     BotLevelData initBotLevelData;
 
-    NodeGenerator nodeGenerator;
-
-    [Header("Me")]
-    int myScore;
-    List<Card> myCards = new List<Card>();
-
-    [Header("Other")]
-    [SerializeField] Bot botPrefab;
+    Bot botPrefab;
     Bot bot;
-    int otherScore;
-    List<Card> otherCards = new List<Card>();
-
-    GameUI gameUI;
-    CardDrawer cardDrawer;
-
-    private void Awake()
-    {
-        nodeGenerator = FindAnyObjectByType<NodeGenerator>();
-        gameUI = FindAnyObjectByType<GameUI>();
-        cardDrawer = FindAnyObjectByType<CardDrawer>();
-    }
 
     public void GameInit(GameInitData initData)
     {
