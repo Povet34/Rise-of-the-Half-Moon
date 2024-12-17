@@ -1,16 +1,16 @@
 using Photon.Pun;
 using Photon.Realtime;
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PhotonLobby : MonoBehaviourPunCallbacks
 {
-    [SerializeField] MatchmakePanel matchmakePanel;
-
     private readonly string gameVersion = "1";
     private Lobby lobby;
+
+    public event Action<PhotonPlayerData> OnPlayerEnteredRoomCallback;
+    public event Action<PhotonPlayerData> OnPlayerAlreadyInRoomCallback;
+    public event Action OnJoinedRoomCallback;
 
     private void Start()
     {
@@ -55,7 +55,6 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
     public void StartMatchmaking()
     {
         Debug.Log("Starting matchmaking...");
-        matchmakePanel.gameObject.SetActive(true);
         PhotonNetwork.JoinRandomRoom();
     }
 
@@ -67,7 +66,7 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
 
     private void CreateRoom()
     {
-        int randomRoomNumber = Random.Range(0, 10000);
+        int randomRoomNumber = UnityEngine.Random.Range(0, 10000);
         RoomOptions roomOptions = new RoomOptions() { IsVisible = true, IsOpen = true, MaxPlayers = 2 };
         PhotonNetwork.CreateRoom("Room" + randomRoomNumber, roomOptions);
     }
@@ -75,8 +74,14 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined a room successfully.");
-        // 로딩 화면을 보여줍니다.
-        matchmakePanel.gameObject.SetActive(true);
+        OnJoinedRoomCallback?.Invoke();
+
+        // 이미 방에 있는 유저의 정보를 가져와 콜백 호출
+        foreach (Player player in PhotonNetwork.PlayerListOthers)
+        {
+            PhotonPlayerData opponentData = GetOpponentData(player);
+            OnPlayerAlreadyInRoomCallback?.Invoke(opponentData);
+        }
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -85,29 +90,42 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
         if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
         {
             // 정원이 2명이 되면 상대 유저의 데이터를 가져옵니다.
-            GetOpponentData(newPlayer);
+            PhotonPlayerData opponentData = GetOpponentData(newPlayer);
 
-            // 게임 씬으로 이동합니다.
-            SceneManager.LoadScene(Definitions.INGAME_SCENE);
+            // 콜백 호출
+            OnPlayerEnteredRoomCallback?.Invoke(opponentData);
         }
     }
 
-    private void GetOpponentData(Player player)
+    private PhotonPlayerData GetOpponentData(Player player)
     {
+        PhotonPlayerData opponentData = new PhotonPlayerData();
+
         if (player.CustomProperties.TryGetValue("Name", out object name))
         {
+            opponentData.SetPlayerName(name.ToString());
             Debug.Log("Opponent Name: " + name);
         }
 
         if (player.CustomProperties.TryGetValue("Email", out object email))
         {
+            opponentData.SetPlayerEmail(email.ToString());
             Debug.Log("Opponent Email: " + email);
         }
 
         if (player.CustomProperties.TryGetValue("ImageUrl", out object imageUrl))
         {
+            opponentData.SetPlayerImageUrl(imageUrl.ToString());
             Debug.Log("Opponent Image URL: " + imageUrl);
         }
+
+        if (player.CustomProperties.TryGetValue("Score", out object score))
+        {
+            opponentData.SetScore(int.Parse(score.ToString()));
+            Debug.Log("Opponent Score: " + score);
+        }
+
+        return opponentData;
     }
 
     public void CancelMatchmaking()
@@ -125,6 +143,5 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
                 PhotonNetwork.LeaveRoom();
             }
         }
-        matchmakePanel.gameObject.SetActive(false);
     }
 }

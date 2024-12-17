@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -9,17 +8,18 @@ public class MatchmakePanel : MonoBehaviour
     [SerializeField] Button cancelButton;
     [SerializeField] Image matchmakeLoadingImage;
     [SerializeField] float rotationSpeed = 100f;
-    [SerializeField] Text myProfileName;
-    [SerializeField] Image myProfileImage;
+
+    [SerializeField] MatchUserProfile myProfile;
+    [SerializeField] MatchUserProfile otherProfile;
 
     private PhotonLobby photonLobby;
-    private PlayerData playerData;
+    private PhotonPlayerData playerData;
 
     private void Awake()
     {
         cancelButton.onClick.AddListener(ClosePanel);
         photonLobby = FindObjectOfType<PhotonLobby>();
-        playerData = FindObjectOfType<PlayerData>();
+        playerData = FindObjectOfType<PhotonPlayerData>();
 
         if (photonLobby == null)
         {
@@ -37,14 +37,16 @@ public class MatchmakePanel : MonoBehaviour
         RotateLoadingImage();
     }
 
+    public void ShowPanel()
+    {
+        gameObject.SetActive(true);
+    }
+
     private void ClosePanel()
     {
         if (photonLobby != null)
         {
             photonLobby.CancelMatchmaking();
-        }
-        else
-        {
             gameObject.SetActive(false);
         }
     }
@@ -61,31 +63,15 @@ public class MatchmakePanel : MonoBehaviour
     {
         if (playerData != null)
         {
-            myProfileName.text = playerData.GetPlayerName();
-
-            string imageUrl = playerData.GetPlayerImageUrl();
-            if (!string.IsNullOrEmpty(imageUrl))
-            {
-                StartCoroutine(LoadImage(imageUrl));
-            }
+            myProfile.SetProfile(playerData);
         }
     }
 
-    private IEnumerator LoadImage(string imageUrl)
+    public void SetOtherProfile(PhotonPlayerData opponentData)
     {
-        using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(imageUrl))
+        if (opponentData != null)
         {
-            yield return uwr.SendWebRequest();
-
-            if (uwr.result == UnityWebRequest.Result.ConnectionError || uwr.result == UnityWebRequest.Result.ProtocolError)
-            {
-                Debug.LogError("Failed to load profile image: " + uwr.error);
-            }
-            else
-            {
-                Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
-                myProfileImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-            }
+            otherProfile.SetProfile(opponentData);
         }
     }
 }

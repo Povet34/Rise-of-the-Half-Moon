@@ -9,6 +9,8 @@ public class PVPGameManager : MonoBehaviourPunCallbacks
     public class GameInitData
     {
         public PhaseData.ContentType contentType;
+        public PhotonPlayerData myPlayerData;
+        public PhotonPlayerData otherPlayerData;
     }
 
     [Header("Data")]

@@ -15,6 +15,8 @@ public class Lobby : MonoBehaviour
     private PhotonLobby photonLobby;
 
     [SerializeField] PVEGameManager pveGameManager;
+    [SerializeField] PVPGameManager pvpGameManager;
+    [SerializeField] MatchmakePanel matchmakePanel;
 
     private void Awake()
     {
@@ -28,6 +30,20 @@ public class Lobby : MonoBehaviour
         matchmakingButton.onClick.AddListener(StartMatchMaring);
         playWithAIButton.onClick.AddListener(PlayWithAI);
         SettingsButton.onClick.AddListener(() => settings.gameObject.SetActive(true));
+
+        photonLobby.OnPlayerEnteredRoomCallback += OnPlayerEnteredRoom;
+        photonLobby.OnPlayerAlreadyInRoomCallback += OnPlayerAlreadyInRoom;
+        photonLobby.OnJoinedRoomCallback += OnJoinedRoom;
+    }
+
+    private void OnDestroy()
+    {
+        if (photonLobby != null)
+        {
+            photonLobby.OnPlayerEnteredRoomCallback -= OnPlayerEnteredRoom;
+            photonLobby.OnPlayerAlreadyInRoomCallback -= OnPlayerAlreadyInRoom;
+            photonLobby.OnJoinedRoomCallback -= OnJoinedRoom;
+        }
     }
 
     public void SetMatchmakingButtonInteractable(bool interactable)
@@ -52,7 +68,7 @@ public class Lobby : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        SetGameData();
+        SetPVEGame();
 
         SceneManager.LoadScene(Definitions.INGAME_SCENE);
     }
@@ -69,7 +85,7 @@ public class Lobby : MonoBehaviour
         }
     }
 
-    private void SetGameData()
+    private void SetPVEGame()
     {
         PVEGameManager.GameInitData data = new PVEGameManager.GameInitData();
         data.contentType = (PhaseData.ContentType)Random.Range(0, (int)PhaseData.ContentType.Count);
@@ -83,5 +99,37 @@ public class Lobby : MonoBehaviour
                 gameManager.GameInit(data);
             }
         };
+    }
+
+    private void SetPVPGame(PhotonPlayerData data)
+    {
+        if (matchmakePanel != null)
+        {
+            matchmakePanel.SetOtherProfile(data);
+        }
+    }
+
+    private void OnPlayerEnteredRoom(PhotonPlayerData opponentData)
+    {
+        if (matchmakePanel != null)
+        {
+            matchmakePanel.SetOtherProfile(opponentData);
+        }
+    }
+
+    private void OnPlayerAlreadyInRoom(PhotonPlayerData opponentData)
+    {
+        if (matchmakePanel != null)
+        {
+            matchmakePanel.SetOtherProfile(opponentData);
+        }
+    }
+
+    private void OnJoinedRoom()
+    {
+        if (matchmakePanel != null)
+        {
+            matchmakePanel.ShowPanel();
+        }
     }
 }
