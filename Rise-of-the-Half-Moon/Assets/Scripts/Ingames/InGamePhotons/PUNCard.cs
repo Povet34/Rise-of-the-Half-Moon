@@ -3,8 +3,9 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Photon.Pun;
 
-public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandler, IEndDragHandler, IPunObservable
 {
     public bool isMine;
     public PhaseData phaseData;
@@ -13,7 +14,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     [SerializeField] private Image cardImage;
 
-    Action<Card> nextTurnCallback;
+    Action<PUNCard> nextTurnCallback;
     Action replaceCallback;
     Action selectCallback;
 
@@ -25,7 +26,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         rectTransform = GetComponent<RectTransform>();
     }
 
-    public void Init(Action<Card> nextTurnCallback, Action replaceCallback, Action selectCallback)
+    public void Init(Action<PUNCard> nextTurnCallback, Action replaceCallback, Action selectCallback)
     {
         this.nextTurnCallback = nextTurnCallback;
         this.replaceCallback = replaceCallback;
@@ -46,8 +47,8 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if(!CanInput())
-            return; 
+        if (!CanInput())
+            return;
 
         dragPos = transform.position;
 
@@ -81,7 +82,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             Node node = hit.collider.GetComponent<Node>();
             if (node != null)
             {
-                if(node.occupiedUser == Definitions.EMPTY_NODE)
+                if (node.occupiedUser == Definitions.EMPTY_NODE)
                 {
                     PlaceCard(node);
                     return;
@@ -100,14 +101,36 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     #endregion
 
-    public virtual void PlaceCard(Node node)
+    public void PlaceCard(Node node)
+    {
+        if (PhotonNetwork.IsConnected)
+        {
+            photonView.RPC(nameof(RPC_PlaceCard), RpcTarget.All, node.index);
+        }
+        else
+        {
+            ExecutePlaceCard(node);
+        }
+    }
+
+    [PunRPC]
+    private void RPC_PlaceCard(int nodeIndex)
+    {
+        Node node = FindNodeByIndex(nodeIndex);
+        if (node != null)
+        {
+            ExecutePlaceCard(node);
+        }
+    }
+
+    private void ExecutePlaceCard(Node node)
     {
         Node.PutData data = new Node.PutData();
         data.occupiedUser = Definitions.NOT_OCCUPIED_NODE;
         data.moonPhaseData = phaseData;
 
         node.PutCard(data);
-        PVEGameManager.Instance.Rule.OnCardPlaced(node, isMine);
+        PVPGameManager.Instance.Rule.OnCardPlaced(node, isMine);
 
         nextTurnCallback?.Invoke(this);
         replaceCallback?.Invoke();
@@ -115,8 +138,20 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         Destroy();
     }
 
+    private Node FindNodeByIndex(int index)
+    {
+        // NodeGenerator에서 노드를 찾는 로직을 구현합니다.
+        NodeGenerator nodeGenerator = FindObjectOfType<NodeGenerator>();
+        return nodeGenerator.Nodes.Find(n => n.index == index);
+    }
+
     public void Destroy()
     {
         Destroy(gameObject);
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        // 필요한 경우 동기화할 데이터를 추가합니다.
     }
 }
