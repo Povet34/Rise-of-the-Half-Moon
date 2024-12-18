@@ -12,20 +12,11 @@ public class IngameSettings : MonoBehaviour
 
     private void Awake()
     {
-        exitButton.onClick.AddListener(ApplicationQuit);
+        exitButton.onClick.AddListener(Exit);
         gobackButton.onClick.AddListener(Goback);
     }
 
-    private void ApplicationQuit()
-    {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
-    }
-
-    private void SignOut()
+    private void Exit()
     {
         if(GameManager.Instance.IsNetworkGame)
         {

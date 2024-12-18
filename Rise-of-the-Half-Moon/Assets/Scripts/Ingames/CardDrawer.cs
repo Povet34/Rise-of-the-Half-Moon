@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -15,7 +16,7 @@ public class CardDrawer : MonoBehaviour
 
     [SerializeField] private Transform myCardArea;
     [SerializeField] private Transform otherCardArea;
-    
+
     private List<PhaseData> phaseDatas;
     private System.Random random;
     private NodeGenerator nodeGenerator;
@@ -39,7 +40,17 @@ public class CardDrawer : MonoBehaviour
             return;
         }
 
-        GameObject go = Instantiate(GameManager.Instance.IsNetworkGame ? punCardPrefab : cardPrefab, isPlayerTurn ? myCardArea : otherCardArea);
+        GameObject go = null;
+        if (GameManager.Instance.IsNetworkGame)
+        {
+            go = PhotonNetwork.Instantiate(punCardPrefab.name, spawnPos, punCardPrefab.transform.rotation);
+            go.transform.SetParent(isPlayerTurn ? myCardArea : otherCardArea, false);
+        }
+        else
+        {
+            go = Instantiate(cardPrefab, isPlayerTurn ? myCardArea : otherCardArea);
+        }
+
         RectTransform rectTransform = go.GetComponent<RectTransform>();
 
         if (isTween)
@@ -70,7 +81,7 @@ public class CardDrawer : MonoBehaviour
             Sequence sequence = DOTween.Sequence();
 
             sequence.AppendCallback(() => { isDrawing = true; });
-            sequence.AppendCallback(() => { card.rt.DOAnchorPos(positions[targetCards.Count - 1], Definitions.CardMoveDuration).SetEase(Ease.OutQuint); });
+            sequence.Append(rectTransform.DOAnchorPos(positions[targetCards.Count - 1], Definitions.CardMoveDuration).SetEase(Ease.OutQuint));
             sequence.AppendCallback(() => { isDrawing = false; });
             sequence.AppendCallback(() => { RepositionCards(targetCards, positions); });
         }
@@ -93,5 +104,3 @@ public class CardDrawer : MonoBehaviour
             return cardCount == 2 ? Definitions.OtherTwoCardPositions : Definitions.OtherThreeCardPositions;
     }
 }
-
-
