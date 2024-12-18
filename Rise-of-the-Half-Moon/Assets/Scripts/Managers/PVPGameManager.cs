@@ -16,7 +16,7 @@ public class PVPGameManager : GameManager
         public int seed;
     }
 
-    public PhotonView photonView;
+    PhotonView photonView;
 
     public void StartGameInit()
     {
@@ -27,6 +27,10 @@ public class PVPGameManager : GameManager
     [PunRPC]
     public void GameInit(int type, int seed)
     {
+        var go = PhotonNetwork.Instantiate("PUNCardDrawer", Vector3.zero, Quaternion.identity);
+
+        cardDrawer = go.GetComponent<PUNCardDrawer>();
+
         Random.InitState(seed);
 
         IsNetworkGame = true;

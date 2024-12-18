@@ -42,7 +42,7 @@ public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandle
 
     private bool CanInput()
     {
-        return IsMine && !gameManager.Rule.IsRemainScoreSettlement() && !CardDrawer.isDrawing && gameManager.isMyTurn;
+        return IsMine && !gameManager.Rule.IsRemainScoreSettlement() && !PUNCardDrawer.isDrawing && gameManager.isMyTurn;
     }   
 
     public void OnBeginDrag(PointerEventData eventData)

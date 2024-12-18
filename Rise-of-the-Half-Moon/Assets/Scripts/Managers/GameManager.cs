@@ -15,7 +15,9 @@ public class GameManager : MonoBehaviour
     protected NodeGenerator nodeGenerator;
     protected List<PhaseData> phaseDatas;
     protected GameUI gameUI;
-    protected CardDrawer cardDrawer;
+
+    protected ICardDrawer cardDrawer;
+
 
     [Header("Me")]
     protected int myScore;
@@ -29,7 +31,7 @@ public class GameManager : MonoBehaviour
     {
         nodeGenerator = FindAnyObjectByType<NodeGenerator>();
         gameUI = FindAnyObjectByType<GameUI>();
-        cardDrawer = FindAnyObjectByType<CardDrawer>();
+        cardDrawer = FindAnyObjectByType<PUNCardDrawer>();
     }
 
     public virtual void UpdateMyScore(int score)

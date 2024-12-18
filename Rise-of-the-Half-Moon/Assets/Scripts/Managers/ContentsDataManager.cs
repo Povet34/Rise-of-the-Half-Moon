@@ -29,6 +29,19 @@ public class ContentsDataManager : Singleton<ContentsDataManager>
         }
     }
 
+    public BotLevelData GetBotLevelData(int level)
+    {
+        if (level >= 0 && level < botLevelDatas.Count)
+        {
+            return botLevelDatas[level];
+        }
+        else
+        {
+            Debug.LogError($"Invalid level: {level}");
+            return null;
+        }
+    }
+
     public void SetPVPGameInitData(PVPGameManager.GameInitData data)
     {
         pvpGameInitData = data;
@@ -47,6 +60,12 @@ public class ContentsDataManager : Singleton<ContentsDataManager>
     public PVEGameManager.GameInitData GetPVEGameInitData()
     {
         return pveGameInitData;
+    }
+
+    public void ClearDatas()
+    {
+        pveGameInitData = null;
+        pvpGameInitData = null;
     }
 
     public PhaseData GetPhaseData(PhaseData.ContentType type, int index)

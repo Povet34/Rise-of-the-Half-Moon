@@ -8,23 +8,28 @@ public class PVEGameManager : GameManager
     {
         public PhaseData.ContentType contentType;
         public int initBotLevel;
+        public int seed;
     }
 
     BotLevelData initBotLevelData;
 
     [SerializeField] Bot botPrefab;
+    [SerializeField] CardDrawer cardDrawerPrefab;
+    
     Bot bot;
 
-    public void GameInit()
+    public void GameInit(GameInitData data)
     {
-        GameInitData data = ContentsDataManager.Instance.GetPVEGameInitData();
+        cardDrawer = Instantiate(cardDrawerPrefab);
+
         if (data == null)
             return;
 
         contentType = data.contentType;
-        Random.InitState(data.initBotLevel);
+        Random.InitState(data.seed);
 
         phaseDatas = ContentsDataManager.Instance.GetPhaseDatas(contentType, ref rule);
+        initBotLevelData = ContentsDataManager.Instance.GetBotLevelData(data.initBotLevel);
 
         StartPlay();
     }

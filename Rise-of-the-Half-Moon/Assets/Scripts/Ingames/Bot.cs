@@ -1,3 +1,4 @@
+using Photon.Pun.Demo.PunBasics;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,6 +17,7 @@ public class Bot : MonoBehaviour
     {
         putCount = initRandomPutCount;
         nodeGenerator = FindObjectOfType<NodeGenerator>();
+        gameManager = FindAnyObjectByType<GameManager>();
 
         accuracy = levelData.accuracy;
         initRandomPutCount = levelData.initRandomPutCount;

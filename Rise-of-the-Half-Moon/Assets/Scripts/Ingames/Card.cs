@@ -46,7 +46,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     private bool CanInput()
     {
-        return IsMine && !gameManager.Rule.IsRemainScoreSettlement() && !CardDrawer.isDrawing && gameManager.isMyTurn;
+        return IsMine && !gameManager.Rule.IsRemainScoreSettlement() && !PUNCardDrawer.isDrawing && gameManager.isMyTurn;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -125,6 +125,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void Destroy()
     {
+        IsDraging = false;
         Destroy(gameObject);
     }
 }

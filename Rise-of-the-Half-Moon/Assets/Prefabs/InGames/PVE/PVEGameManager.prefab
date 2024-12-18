@@ -47,3 +47,4 @@ MonoBehaviour:
   isMyTurn: 0
   contentType: 0
   botPrefab: {fileID: 5729797559278538166, guid: 1554da61ce13a884583a34daa1e50ae4, type: 3}
+  cardDrawerPrefab: {fileID: 753840348649838277, guid: a8dad4da198564d4f8b031f7851d45e6, type: 3}

@@ -13,12 +13,9 @@ public class Lobby : MonoBehaviour
 
     [SerializeField] LobbySettings settings;
     [SerializeField] GlobalVolumeController globalVolumeController;
+    [SerializeField] MatchmakePanel matchmakePanel;
 
     private PhotonLobby photonLobby;
-
-    [SerializeField] PVEGameManager pveGameManager;
-    [SerializeField] PVPGameManager pvpGameManager;
-    [SerializeField] MatchmakePanel matchmakePanel;
 
     private void Awake()
     {
@@ -127,20 +124,9 @@ public class Lobby : MonoBehaviour
         PVEGameManager.GameInitData data = new PVEGameManager.GameInitData();
         data.contentType = (PhaseData.ContentType)Random.Range(0, (int)PhaseData.ContentType.Count);
         data.initBotLevel = Random.Range(0, ContentsDataManager.Instance.botLevelDatas.Count);
+        data.seed = Random.Range(0, 100000);
 
         ContentsDataManager.Instance.SetPVEGameInitData(data);
-
-        SceneManager.sceneLoaded += OnPVESceneLoaded;
-        PhotonNetwork.LoadLevel(Definitions.INGAME_SCENE);
-    }
-
-    private void OnPVESceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (scene.name == Definitions.INGAME_SCENE)
-        {
-            PVEGameManager gameManager = Instantiate(pveGameManager);
-            gameManager.GameInit();
-            SceneManager.sceneLoaded -= OnPVESceneLoaded;
-        }
+        SceneManager.LoadScene(Definitions.INGAME_SCENE);
     }
 }
