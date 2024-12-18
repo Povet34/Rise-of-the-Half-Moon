@@ -28,7 +28,7 @@ public class CardDrawer : MonoBehaviour
         nodeGenerator = FindObjectOfType<NodeGenerator>();
     }
 
-    public void DrawCard(bool isPlayerTurn, List<Card> targetCards, System.Action<Card> nextTurnCallback, bool isTween = true)
+    public void DrawCard(bool isPlayerTurn, List<ICard> targetCards, System.Action<ICard> nextTurnCallback, bool isTween = true)
     {
         Vector2[] positions = GetCardPositions(targetCards.Count + 1, isPlayerTurn);
         Vector2 spawnPos = isPlayerTurn ? Definitions.MyDrawCardSpawnPos : Definitions.OhterDrawCardSpawnPos;
@@ -47,40 +47,40 @@ public class CardDrawer : MonoBehaviour
         else
             rectTransform.anchoredPosition = positions[targetCards.Count];
 
-        Card card = go.GetComponent<Card>();
+        ICard card = go.GetComponent<ICard>();
         card.phaseData = phaseDatas[random.Next(phaseDatas.Count)];
-        card.isMine = isPlayerTurn;
+        card.IsMine = isPlayerTurn;
         targetCards.Add(card);
 
-        card.Init(nextTurnCallback, 
-            () => 
+        ICard.CardParam param = new ICard.CardParam();
+        param.nextTurnCallback = nextTurnCallback;
+        param.replaceCallback = () => { RepositionCards(targetCards, positions); };
+        param.selectCallback = () =>
+        {
+            foreach (var node in nodeGenerator.Nodes)
             {
-                RepositionCards(targetCards, positions);
-            },
-            ()=>
-            {
-                foreach (var node in nodeGenerator.Nodes)
-                {
-                    node.UpdatePointValue(GameManager.Instance.Rule.PredictScoreForCard(node, card));
-                }
-            });
+                node.UpdatePointValue(GameManager.Instance.Rule.PredictScoreForCard(node, card));
+            }
+        };
+
+        card.Init(param);
 
         //Draw Animation
         {
             Sequence sequence = DOTween.Sequence();
 
             sequence.AppendCallback(() => { isDrawing = true; });
-            sequence.AppendCallback(() => { card.GetComponent<RectTransform>().DOAnchorPos(positions[targetCards.Count - 1], Definitions.CardMoveDuration).SetEase(Ease.OutQuint); });
+            sequence.AppendCallback(() => { card.rt.DOAnchorPos(positions[targetCards.Count - 1], Definitions.CardMoveDuration).SetEase(Ease.OutQuint); });
             sequence.AppendCallback(() => { isDrawing = false; });
             sequence.AppendCallback(() => { RepositionCards(targetCards, positions); });
         }
     }
 
-    private void RepositionCards(List<Card> cards, Vector2[] positions)
+    private void RepositionCards(List<ICard> cards, Vector2[] positions)
     {
         for (int i = 0; i < cards.Count; i++)
         {
-            RectTransform rectTransform = cards[i].GetComponent<RectTransform>();
+            RectTransform rectTransform = cards[i].rt;
             rectTransform.DOAnchorPos(positions[i], Definitions.CardMoveDuration).SetEase(Ease.OutQuint);
         }
     }

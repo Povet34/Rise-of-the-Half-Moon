@@ -4,14 +4,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, ICard
 {
-    public static bool IsDraging { get; private set; }
+    public static bool IsDraging { get; protected set; }
+    public bool IsMine { get; set; }
+    public PhaseData phaseData { get; set; }
+    public RectTransform rt { get; set; }
 
-    public bool isMine;
-    public PhaseData phaseData;
     private CanvasGroup canvasGroup;
-    private RectTransform rectTransform;
 
     [SerializeField] private Image cardImage;
 
@@ -24,18 +24,18 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     private void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
-        rectTransform = GetComponent<RectTransform>();
+        rt = GetComponent<RectTransform>();
     }
 
-    public void Init(Action<Card> nextTurnCallback, Action replaceCallback, Action selectCallback)
+    public void Init(ICard.CardParam cardParam)
     {
-        this.nextTurnCallback = nextTurnCallback;
-        this.replaceCallback = replaceCallback;
-        this.selectCallback = selectCallback;
+        nextTurnCallback = cardParam.nextTurnCallback;
+        replaceCallback = cardParam.replaceCallback;
+        selectCallback = cardParam.selectCallback;
 
         if (phaseData != null)
         {
-            cardImage.sprite = phaseData.GetSprite(isMine);
+            cardImage.sprite = phaseData.GetSprite(IsMine);
         }
     }
 
@@ -43,7 +43,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     private bool CanInput()
     {
-        return isMine && !GameManager.Instance.Rule.IsRemainScoreSettlement() && !CardDrawer.isDrawing && GameManager.Instance.isMyTurn;
+        return IsMine && !GameManager.Instance.Rule.IsRemainScoreSettlement() && !CardDrawer.isDrawing && GameManager.Instance.isMyTurn;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -63,7 +63,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         if (!CanInput())
             return;
 
-        rectTransform.anchoredPosition += eventData.delta / canvasGroup.transform.localScale.x; // 드래그 위치 업데이트
+        rt.anchoredPosition += eventData.delta / canvasGroup.transform.localScale.x; // 드래그 위치 업데이트
 
         selectCallback?.Invoke();
     }
@@ -105,14 +105,14 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     #endregion
 
-    public virtual void PlaceCard(Node node)
+    public void PlaceCard(Node node)
     {
         Node.PutData data = new Node.PutData();
         data.occupiedUser = Definitions.NOT_OCCUPIED_NODE;
         data.moonPhaseData = phaseData;
 
         node.PutCard(data);
-        PVEGameManager.Instance.Rule.OnCardPlaced(node, isMine);
+        PVEGameManager.Instance.Rule.OnCardPlaced(node, IsMine);
 
         nextTurnCallback?.Invoke(this);
         replaceCallback?.Invoke();

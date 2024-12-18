@@ -5,14 +5,14 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Photon.Pun;
 
-public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandler, IEndDragHandler, IPunObservable
+public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandler, IEndDragHandler, IPunObservable, ICard
 {
     public static bool IsDraging { get; private set; }
+    public bool IsMine { get; set; }
+    public PhaseData phaseData { get; set; }
+    public RectTransform rt { get; set; }
 
-    public bool isMine;
-    public PhaseData phaseData;
     private CanvasGroup canvasGroup;
-    private RectTransform rectTransform;
 
     [SerializeField] private Image cardImage;
 
@@ -25,18 +25,18 @@ public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandle
     private void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
-        rectTransform = GetComponent<RectTransform>();
+        rt = GetComponent<RectTransform>();
     }
 
-    public void Init(Action<PUNCard> nextTurnCallback, Action replaceCallback, Action selectCallback)
+    public void Init(ICard.CardParam param)
     {
-        this.nextTurnCallback = nextTurnCallback;
-        this.replaceCallback = replaceCallback;
-        this.selectCallback = selectCallback;
+        nextTurnCallback = param.nextTurnCallback;
+        replaceCallback = param.replaceCallback;
+        selectCallback = param.selectCallback;
 
         if (phaseData != null)
         {
-            cardImage.sprite = phaseData.GetSprite(isMine);
+            cardImage.sprite = phaseData.GetSprite(IsMine);
         }
     }
 
@@ -44,7 +44,7 @@ public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandle
 
     private bool CanInput()
     {
-        return isMine && !GameManager.Instance.Rule.IsRemainScoreSettlement() && !CardDrawer.isDrawing && GameManager.Instance.isMyTurn;
+        return IsMine && !GameManager.Instance.Rule.IsRemainScoreSettlement() && !CardDrawer.isDrawing && GameManager.Instance.isMyTurn;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -65,7 +65,7 @@ public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandle
         if (!CanInput())
             return;
 
-        rectTransform.anchoredPosition += eventData.delta / canvasGroup.transform.localScale.x; // 드래그 위치 업데이트
+        rt.anchoredPosition += eventData.delta / canvasGroup.transform.localScale.x; // 드래그 위치 업데이트
 
         selectCallback?.Invoke();
     }
@@ -136,7 +136,7 @@ public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandle
         data.moonPhaseData = phaseData;
 
         node.PutCard(data);
-        PVPGameManager.Instance.Rule.OnCardPlaced(node, isMine);
+        PVPGameManager.Instance.Rule.OnCardPlaced(node, IsMine);
 
         nextTurnCallback?.Invoke(this);
         replaceCallback?.Invoke();

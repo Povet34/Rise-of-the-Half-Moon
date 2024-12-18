@@ -25,7 +25,7 @@ public class DiceRule : ContentRule
         base.OnCardPlaced(node, isMine);
     }
 
-    public override int PredictScoreForCard(Node node, Card card)
+    public override int PredictScoreForCard(Node node, ICard card)
     {
         return base.PredictScoreForCard(node, card);
     }

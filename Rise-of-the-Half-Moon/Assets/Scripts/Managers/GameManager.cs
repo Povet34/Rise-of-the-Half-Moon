@@ -19,11 +19,11 @@ public class GameManager : VolatilitySingleton<GameManager>
 
     [Header("Me")]
     protected int myScore;
-    protected List<Card> myCards = new List<Card>();
+    protected List<ICard> myCards = new List<ICard>();
 
     [Header("Other")]
     protected int otherScore;
-    protected List<Card> otherCards = new List<Card>();
+    protected List<ICard> otherCards = new List<ICard>();
 
     protected virtual void Awake()
     {

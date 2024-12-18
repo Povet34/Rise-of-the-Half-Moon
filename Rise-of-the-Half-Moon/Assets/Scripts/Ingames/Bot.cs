@@ -9,9 +9,9 @@ public class Bot : MonoBehaviour
     int putCount;
     NodeGenerator nodeGenerator;
     
-    public List<Card> cards; // Bot이 가지고 있는 카드 리스트
+    public List<ICard> cards; // Bot이 가지고 있는 카드 리스트
 
-    public void Init(BotLevelData levelData, List<Card> cards)
+    public void Init(BotLevelData levelData, List<ICard> cards)
     {
         putCount = initRandomPutCount;
         nodeGenerator = FindObjectOfType<NodeGenerator>();
@@ -63,7 +63,7 @@ public class Bot : MonoBehaviour
         if (cards.Count == 0 || emptyNodes.Count == 0) return;
 
         // 임의의 카드와 Node 선택
-        Card cardToPlace = cards[Random.Range(0, cards.Count)];
+        ICard cardToPlace = cards[Random.Range(0, cards.Count)];
         Node targetNode = emptyNodes[Random.Range(0, emptyNodes.Count)];
 
         cards.Remove(cardToPlace);

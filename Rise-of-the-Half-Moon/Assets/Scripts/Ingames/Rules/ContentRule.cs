@@ -33,7 +33,7 @@ public class ContentRule : MonoBehaviour
 
     #region Infer Score
 
-    public virtual int PredictScoreForCard(Node node, Card card)
+    public virtual int PredictScoreForCard(Node node, ICard card)
     {
         return -1;
     }

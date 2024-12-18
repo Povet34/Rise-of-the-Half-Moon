@@ -55,7 +55,7 @@ public class PVPGameManager : GameManager
         cardDrawer.DrawCard(isMyTurn, myCards, NextTurn);
     }
 
-    private void InitCards(int cardCount, List<Card> cards, bool isPlayer1)
+    private void InitCards(int cardCount, List<ICard> cards, bool isPlayer1)
     {
         for (int i = 0; i < cardCount; i++)
         {
@@ -63,7 +63,7 @@ public class PVPGameManager : GameManager
         }
     }
 
-    private void NextTurn(Card removedCard)
+    private void NextTurn(ICard removedCard)
     {
         if (nodeGenerator.IsEndGame())
         {

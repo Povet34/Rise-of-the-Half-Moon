@@ -7,7 +7,6 @@ using UnityEngine;
 
 public class MoonRule : ContentRule
 {
-
     #region Calc Score
 
     public override void SettlementOccupiedNodes(Action settlementEndCallback)
@@ -88,7 +87,7 @@ public class MoonRule : ContentRule
 
     #region Infer Score
 
-    public override int PredictScoreForCard(Node node, Card card)
+    public override int PredictScoreForCard(Node node, ICard card)
     {
         int totalScore = 0;
 

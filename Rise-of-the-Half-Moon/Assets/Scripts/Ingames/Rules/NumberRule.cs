@@ -75,7 +75,7 @@ public class NumberRule : ContentRule
 
     #region Infer Score
 
-    public override int PredictScoreForCard(Node node, Card card)
+    public override int PredictScoreForCard(Node node, ICard card)
     {
         int totalScore = 0;
 
