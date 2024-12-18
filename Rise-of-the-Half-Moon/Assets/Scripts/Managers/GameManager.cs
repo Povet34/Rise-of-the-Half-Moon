@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : VolatilitySingleton<GameManager>
+public class GameManager : MonoBehaviour
 {
     public virtual ContentRule Rule => rule;
     public bool IsNetworkGame { get; protected set; }

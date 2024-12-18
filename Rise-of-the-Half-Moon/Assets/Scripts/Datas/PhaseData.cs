@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.U2D;
 
 [CreateAssetMenu(fileName = "PhaseData", menuName = "Game/Phase")]
 
@@ -100,5 +99,16 @@ public class PhaseData : ScriptableObject
             ContentType.Number => Definitions.NumberDataCount,
             _ => 0,
         };
+    }
+
+    public string Serialize()
+    {
+        return JsonUtility.ToJson(this);
+    }
+
+    // 직렬화된 데이터를 PhaseData 객체로 변환하는 메서드
+    public static PhaseData Deserialize(string jsonData)
+    {
+        return JsonUtility.FromJson<PhaseData>(jsonData);
     }
 }

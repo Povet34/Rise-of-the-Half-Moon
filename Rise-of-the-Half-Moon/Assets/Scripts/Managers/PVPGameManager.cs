@@ -1,27 +1,36 @@
 using Photon.Pun;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class PVPGameManager : GameManager
 {
+    [Serializable]
     public class GameInitData
     {
         public PhaseData.ContentType contentType;
         public PhotonPlayerData myPlayerData;
         public PhotonPlayerData otherPlayerData;
-        public System.Random random;
+        public int seed;
     }
 
-    public void GameInit(GameInitData initData)
+    public PhotonView photonView;
+
+    public void StartGameInit()
     {
+        GameInitData initData = ContentsDataManager.Instance.GetPVPGameInitData();
+        photonView.RPC(nameof(GameInit), RpcTarget.All, (int)initData.contentType, initData.seed);
+    }
+
+    [PunRPC]
+    public void GameInit(int type, int seed)
+    {
+        Random.InitState(seed);
+
         IsNetworkGame = true;
-
-        if (null == initData)
-            return;
-
-        contentType = initData.contentType;
-        random = initData.random;
+        contentType = (PhaseData.ContentType)type;
 
         phaseDatas = ContentsDataManager.Instance.GetPhaseDatas(contentType, ref rule);
 
@@ -44,22 +53,21 @@ public class PVPGameManager : GameManager
         otherCards.Clear();
 
         nodeGenerator.Create();
-
-        random = new System.Random();
-        cardDrawer.Init(phaseDatas, random);
+        rule.Init();
+        cardDrawer.Init(phaseDatas, ref myCards, ref otherCards, NextTurn);
 
         InitCards(2, myCards, true);
         InitCards(2, otherCards, false);
 
         isMyTurn = PhotonNetwork.IsMasterClient; // 마스터 클라이언트가 먼저 시작
-        cardDrawer.DrawCard(isMyTurn, myCards, NextTurn);
+        cardDrawer.DrawCard(isMyTurn);
     }
 
     private void InitCards(int cardCount, List<ICard> cards, bool isPlayer1)
     {
         for (int i = 0; i < cardCount; i++)
         {
-            cardDrawer.DrawCard(isPlayer1, cards, NextTurn, false);
+            cardDrawer.DrawCard(isPlayer1, false);
         }
     }
 
@@ -81,26 +89,9 @@ public class PVPGameManager : GameManager
         isMyTurn = !isMyTurn;
 
         //드로우한다
-        cardDrawer.DrawCard(isMyTurn, isMyTurn ? myCards : otherCards, NextTurn);
-
-        //만약 상대 턴이면, 상대가 둘 수 있도록 한다.
-        if (!isMyTurn)
-        {
-            //photonView.RPC("RPC_StartPlaceCard", RpcTarget.Others, UnityEngine.Random.Range(1f, 4f));
-        }
+        cardDrawer.DrawCard(isMyTurn);
     }
 
-    [PunRPC]
-    private void RPC_StartPlaceCard(float delay)
-    {
-        StartCoroutine(DelayPlaceCard(delay));
-    }
-
-    private IEnumerator DelayPlaceCard(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        // 상대 플레이어가 카드를 놓는 로직을 구현합니다.
-    }
 
     private void SettlementPlay()
     {

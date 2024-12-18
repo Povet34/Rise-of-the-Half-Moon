@@ -1,6 +1,5 @@
-using System.Collections;
+using Photon.Pun;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class MatchmakePanel : MonoBehaviour
@@ -19,16 +18,10 @@ public class MatchmakePanel : MonoBehaviour
     {
         cancelButton.onClick.AddListener(ClosePanel);
         photonLobby = FindObjectOfType<PhotonLobby>();
-        playerData = new PhotonPlayerData();
 
         if (photonLobby == null)
         {
             Debug.LogError("PhotonLobby instance not found!");
-        }
-
-        if (playerData == null)
-        {
-            Debug.LogError("PlayerData instance not found!");
         }
     }
 
@@ -59,12 +52,9 @@ public class MatchmakePanel : MonoBehaviour
         }
     }
 
-    public void SetMyProfile()
+    public void SetMyProfile(PhotonPlayerData myData)
     {
-        if (playerData != null)
-        {
-            myProfile.SetProfile(playerData);
-        }
+        myProfile.SetProfile(PhotonPlayerData.FromCustomProperties(PhotonNetwork.LocalPlayer.CustomProperties));
     }
 
     public void SetOtherProfile(PhotonPlayerData opponentData)

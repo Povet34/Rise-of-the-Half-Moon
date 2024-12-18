@@ -13,23 +13,21 @@ public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandle
     public RectTransform rt { get; set; }
 
     private CanvasGroup canvasGroup;
+    private GameManager gameManager;
 
     [SerializeField] private Image cardImage;
 
     Action<PUNCard> nextTurnCallback;
     Action replaceCallback;
     Action selectCallback;
-
     Vector2 dragPos;
-
-    private void Awake()
-    {
-        canvasGroup = GetComponent<CanvasGroup>();
-        rt = GetComponent<RectTransform>();
-    }
 
     public void Init(ICard.CardParam param)
     {
+        gameManager = FindAnyObjectByType<GameManager>();
+        canvasGroup = GetComponent<CanvasGroup>();
+        rt = GetComponent<RectTransform>();
+
         nextTurnCallback = param.nextTurnCallback;
         replaceCallback = param.replaceCallback;
         selectCallback = param.selectCallback;
@@ -44,8 +42,8 @@ public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandle
 
     private bool CanInput()
     {
-        return IsMine && !GameManager.Instance.Rule.IsRemainScoreSettlement() && !CardDrawer.isDrawing && GameManager.Instance.isMyTurn;
-    }
+        return IsMine && !gameManager.Rule.IsRemainScoreSettlement() && !CardDrawer.isDrawing && gameManager.isMyTurn;
+    }   
 
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -127,16 +125,26 @@ public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandle
         {
             ExecutePlaceCard(node);
         }
+        else
+        {
+            Debug.LogError("Node not found for index: " + nodeIndex);
+        }
     }
 
     private void ExecutePlaceCard(Node node)
     {
+        if (node == null)
+        {
+            Debug.LogError("Node is null in ExecutePlaceCard");
+            return;
+        }
+
         Node.PutData data = new Node.PutData();
         data.occupiedUser = Definitions.NOT_OCCUPIED_NODE;
         data.moonPhaseData = phaseData;
 
         node.PutCard(data);
-        PVPGameManager.Instance.Rule.OnCardPlaced(node, IsMine);
+        gameManager.Rule.OnCardPlaced(node, IsMine);
 
         nextTurnCallback?.Invoke(this);
         replaceCallback?.Invoke();
@@ -148,7 +156,19 @@ public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandle
     {
         // NodeGenerator에서 노드를 찾는 로직을 구현합니다.
         NodeGenerator nodeGenerator = FindObjectOfType<NodeGenerator>();
-        return nodeGenerator.Nodes.Find(n => n.index == index);
+        if (nodeGenerator == null)
+        {
+            Debug.LogError("NodeGenerator not found in the scene.");
+            return null;
+        }
+
+        Node node = nodeGenerator.Nodes.Find(n => n.index == index);
+        if (node == null)
+        {
+            Debug.LogError("Node not found for index: " + index);
+        }
+
+        return node;
     }
 
     public void Destroy()

@@ -8,6 +8,9 @@ public class ContentsDataManager : Singleton<ContentsDataManager>
     public List<PhaseData> dicePhaseDatas = new List<PhaseData>();
     public List<BotLevelData> botLevelDatas = new List<BotLevelData>();
 
+    private PVPGameManager.GameInitData pvpGameInitData;
+    private PVEGameManager.GameInitData pveGameInitData;
+
     public List<PhaseData> GetPhaseDatas(PhaseData.ContentType content, ref ContentRule rule)
     {
         switch (content)
@@ -26,8 +29,54 @@ public class ContentsDataManager : Singleton<ContentsDataManager>
         }
     }
 
-    public BotLevelData GetBotLevelData(int index)
+    public void SetPVPGameInitData(PVPGameManager.GameInitData data)
     {
-        return botLevelDatas[index];
+        pvpGameInitData = data;
+    }
+
+    public PVPGameManager.GameInitData GetPVPGameInitData()
+    {
+        return pvpGameInitData;
+    }
+
+    public void SetPVEGameInitData(PVEGameManager.GameInitData data)
+    {
+        pveGameInitData = data;
+    }
+
+    public PVEGameManager.GameInitData GetPVEGameInitData()
+    {
+        return pveGameInitData;
+    }
+
+    public PhaseData GetPhaseData(PhaseData.ContentType type, int index)
+    {
+        List<PhaseData> phaseDataList = null;
+
+        switch (type)
+        {
+            case PhaseData.ContentType.Dice:
+                phaseDataList = dicePhaseDatas;
+                break;
+            case PhaseData.ContentType.Moon:
+                phaseDataList = moonPhaseDatas;
+                break;
+            case PhaseData.ContentType.Number:
+                phaseDataList = numberPhaseDatas;
+                break;
+            default:
+                Debug.LogError($"Invalid ContentType: {type}");
+                return null;
+        }
+
+        if (index >= 0 && index < phaseDataList.Count)
+        {
+            return phaseDataList[index];
+        }
+        else
+        {
+            Debug.LogError($"Invalid index: {index} for ContentType: {type}");
+            return null;
+        }
     }
 }

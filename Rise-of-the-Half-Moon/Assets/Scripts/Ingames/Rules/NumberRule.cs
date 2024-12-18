@@ -124,9 +124,9 @@ public class NumberRule : ContentRule
             AnimateNodes(nodes, isMine, endCallback);
 
             if (isMine)
-                GameManager.Instance.UpdateMyScore(score);
+                gameManager.UpdateMyScore(score);
             else
-                GameManager.Instance.UpdateOtherScore(score);
+                gameManager.UpdateOtherScore(score);
         });
     }
 

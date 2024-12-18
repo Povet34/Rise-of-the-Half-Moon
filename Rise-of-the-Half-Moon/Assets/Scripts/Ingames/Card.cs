@@ -12,6 +12,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     public RectTransform rt { get; set; }
 
     private CanvasGroup canvasGroup;
+    GameManager gameManager;
 
     [SerializeField] private Image cardImage;
 
@@ -29,6 +30,8 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void Init(ICard.CardParam cardParam)
     {
+        gameManager = FindAnyObjectByType<GameManager>();
+
         nextTurnCallback = cardParam.nextTurnCallback;
         replaceCallback = cardParam.replaceCallback;
         selectCallback = cardParam.selectCallback;
@@ -43,7 +46,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     private bool CanInput()
     {
-        return IsMine && !GameManager.Instance.Rule.IsRemainScoreSettlement() && !CardDrawer.isDrawing && GameManager.Instance.isMyTurn;
+        return IsMine && !gameManager.Rule.IsRemainScoreSettlement() && !CardDrawer.isDrawing && gameManager.isMyTurn;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -112,7 +115,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         data.moonPhaseData = phaseData;
 
         node.PutCard(data);
-        PVEGameManager.Instance.Rule.OnCardPlaced(node, IsMine);
+        gameManager.Rule.OnCardPlaced(node, IsMine);
 
         nextTurnCallback?.Invoke(this);
         replaceCallback?.Invoke();

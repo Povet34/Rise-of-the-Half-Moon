@@ -32,6 +32,12 @@ public static class Definitions
 
     #endregion
 
+    #region Prefab Name
+    
+    public const string PUNCard = "PUNCard";
+
+    #endregion
+
     public const int EMPTY_NODE = 0;
     public const int NOT_OCCUPIED_NODE = 1;
     public const int MY_INDEX = 2;

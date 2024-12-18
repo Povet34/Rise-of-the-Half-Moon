@@ -1,15 +1,14 @@
 using DG.Tweening;
 using Photon.Pun;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
+using Random = UnityEngine.Random;
 
-public class CardDrawer : MonoBehaviour
+public class CardDrawer : MonoBehaviourPun
 {
-    /// <summary>
-    /// Draw중인지 아닌지 판단
-    /// </summary>
     public static bool isDrawing;
+    GameManager gameManager;
 
     [SerializeField] private GameObject cardPrefab;
     [SerializeField] private GameObject punCardPrefab;
@@ -18,19 +17,30 @@ public class CardDrawer : MonoBehaviour
     [SerializeField] private Transform otherCardArea;
 
     private List<PhaseData> phaseDatas;
-    private System.Random random;
     private NodeGenerator nodeGenerator;
 
-    public void Init(List<PhaseData> phaseDatas, System.Random random)
+    private List<ICard> myCards;
+    private List<ICard> otherCards;
+    private Action<ICard> nextTurnCallback;
+
+    public void Init(List<PhaseData> phaseDatas, ref List<ICard> myCards, ref List<ICard> otherCards, Action<ICard> nextTurnCallback)
     {
         this.phaseDatas = phaseDatas;
-        this.random = random;
 
+        this.myCards = myCards;
+        this.otherCards = otherCards;
+        this.nextTurnCallback = nextTurnCallback;
+
+        gameManager = FindAnyObjectByType<GameManager>();
         nodeGenerator = FindObjectOfType<NodeGenerator>();
     }
 
-    public void DrawCard(bool isPlayerTurn, List<ICard> targetCards, System.Action<ICard> nextTurnCallback, bool isTween = true)
+    public void DrawCard(bool isPlayerTurn, bool isTween = true)
     {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        List<ICard> targetCards = isPlayerTurn ? myCards : otherCards;
         Vector2[] positions = GetCardPositions(targetCards.Count + 1, isPlayerTurn);
         Vector2 spawnPos = isPlayerTurn ? Definitions.MyDrawCardSpawnPos : Definitions.OhterDrawCardSpawnPos;
 
@@ -41,47 +51,76 @@ public class CardDrawer : MonoBehaviour
         }
 
         GameObject go = null;
-        if (GameManager.Instance.IsNetworkGame)
+        if (gameManager.IsNetworkGame)
         {
-            go = PhotonNetwork.Instantiate(punCardPrefab.name, spawnPos, punCardPrefab.transform.rotation);
+            go = PhotonNetwork.Instantiate(Definitions.PUNCard, spawnPos, Quaternion.identity);
             go.transform.SetParent(isPlayerTurn ? myCardArea : otherCardArea, false);
+
+            ICard card = go.GetComponent<ICard>();
+            card.phaseData = phaseDatas[Random.Range(0, phaseDatas.Count)];
+            card.IsMine = isPlayerTurn;
+
+            photonView.RPC(nameof(RPC_DrawCard), RpcTarget.Others, isPlayerTurn, targetCards.Count, spawnPos, isTween, (int)card.phaseData.contentType, card.phaseData.phaseIndex);
         }
         else
         {
             go = Instantiate(cardPrefab, isPlayerTurn ? myCardArea : otherCardArea);
         }
 
+        InitializeCard(go, isPlayerTurn, isTween, positions);
+    }
+
+    [PunRPC]
+    private void RPC_DrawCard(bool isPlayerTurn, int cardIndex, Vector2 spawnPos, bool isTween, int contentType, int phaseIndex)
+    {
+        List<ICard> targetCards = !isPlayerTurn ? myCards : otherCards;
+        Vector2[] positions = GetCardPositions(cardIndex + 1, !isPlayerTurn);
+
+        GameObject go = PhotonNetwork.Instantiate(Definitions.PUNCard, spawnPos, Quaternion.identity);
+        go.transform.SetParent(!isPlayerTurn ? myCardArea : otherCardArea, false);
+
+        PhaseData phaseData = ContentsDataManager.Instance.GetPhaseData((PhaseData.ContentType)contentType, phaseIndex);
+        InitializeCard(go, !isPlayerTurn, isTween, positions, cardIndex, phaseData);
+    }
+
+    private void InitializeCard(GameObject go, bool isPlayerTurn, bool isTween, Vector2[] positions, int cardIndex = -1, PhaseData phaseData = null)
+    {
         RectTransform rectTransform = go.GetComponent<RectTransform>();
 
         if (isTween)
-            rectTransform.anchoredPosition = spawnPos;
+            rectTransform.anchoredPosition = positions[cardIndex == -1 ? (isPlayerTurn ? myCards.Count : otherCards.Count) : cardIndex];
         else
-            rectTransform.anchoredPosition = positions[targetCards.Count];
+            rectTransform.anchoredPosition = positions[cardIndex == -1 ? (isPlayerTurn ? myCards.Count : otherCards.Count) : cardIndex];
 
         ICard card = go.GetComponent<ICard>();
-        card.phaseData = phaseDatas[random.Next(phaseDatas.Count)];
+        card.phaseData = phaseData;
         card.IsMine = isPlayerTurn;
+
+        List<ICard> targetCards = isPlayerTurn ? myCards : otherCards;
         targetCards.Add(card);
 
-        ICard.CardParam param = new ICard.CardParam();
-        param.nextTurnCallback = nextTurnCallback;
-        param.replaceCallback = () => { RepositionCards(targetCards, positions); };
-        param.selectCallback = () =>
+        if (nextTurnCallback != null)
         {
-            foreach (var node in nodeGenerator.Nodes)
+            ICard.CardParam param = new ICard.CardParam();
+            param.nextTurnCallback = nextTurnCallback;
+            param.replaceCallback = () => { RepositionCards(targetCards, positions); };
+            param.selectCallback = () =>
             {
-                node.UpdatePointValue(GameManager.Instance.Rule.PredictScoreForCard(node, card));
-            }
-        };
+                foreach (var node in nodeGenerator.Nodes)
+                {
+                    node.UpdatePointValue(gameManager.Rule.PredictScoreForCard(node, card));
+                }
+            };
 
-        card.Init(param);
+            card.Init(param);
+        }
 
         //Draw Animation
         {
             Sequence sequence = DOTween.Sequence();
 
             sequence.AppendCallback(() => { isDrawing = true; });
-            sequence.Append(rectTransform.DOAnchorPos(positions[targetCards.Count - 1], Definitions.CardMoveDuration).SetEase(Ease.OutQuint));
+            sequence.Append(rectTransform.DOAnchorPos(positions[cardIndex == -1 ? targetCards.Count - 1 : cardIndex], Definitions.CardMoveDuration).SetEase(Ease.OutQuint));
             sequence.AppendCallback(() => { isDrawing = false; });
             sequence.AppendCallback(() => { RepositionCards(targetCards, positions); });
         }

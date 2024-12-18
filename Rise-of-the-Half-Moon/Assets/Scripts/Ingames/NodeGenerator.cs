@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using Random = UnityEngine.Random;
 
 public class NodeGenerator : MonoBehaviour
 {
@@ -9,8 +9,8 @@ public class NodeGenerator : MonoBehaviour
     public int rows = 3;           // Number of rows
     public int cols = 4;           // Number of columns
     public float spacing = 2.0f;   // Spacing between nodes
-    public int seed = 42;          // Random seed value
 
+    private GameManager gameManager;
     private List<Node> nodes = new List<Node>();  // List to store all nodes
     private List<Edge> edges = new List<Edge>();  // List to store all edges
 
@@ -32,6 +32,8 @@ public class NodeGenerator : MonoBehaviour
 
     public void Create()
     {
+        gameManager = FindAnyObjectByType<GameManager>();
+
         foreach (GameObject nodeObject in nodeObjects)
         {
             Destroy(nodeObject);
@@ -45,9 +47,6 @@ public class NodeGenerator : MonoBehaviour
         nodes.Clear();
         edges.Clear();
 
-        seed = Random.Range(0, 10000);
-
-        Random.InitState(seed); // 랜덤 시드 초기화
         GenerateGrid();
         GenerateRandomConnections();
         EnsureAllNodesConnected();
@@ -72,22 +71,25 @@ public class NodeGenerator : MonoBehaviour
         }
     }
 
-    // Generate random connections between the nodes
     void GenerateRandomConnections()
     {
-        System.Random random = new System.Random(seed);
-        System.Random random2 = new System.Random(seed + 100);
-
         foreach (Node node in nodes)
         {
             List<Node> neighbors = GetNeighbors(node);
 
+            // Ensure each node has at least one connection
+            if (node.connectedEdges.Count == 0 && neighbors.Count > 0)
+            {
+                Node randomNeighbor = neighbors[Random.Range(0, neighbors.Count)];
+                CreateEdge(node, randomNeighbor);
+            }
+
+            // Create additional random connections
             foreach (Node neighbor in neighbors)
             {
-                float distance = Vector3.Distance(node.position, neighbor.position);
-                if (distance <= (spacing + spacing * 0.5f) && !IsAlreadyConnected(node, neighbor))
+                if (!IsAlreadyConnected(node, neighbor))
                 {
-                    if (random.NextDouble() <= random2.NextDouble())
+                    if (Random.value <= 0.5f) // Adjust the probability as needed
                     {
                         CreateEdge(node, neighbor);
                     }
@@ -215,8 +217,8 @@ public class NodeGenerator : MonoBehaviour
                         {
                             int neighborPhase = neighbor.GetPhaseType();
 
-                            if (PhaseData.GetPreviousPhaseType(currentPhase, GameManager.Instance.contentType) == neighborPhase ||
-                                PhaseData.GetNextPhaseType(currentPhase, GameManager.Instance.contentType) == neighborPhase)
+                            if (PhaseData.GetPreviousPhaseType(currentPhase, gameManager.contentType) == neighborPhase ||
+                                PhaseData.GetNextPhaseType(currentPhase, gameManager.contentType) == neighborPhase)
                             {
                                 queue.Enqueue(neighbor);
                                 visited.Add(neighbor);

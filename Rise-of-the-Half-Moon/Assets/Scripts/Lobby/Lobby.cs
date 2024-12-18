@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class Lobby : MonoBehaviour
 {
@@ -35,7 +36,7 @@ public class Lobby : MonoBehaviour
         photonLobby.OnPlayerEnteredRoomCallback += OnPlayerEnteredRoom;
         photonLobby.OnPlayerAlreadyInRoomCallback += OnPlayerAlreadyInRoom;
         photonLobby.OnJoinedRoomCallback += OnJoinedRoom;
-        photonLobby.OnStartGameCallback += StartPVPGame;
+        photonLobby.OnCreatedRoomCallback += OnCreatedRoom;
     }
 
     private void OnDestroy()
@@ -45,7 +46,7 @@ public class Lobby : MonoBehaviour
             photonLobby.OnPlayerEnteredRoomCallback -= OnPlayerEnteredRoom;
             photonLobby.OnPlayerAlreadyInRoomCallback -= OnPlayerAlreadyInRoom;
             photonLobby.OnJoinedRoomCallback -= OnJoinedRoom;
-            photonLobby.OnStartGameCallback -= StartPVPGame;
+            photonLobby.OnCreatedRoomCallback -= OnCreatedRoom;
         }
     }
 
@@ -88,41 +89,11 @@ public class Lobby : MonoBehaviour
         }
     }
 
-    private void StartPVEGame()
-    {
-        PVEGameManager.GameInitData data = new PVEGameManager.GameInitData();
-        data.contentType = (PhaseData.ContentType)Random.Range(0, (int)PhaseData.ContentType.Count);
-        data.initBotLevel = Random.Range(0, ContentsDataManager.Instance.botLevelDatas.Count);
-
-        SceneManager.sceneLoaded += (scene, mode) =>
-        {
-            if (scene.name == Definitions.INGAME_SCENE)
-            {
-                PVEGameManager gameManager = Instantiate(pveGameManager);
-                gameManager.GameInit(data);
-            }
-        };
-    }
-
-    private void StartPVPGame(PVPGameManager.GameInitData data)
-    {
-        SceneManager.sceneLoaded += (scene, mode) =>
-        {
-            if (scene.name == Definitions.INGAME_SCENE)
-            {
-                PVPGameManager gameManager = Instantiate(pvpGameManager);
-                gameManager.GameInit(data);
-            }
-        };
-
-        SceneManager.LoadScene(Definitions.INGAME_SCENE);
-    }
-
-    private void OnPlayerEnteredRoom(PhotonPlayerData opponentData)
+    private void OnCreatedRoom(PhotonPlayerData myData)
     {
         if (matchmakePanel != null)
         {
-            matchmakePanel.SetOtherProfile(opponentData);
+            matchmakePanel.SetMyProfile(myData);
         }
     }
 
@@ -134,11 +105,42 @@ public class Lobby : MonoBehaviour
         }
     }
 
+    private void OnPlayerEnteredRoom(PhotonPlayerData opponentData)
+    {
+        if (matchmakePanel != null)
+        {
+            matchmakePanel.SetOtherProfile(opponentData);
+        }
+    }
+
+
     private void OnJoinedRoom()
     {
         if (matchmakePanel != null)
         {
             matchmakePanel.ShowPanel();
+        }
+    }
+
+    private void StartPVEGame()
+    {
+        PVEGameManager.GameInitData data = new PVEGameManager.GameInitData();
+        data.contentType = (PhaseData.ContentType)Random.Range(0, (int)PhaseData.ContentType.Count);
+        data.initBotLevel = Random.Range(0, ContentsDataManager.Instance.botLevelDatas.Count);
+
+        ContentsDataManager.Instance.SetPVEGameInitData(data);
+
+        SceneManager.sceneLoaded += OnPVESceneLoaded;
+        PhotonNetwork.LoadLevel(Definitions.INGAME_SCENE);
+    }
+
+    private void OnPVESceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == Definitions.INGAME_SCENE)
+        {
+            PVEGameManager gameManager = Instantiate(pveGameManager);
+            gameManager.GameInit();
+            SceneManager.sceneLoaded -= OnPVESceneLoaded;
         }
     }
 }

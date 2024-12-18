@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class VolatilitySingleton<T> : MonoBehaviour where T : MonoBehaviour
 {
@@ -37,8 +38,14 @@ public class VolatilitySingleton<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 
-    protected void OnDestroy()
+    private void OnDestroy()
     {
-        applicationIsQuitting = true;
+        lock (lockObject)
+        {
+            if (instance != null)
+            {
+                instance = null;
+            }
+        }
     }
 }

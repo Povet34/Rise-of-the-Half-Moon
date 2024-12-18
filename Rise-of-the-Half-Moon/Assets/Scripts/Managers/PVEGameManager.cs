@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class PVEGameManager : GameManager
 {
@@ -14,20 +15,20 @@ public class PVEGameManager : GameManager
     [SerializeField] Bot botPrefab;
     Bot bot;
 
-    public void GameInit(GameInitData initData)
+    public void GameInit()
     {
-        IsNetworkGame = false;
-
-        if (null == initData)
+        GameInitData data = ContentsDataManager.Instance.GetPVEGameInitData();
+        if (data == null)
             return;
 
-        contentType = initData.contentType;
+        contentType = data.contentType;
+        Random.InitState(data.initBotLevel);
 
         phaseDatas = ContentsDataManager.Instance.GetPhaseDatas(contentType, ref rule);
-        initBotLevelData = ContentsDataManager.Instance.GetBotLevelData(initData.initBotLevel);
 
         StartPlay();
     }
+
 
     private void StartPlay()
     {
@@ -45,26 +46,25 @@ public class PVEGameManager : GameManager
         otherCards.Clear();
 
         nodeGenerator.Create();
+        rule.Init();
 
-        random = new System.Random();
-        cardDrawer.Init(phaseDatas, random);
+        cardDrawer.Init(phaseDatas, ref myCards, ref otherCards, NextTurn);
 
         InitCards(2, myCards, true);
         InitCards(2, otherCards, false);
-
 
         bot = Instantiate(botPrefab);
         bot.Init(initBotLevelData, otherCards);
 
         isMyTurn = true; // 플레이어가 먼저 시작
-        cardDrawer.DrawCard(isMyTurn, myCards, NextTurn);
+        cardDrawer.DrawCard(isMyTurn);
     }
 
     private void InitCards(int cardCount, List<ICard> cards, bool isPlayer1)
     {
         for (int i = 0; i < cardCount; i++)
         {
-            cardDrawer.DrawCard(isPlayer1, cards, NextTurn, false);
+            cardDrawer.DrawCard(isPlayer1, false);
         }
     }
 
@@ -86,12 +86,12 @@ public class PVEGameManager : GameManager
         isMyTurn = !isMyTurn;
 
         //드로우한다
-        cardDrawer.DrawCard(isMyTurn, isMyTurn ? myCards : otherCards, NextTurn);
+        cardDrawer.DrawCard(isMyTurn);
 
         //만약 ai 턴이면, bot이 둘 수 있도록 한다.
         if (!isMyTurn)
         {
-            bot.StartPlaceCard(UnityEngine.Random.Range(1f, 4f));
+            bot.StartPlaceCard(Random.Range(1f, 4f));
         }
     }
 

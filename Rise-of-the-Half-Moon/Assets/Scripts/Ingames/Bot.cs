@@ -8,7 +8,8 @@ public class Bot : MonoBehaviour
     int initRandomPutCount;
     int putCount;
     NodeGenerator nodeGenerator;
-    
+    GameManager gameManager;
+
     public List<ICard> cards; // Bot이 가지고 있는 카드 리스트
 
     public void Init(BotLevelData levelData, List<ICard> cards)
@@ -27,16 +28,16 @@ public class Bot : MonoBehaviour
         List<Node> emptyNodes = nodeGenerator.FindEmptyOccupidNodes();
         if (cards.Count == 0 || emptyNodes.Count == 0) return;
 
-        Card cardToPlace = null;
+        ICard cardToPlace = null;
         Node targetNode = null;
         int highestScore = int.MinValue;
 
         // 각 카드와 노드 조합의 점수를 계산하여 가장 높은 점수를 가진 조합을 선택
-        foreach (Card card in cards)
+        foreach (ICard card in cards)
         {
             foreach (Node node in emptyNodes)
             {
-                int score = GameManager.Instance.Rule.PredictScoreForCard(node, card) + BotHandicap();
+                int score = gameManager.Rule.PredictScoreForCard(node, card) + BotHandicap();
                 if (score > highestScore)
                 {
                     highestScore = score;
@@ -77,7 +78,7 @@ public class Bot : MonoBehaviour
 
     private IEnumerator DelayPlaceCardBody(float delay)
     {
-        yield return new WaitUntil(()=> !GameManager.Instance.Rule.IsRemainScoreSettlement());
+        yield return new WaitUntil(()=> !gameManager.Rule.IsRemainScoreSettlement());
         yield return new WaitForSeconds(delay);
 
         if (accuracy == -1 || putCount > initRandomPutCount)

@@ -8,9 +8,11 @@ public class ContentRule : MonoBehaviour
     protected bool isAnimating = false;
     protected NodeGenerator nodeGenerator;
     protected Queue<Action> animationQueue = new Queue<Action>();
+    protected GameManager gameManager;
 
-    protected virtual void Awake()
+    public virtual void Init()
     {
+        gameManager = FindAnyObjectByType<GameManager>();
         nodeGenerator = FindObjectOfType<NodeGenerator>();
         StartCoroutine(DelayAnimation());
     }

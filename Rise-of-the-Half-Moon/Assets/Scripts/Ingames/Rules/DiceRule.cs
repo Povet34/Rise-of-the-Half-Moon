@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class DiceRule : ContentRule
 {
+    public override void Init()
+    {
+        base.Init();
+    }
+
     public override bool Equals(object other)
     {
         return base.Equals(other);
@@ -55,10 +60,6 @@ public class DiceRule : ContentRule
         base.AnimateNodes(nodes, isMine, endCallback);
     }
 
-    protected override void Awake()
-    {
-        base.Awake();
-    }
 
     protected override void CheckAdjacentNodes(Node node, bool isMine)
     {

@@ -4,6 +4,8 @@ using System;
 using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 public class PhotonLobby : MonoBehaviourPunCallbacks
 {
@@ -12,8 +14,8 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
 
     public event Action<PhotonPlayerData> OnPlayerEnteredRoomCallback;
     public event Action<PhotonPlayerData> OnPlayerAlreadyInRoomCallback;
+    public event Action<PhotonPlayerData> OnCreatedRoomCallback;
     public event Action OnJoinedRoomCallback;
-    public event Action<PVPGameManager.GameInitData> OnStartGameCallback;
 
     private void Start()
     {
@@ -25,6 +27,7 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
         }
 
         ConnectToMaster();
+        PhotonNetwork.AutomaticallySyncScene = true;
     }
 
     private void ConnectToMaster()
@@ -33,7 +36,7 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
         PhotonNetwork.ConnectUsingSettings();
     }
 
-    public override void OnConnectedToMaster()
+    public override async void OnConnectedToMaster()
     {
         base.OnConnectedToMaster();
         Debug.Log("Connected to Master Server");
@@ -41,6 +44,7 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
         if (lobby != null)
         {
             lobby.SetMatchmakingButtonInteractable(true);
+            await new PhotonPlayerData().Initialize();
         }
     }
 
@@ -74,6 +78,15 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
         PhotonNetwork.CreateRoom("Room" + randomRoomNumber, roomOptions);
     }
 
+    public override void OnCreatedRoom()
+    {
+        base.OnCreatedRoom();
+        Debug.Log("Room created successfully.");
+
+        PhotonPlayerData myData = PhotonPlayerData.FromCustomProperties(PhotonNetwork.LocalPlayer.CustomProperties);
+        OnCreatedRoomCallback?.Invoke(myData);
+    }
+
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined a room successfully.");
@@ -105,25 +118,8 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
     IEnumerator DelayStart()
     {
         yield return new WaitForSeconds(3f);
-        photonView.RPC(nameof(StartGame), RpcTarget.All);
+        StartPVPGame();
     }
-
-    [PunRPC]
-    private void StartGame()
-    {
-        int contentType = UnityEngine.Random.Range(0, (int)PhaseData.ContentType.Count);
-
-        PhotonPlayerData myData = PhotonPlayerData.FromCustomProperties(PhotonNetwork.LocalPlayer.CustomProperties);
-        PVPGameManager.GameInitData initData = new PVPGameManager.GameInitData
-        {
-            contentType = (PhaseData.ContentType)contentType,
-            myPlayerData = myData,
-            otherPlayerData = PhotonPlayerData.FromCustomProperties(PhotonNetwork.PlayerListOthers[0].CustomProperties),
-            random = new System.Random()
-        };
-        OnStartGameCallback?.Invoke(initData);
-    }
-
 
     public void CancelMatchmaking()
     {
@@ -131,14 +127,43 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
         {
             if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
             {
-                // 방에 혼자 있는 경우 방을 파괴합니다.
                 PhotonNetwork.LeaveRoom();
             }
             else
             {
-                // 방에 다른 플레이어가 있는 경우 방에서 나갑니다.
                 PhotonNetwork.LeaveRoom();
             }
+        }
+    }
+
+    public void StartPVPGame()
+    {
+        PhotonPlayerData myData = PhotonPlayerData.FromCustomProperties(PhotonNetwork.LocalPlayer.CustomProperties);
+        PVPGameManager.GameInitData initData = new PVPGameManager.GameInitData
+        {
+            contentType = (PhaseData.ContentType)Random.Range(0, (int)PhaseData.ContentType.Count),
+            myPlayerData = myData,
+            otherPlayerData = PhotonPlayerData.FromCustomProperties(PhotonNetwork.PlayerListOthers[0].CustomProperties),
+            seed = Random.Range(0, 10000),
+        };
+
+        ContentsDataManager.Instance.SetPVPGameInitData(initData);
+
+        SceneManager.sceneLoaded += OnPVPSceneLoaded;
+        PhotonNetwork.LoadLevel(Definitions.INGAME_SCENE);
+    }
+
+    private void OnPVPSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == Definitions.INGAME_SCENE)
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                GameObject pvpManager = PhotonNetwork.Instantiate("PVPGameManager", Vector3.zero, Quaternion.identity);
+
+                pvpManager.GetComponent<PVPGameManager>().StartGameInit();
+            }
+            SceneManager.sceneLoaded -= OnPVPSceneLoaded;
         }
     }
 }

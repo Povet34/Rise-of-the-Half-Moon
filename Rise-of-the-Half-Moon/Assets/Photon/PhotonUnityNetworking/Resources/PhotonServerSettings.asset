@@ -42,6 +42,9 @@ MonoBehaviour:
   - RPC_StartPlaceCard
   - StartGame
   - RPC_PlaceCard
+  - RPC_LoadLevel
+  - GameInit
+  - RPC_DrawCard
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

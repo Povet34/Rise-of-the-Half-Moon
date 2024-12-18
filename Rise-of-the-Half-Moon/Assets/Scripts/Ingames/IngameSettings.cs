@@ -1,6 +1,4 @@
 using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,15 +8,22 @@ public class IngameSettings : MonoBehaviour
     [SerializeField] Button exitButton;
     [SerializeField] Button gobackButton;
 
+    GameManager gameManager;
+
     private void Awake()
     {
         exitButton.onClick.AddListener(Exit);
         gobackButton.onClick.AddListener(Goback);
     }
 
+    private void Start()
+    {
+        gameManager = FindAnyObjectByType<GameManager>();
+    }
+
     private void Exit()
     {
-        if(GameManager.Instance.IsNetworkGame)
+        if(gameManager.IsNetworkGame)
         {
             PhotonNetwork.LeaveRoom();
         }
