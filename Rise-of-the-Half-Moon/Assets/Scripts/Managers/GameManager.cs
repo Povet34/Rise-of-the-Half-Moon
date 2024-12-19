@@ -31,16 +31,8 @@ public class GameManager : MonoBehaviour
     {
         nodeGenerator = FindAnyObjectByType<NodeGenerator>();
         gameUI = FindAnyObjectByType<GameUI>();
-        cardDrawer = FindAnyObjectByType<PUNCardDrawer>();
     }
 
-    public virtual void UpdateMyScore(int score)
-    {
-
-    }
-
-    public virtual void UpdateOtherScore(int score)
-    {
-
-    }
+    public virtual void UpdateMyScore(int score) { }
+    public virtual void UpdateOtherScore(int score) { }
 }

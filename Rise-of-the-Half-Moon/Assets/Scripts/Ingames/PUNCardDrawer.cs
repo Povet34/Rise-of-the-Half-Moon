@@ -10,8 +10,6 @@ public class PUNCardDrawer : MonoBehaviourPun, ICardDrawer
     public static bool isDrawing;
     GameManager gameManager;
 
-    [SerializeField] private GameObject punCardPrefab;
-
     private Transform myCardArea;
     private Transform otherCardArea;
 
@@ -25,7 +23,6 @@ public class PUNCardDrawer : MonoBehaviourPun, ICardDrawer
     public void Init(List<PhaseData> phaseDatas, ref List<ICard> myCards, ref List<ICard> otherCards, Action<ICard> nextTurnCallback)
     {
         this.phaseDatas = phaseDatas;
-
         this.myCards = myCards;
         this.otherCards = otherCards;
         this.nextTurnCallback = nextTurnCallback;
@@ -62,46 +59,48 @@ public class PUNCardDrawer : MonoBehaviourPun, ICardDrawer
             return;
         }
 
-        GameObject go = null;
-        if (gameManager.IsNetworkGame)
-        {
-            go = PhotonNetwork.Instantiate(Definitions.PUNCard, spawnPos, Quaternion.identity);
-            go.transform.SetParent(isPlayerTurn ? myCardArea : otherCardArea, false);
+        GameObject go = PhotonNetwork.Instantiate(Definitions.PUNCard, spawnPos, Quaternion.identity);
+        go.transform.SetParent(isPlayerTurn ? myCardArea : otherCardArea, false);
 
-            ICard card = go.GetComponent<ICard>();
-            card.phaseData = phaseDatas[Random.Range(0, phaseDatas.Count)];
-            card.IsMine = isPlayerTurn;
+        ICard card = go.GetComponent<ICard>();
+        card.phaseData = phaseDatas[Random.Range(0, phaseDatas.Count)];
+        card.IsMine = isPlayerTurn;
 
-            photonView.RPC(nameof(RPC_DrawCard), RpcTarget.Others, isPlayerTurn, targetCards.Count, spawnPos, isTween, (int)card.phaseData.contentType, card.phaseData.phaseIndex);
-        }
+        InitializeCard(go, isPlayerTurn, isTween, positions, card.phaseData);
 
-        InitializeCard(go, isPlayerTurn, isTween, positions);
+        // RPC 호출하여 다른 클라이언트에 객체 정보 전달
+        photonView.RPC("SyncCard", RpcTarget.Others, go.GetComponent<PhotonView>().ViewID, isPlayerTurn, isTween, positions, card.phaseData.phaseIndex);
     }
 
     [PunRPC]
-    private void RPC_DrawCard(bool isPlayerTurn, int cardIndex, Vector2 spawnPos, bool isTween, int contentType, int phaseIndex)
+    public void SyncCard(int viewID, bool isPlayerTurn, bool isTween, Vector2[] positions, int phaseIndex)
     {
-        List<ICard> targetCards = !isPlayerTurn ? myCards : otherCards;
-        Vector2[] positions = GetCardPositions(cardIndex + 1, !isPlayerTurn);
-
-        GameObject go = PhotonNetwork.Instantiate(Definitions.PUNCard, spawnPos, Quaternion.identity);
+        GameObject go = PhotonView.Find(viewID).gameObject;
         go.transform.SetParent(!isPlayerTurn ? myCardArea : otherCardArea, false);
 
-        PhaseData phaseData = ContentsDataManager.Instance.GetPhaseData((PhaseData.ContentType)contentType, phaseIndex);
-        InitializeCard(go, !isPlayerTurn, isTween, positions, cardIndex, phaseData);
+        ICard card = go.GetComponent<ICard>();
+        card.phaseData = phaseDatas[phaseIndex];
+        card.IsMine = !isPlayerTurn;
+
+        InitializeCard(go, !isPlayerTurn, isTween, positions, card.phaseData);
     }
 
-    private void InitializeCard(GameObject go, bool isPlayerTurn, bool isTween, Vector2[] positions, int cardIndex = -1, PhaseData phaseData = null)
+    private void InitializeCard(GameObject go, bool isPlayerTurn, bool isTween, Vector2[] positions, PhaseData phaseData)
     {
         RectTransform rectTransform = go.GetComponent<RectTransform>();
+        int cardIndex = isPlayerTurn ? myCards.Count : otherCards.Count;
+        if (cardIndex >= positions.Length)
+        {
+            Debug.LogError("Index out of range: cardIndex is greater than or equal to positions length.");
+            return;
+        }
 
         if (isTween)
-            rectTransform.anchoredPosition = positions[cardIndex == -1 ? (isPlayerTurn ? myCards.Count : otherCards.Count) : cardIndex];
+            rectTransform.anchoredPosition = positions[cardIndex];
         else
-            rectTransform.anchoredPosition = positions[cardIndex == -1 ? (isPlayerTurn ? myCards.Count : otherCards.Count) : cardIndex];
+            rectTransform.anchoredPosition = positions[cardIndex];
 
         ICard card = go.GetComponent<ICard>();
-        card.phaseData = phaseData;
         card.IsMine = isPlayerTurn;
 
         List<ICard> targetCards = isPlayerTurn ? myCards : otherCards;
@@ -123,12 +122,12 @@ public class PUNCardDrawer : MonoBehaviourPun, ICardDrawer
             card.Init(param);
         }
 
-        //Draw Animation
+        // Draw Animation
         {
             Sequence sequence = DOTween.Sequence();
 
             sequence.AppendCallback(() => { isDrawing = true; });
-            sequence.Append(rectTransform.DOAnchorPos(positions[cardIndex == -1 ? targetCards.Count - 1 : cardIndex], Definitions.CardMoveDuration).SetEase(Ease.OutQuint));
+            sequence.Append(rectTransform.DOAnchorPos(positions[targetCards.Count - 1], Definitions.CardMoveDuration).SetEase(Ease.OutQuint));
             sequence.AppendCallback(() => { isDrawing = false; });
             sequence.AppendCallback(() => { RepositionCards(targetCards, positions); });
         }

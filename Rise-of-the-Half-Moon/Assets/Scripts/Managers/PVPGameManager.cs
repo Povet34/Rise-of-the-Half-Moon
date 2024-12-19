@@ -17,31 +17,42 @@ public class PVPGameManager : GameManager
     }
 
     PhotonView photonView;
+    [SerializeField] PUNCardDrawer cardDrawerPrefab;
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        photonView = GetComponent<PhotonView>();
+        if (photonView == null)
+        {
+            Debug.LogError("PhotonView component is missing on this GameObject.");
+        }
+    }
 
     public void StartGameInit()
     {
+        IsNetworkGame = true;
+
+        var go = PhotonNetwork.Instantiate("PUNCardDrawer", Vector3.zero, Quaternion.identity);
+        cardDrawer = go.GetComponent<PUNCardDrawer>();
+
         GameInitData initData = ContentsDataManager.Instance.GetPVPGameInitData();
-        photonView.RPC(nameof(GameInit), RpcTarget.All, (int)initData.contentType, initData.seed);
+        photonView.RPC(nameof(GameInit), RpcTarget.All, (int)initData.contentType, initData.seed, go.GetPhotonView().ViewID);
     }
 
     [PunRPC]
-    public void GameInit(int type, int seed)
+    public void GameInit(int type, int seed, int viewID)
     {
-        var go = PhotonNetwork.Instantiate("PUNCardDrawer", Vector3.zero, Quaternion.identity);
-
-        cardDrawer = go.GetComponent<PUNCardDrawer>();
-
         Random.InitState(seed);
 
-        IsNetworkGame = true;
         contentType = (PhaseData.ContentType)type;
-
         phaseDatas = ContentsDataManager.Instance.GetPhaseDatas(contentType, ref rule);
 
-        StartPlay();
+        StartPlay(viewID);
     }
 
-    private void StartPlay()
+    private void StartPlay(int viewID)
     {
         foreach (var card in otherCards)
         {
@@ -58,6 +69,10 @@ public class PVPGameManager : GameManager
 
         nodeGenerator.Create();
         rule.Init();
+
+        if(null == cardDrawer)
+            cardDrawer = PhotonView.Find(viewID).GetComponent<PUNCardDrawer>();
+
         cardDrawer.Init(phaseDatas, ref myCards, ref otherCards, NextTurn);
 
         InitCards(2, myCards, true);

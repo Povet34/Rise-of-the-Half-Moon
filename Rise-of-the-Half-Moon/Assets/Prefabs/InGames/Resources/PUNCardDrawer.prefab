@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5226062271992756283}
   - component: {fileID: 6609869003056341992}
-  - component: {fileID: 1039723862110569870}
+  - component: {fileID: 1420330690638724278}
   m_Layer: 0
   m_Name: PUNCardDrawer
   m_TagString: Untagged
@@ -45,8 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 316e75e366f450c498f333c543e91d02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  punCardPrefab: {fileID: 0}
---- !u!114 &1039723862110569870
+--- !u!114 &1420330690638724278
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
