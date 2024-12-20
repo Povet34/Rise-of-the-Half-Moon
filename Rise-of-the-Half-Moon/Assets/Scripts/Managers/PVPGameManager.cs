@@ -37,7 +37,7 @@ public class PVPGameManager : GameManager
 
         IsNetworkGame = true;
 
-        var go = PhotonNetwork.Instantiate("PUNCardDrawer", Vector3.zero, Quaternion.identity);
+        var go = PhotonNetwork.Instantiate(Definitions.PUNCardDrawer, Vector3.zero, Quaternion.identity);
         cardDrawer = go.GetComponent<PUNCardDrawer>();
 
         data = ContentsDataManager.Instance.GetPVPGameInitData();

@@ -10,4 +10,7 @@ public class BotLevelData : ScriptableObject
 
     [Tooltip("초기 랜덤하게 두는 횟수")]
     public int initRandomPutCount;
+
+    [Tooltip("다음 PlaceCard 까지 딜레이 시간")]
+    public int placeDelay;
 }

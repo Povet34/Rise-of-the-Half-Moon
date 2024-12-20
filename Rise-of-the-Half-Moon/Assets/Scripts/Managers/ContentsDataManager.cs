@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class ContentsDataManager : Singleton<ContentsDataManager>
 {
+    public PhaseData.ContentType testType;
     public List<PhaseData> moonPhaseDatas = new List<PhaseData>();
     public List<PhaseData> numberPhaseDatas = new List<PhaseData>();
     public List<PhaseData> dicePhaseDatas = new List<PhaseData>();
@@ -55,6 +56,11 @@ public class ContentsDataManager : Singleton<ContentsDataManager>
     public void SetPVEGameInitData(PVEGameManager.GameInitData data)
     {
         pveGameInitData = data;
+
+        if (TestManager.Instance.isTest)
+        {
+            pveGameInitData.contentType = testType;
+        }
     }
 
     public PVEGameManager.GameInitData GetPVEGameInitData()

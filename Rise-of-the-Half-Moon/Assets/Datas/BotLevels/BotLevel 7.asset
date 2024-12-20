@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   accuracy: 1
   initRandomPutCount: 2
+  placeDelay: 1

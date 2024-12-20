@@ -8,6 +8,7 @@ public class Bot : MonoBehaviour
     int accuracy = -1; // Bot의 난이도
     int initRandomPutCount;
     int putCount;
+    float placeDelay;
     NodeGenerator nodeGenerator;
     GameManager gameManager;
 
@@ -21,6 +22,7 @@ public class Bot : MonoBehaviour
 
         accuracy = levelData.accuracy;
         initRandomPutCount = levelData.initRandomPutCount;
+        placeDelay = levelData.placeDelay;
 
         this.cards = cards;
     }
@@ -73,9 +75,9 @@ public class Bot : MonoBehaviour
         cardToPlace.PlaceCard(targetNode);
     }
 
-    public void StartPlaceCard(float delay)
+    public void StartPlaceCard()
     {
-        StartCoroutine(DelayPlaceCardBody(delay));
+        StartCoroutine(DelayPlaceCardBody(placeDelay));
     }
 
     private IEnumerator DelayPlaceCardBody(float delay)

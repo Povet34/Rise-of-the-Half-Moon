@@ -72,7 +72,7 @@ public class CardDrawer : MonoBehaviour, ICardDrawer
         RectTransform rectTransform = go.GetComponent<RectTransform>();
 
         if (isTween)
-            rectTransform.anchoredPosition = positions[isPlayerTurn ? myCards.Count : otherCards.Count];
+            rectTransform.anchoredPosition = isPlayerTurn ? Definitions.MyDrawCardSpawnPos : Definitions.OhterDrawCardSpawnPos;
         else
             rectTransform.anchoredPosition = positions[isPlayerTurn ? myCards.Count : otherCards.Count];
 
@@ -104,13 +104,14 @@ public class CardDrawer : MonoBehaviour, ICardDrawer
             Sequence sequence = DOTween.Sequence();
 
             sequence.AppendCallback(() => { isDrawing = true; });
+            sequence.AppendCallback(() => { RepositionCards(targetCards, positions); });
             sequence.Append(rectTransform.DOAnchorPos(positions[targetCards.Count - 1], Definitions.CardMoveDuration).SetEase(Ease.OutQuint));
             sequence.AppendCallback(() => { isDrawing = false; });
-            sequence.AppendCallback(() => { RepositionCards(targetCards, positions); });
+
         }
     }
 
-    private void RepositionCards(List<ICard> cards, Vector2[] positions)
+    void RepositionCards(List<ICard> cards, Vector2[] positions)
     {
         for (int i = 0; i < cards.Count; i++)
         {
@@ -119,7 +120,7 @@ public class CardDrawer : MonoBehaviour, ICardDrawer
         }
     }
 
-    private Vector2[] GetCardPositions(int cardCount, bool isPlayer1)
+    Vector2[] GetCardPositions(int cardCount, bool isPlayer1)
     {
         if (isPlayer1)
             return cardCount == 2 ? Definitions.MyTwoCardPositions : Definitions.MyThreeCardPositions;

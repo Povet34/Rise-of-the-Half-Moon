@@ -3,6 +3,7 @@ using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
 public class PUNCardDrawer : MonoBehaviourPun, ICardDrawer
@@ -28,7 +29,7 @@ public class PUNCardDrawer : MonoBehaviourPun, ICardDrawer
         this.nextTurnCallback = nextTurnCallback;
 
         gameManager = FindAnyObjectByType<GameManager>();
-        nodeGenerator = FindObjectOfType<NodeGenerator>();
+        nodeGenerator = FindAnyObjectByType<NodeGenerator>();
 
         CardArea[] areas = FindObjectsOfType<CardArea>();
         foreach (var area in areas)
@@ -69,7 +70,7 @@ public class PUNCardDrawer : MonoBehaviourPun, ICardDrawer
         InitializeCard(go, isPlayerTurn, isTween, positions, card.phaseData);
 
         // RPC 호출하여 다른 클라이언트에 객체 정보 전달
-        photonView.RPC("SyncCard", RpcTarget.Others, go.GetComponent<PhotonView>().ViewID, isPlayerTurn, isTween, positions, card.phaseData.phaseIndex);
+        photonView.RPC(nameof(SyncCard), RpcTarget.Others, go.GetComponent<PhotonView>().ViewID, isPlayerTurn, isTween, positions, card.phaseData.phaseIndex);
     }
 
     [PunRPC]
@@ -96,12 +97,11 @@ public class PUNCardDrawer : MonoBehaviourPun, ICardDrawer
         }
 
         if (isTween)
-            rectTransform.anchoredPosition = positions[cardIndex];
+            rectTransform.anchoredPosition = isPlayerTurn ? Definitions.MyDrawCardSpawnPos : Definitions.OhterDrawCardSpawnPos;
         else
             rectTransform.anchoredPosition = positions[cardIndex];
 
         ICard card = go.GetComponent<ICard>();
-        card.IsMine = isPlayerTurn;
 
         List<ICard> targetCards = isPlayerTurn ? myCards : otherCards;
         targetCards.Add(card);
@@ -122,18 +122,24 @@ public class PUNCardDrawer : MonoBehaviourPun, ICardDrawer
             card.Init(param);
         }
 
+        _DrawAnimation();
+
         // Draw Animation
+        void _DrawAnimation()
         {
             Sequence sequence = DOTween.Sequence();
 
             sequence.AppendCallback(() => { isDrawing = true; });
+            sequence.AppendCallback(() => { RepositionCards(targetCards, positions); });
             sequence.Append(rectTransform.DOAnchorPos(positions[targetCards.Count - 1], Definitions.CardMoveDuration).SetEase(Ease.OutQuint));
             sequence.AppendCallback(() => { isDrawing = false; });
-            sequence.AppendCallback(() => { RepositionCards(targetCards, positions); });
+
+            sequence.Play();
         }
     }
 
-    private void RepositionCards(List<ICard> cards, Vector2[] positions)
+
+    void RepositionCards(List<ICard> cards, Vector2[] positions)
     {
         for (int i = 0; i < cards.Count; i++)
         {
@@ -142,7 +148,7 @@ public class PUNCardDrawer : MonoBehaviourPun, ICardDrawer
         }
     }
 
-    private Vector2[] GetCardPositions(int cardCount, bool isPlayer1)
+    Vector2[] GetCardPositions(int cardCount, bool isPlayer1)
     {
         if (isPlayer1)
             return cardCount == 2 ? Definitions.MyTwoCardPositions : Definitions.MyThreeCardPositions;

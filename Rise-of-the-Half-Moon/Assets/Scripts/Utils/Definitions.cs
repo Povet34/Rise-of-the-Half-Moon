@@ -32,9 +32,11 @@ public static class Definitions
 
     #endregion
 
-    #region Prefab Name
+    #region PUN Name
     
     public const string PUNCard = "PUNCard";
+    public const string PUNCardDrawer = "PUNCardDrawer";
+    public const string SyncCard = "SyncCard";
 
     #endregion
 
@@ -44,10 +46,10 @@ public static class Definitions
     public const int OTHER_INDEX = 3;
 
     public const int SAME_PHASE_SCORE = 1;
-    public const int FULL_MOON_SCORE = 2;
     public const int PHASE_CYCLE_SCORE = 1;
+    public const int COMBINATION_SCORE = 2;
+
     public const int SETTLEMENT_SCORE = 1;
-    public const int NUMBER_COMBINATION_SCORE = 2;
 
     public const float Card_Alignment_Y = 0;
 
@@ -74,7 +76,7 @@ public static class Definitions
     public static readonly Vector2 MyDrawCardSpawnPos = new Vector2(Screen.width, -Card_Alignment_Y);
 
     public static readonly Vector2 OhterDrawCardSpawnPos = new Vector2(Screen.width, Card_Alignment_Y);
-    public static float CardMoveDuration = 3f;
+    public static float CardMoveDuration = 1f;
 
     public static Color My_Occupied_Color = new Color(0.8f, 0.1f, 0.1f, 1f);
     public static Color Other_Occupied_Color = new Color(0.1f, 0.1f, 0.8f, 1f);

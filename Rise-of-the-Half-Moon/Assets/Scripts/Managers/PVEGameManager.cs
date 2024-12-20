@@ -51,4 +51,12 @@ public class PVEGameManager : GameManager
 
         ContentsDataManager.Instance.ClearDatas();
     }
+
+    protected override void NextTurn(ICard removedCard)
+    {
+        base.NextTurn(removedCard);
+
+        if (!isMyTurn)
+            bot.StartPlaceCard();
+    }
 }
