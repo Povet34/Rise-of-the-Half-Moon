@@ -1,6 +1,5 @@
-using UnityEngine;
 using System.Collections.Generic;
-using Random = UnityEngine.Random;
+using UnityEngine;
 
 public class NodeGenerator : MonoBehaviour
 {
@@ -60,7 +59,7 @@ public class NodeGenerator : MonoBehaviour
             for (int j = 0; j < cols; j++)
             {
                 Vector3 position = new Vector3(j * spacing, i * spacing, 0);
-                GameObject nodeObject = Instantiate(nodePrefab, position, Quaternion.Euler(0,0,180), transform);
+                GameObject nodeObject = Instantiate(nodePrefab, position, Quaternion.Euler(0, 0, 180), transform);
 
                 Node newNode = nodeObject.GetComponent<Node>();
                 newNode.Init(order++, position, nodeObject);
@@ -275,5 +274,27 @@ public class NodeGenerator : MonoBehaviour
     public bool IsEndGame()
     {
         return FindEmptyOccupidNodes().Count == 0;
+    }
+
+    public Bounds GetNodeBounds()
+    {
+        if (nodes.Count == 0)
+        {
+            return new Bounds(Vector3.zero, Vector3.zero);
+        }
+
+        Vector3 min = nodes[0].position;
+        Vector3 max = nodes[0].position;
+
+        foreach (Node node in nodes)
+        {
+            min = Vector3.Min(min, node.position);
+            max = Vector3.Max(max, node.position);
+        }
+
+        Vector3 center = (min + max) / 2;
+        Vector3 size = max - min;
+
+        return new Bounds(center, size);
     }
 }

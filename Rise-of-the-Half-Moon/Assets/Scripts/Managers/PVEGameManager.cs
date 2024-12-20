@@ -53,6 +53,8 @@ public class PVEGameManager : GameManager
         nodeGenerator.Create();
         rule.Init();
 
+        CameInit(nodeGenerator.GetNodeBounds());
+
         cardDrawer.Init(phaseDatas, ref myCards, ref otherCards, NextTurn);
 
         InitCards(2, myCards, true);

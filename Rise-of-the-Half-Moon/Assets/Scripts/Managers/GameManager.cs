@@ -15,9 +15,8 @@ public class GameManager : MonoBehaviour
     protected NodeGenerator nodeGenerator;
     protected List<PhaseData> phaseDatas;
     protected GameUI gameUI;
-
+    protected InGameCamController camController;
     protected ICardDrawer cardDrawer;
-
 
     [Header("Me")]
     protected int myScore;
@@ -31,6 +30,12 @@ public class GameManager : MonoBehaviour
     {
         nodeGenerator = FindAnyObjectByType<NodeGenerator>();
         gameUI = FindAnyObjectByType<GameUI>();
+        camController = FindAnyObjectByType<InGameCamController>();
+    }
+
+    protected virtual void CameInit(Bounds nodeBounds) 
+    {
+        camController.Init(nodeBounds);
     }
 
     public virtual void UpdateMyScore(int score) { }
