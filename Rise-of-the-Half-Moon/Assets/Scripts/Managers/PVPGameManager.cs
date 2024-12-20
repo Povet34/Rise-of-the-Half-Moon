@@ -17,7 +17,7 @@ public class PVPGameManager : GameManager
     }
 
     PhotonView photonView;
-    [SerializeField] PUNCardDrawer cardDrawerPrefab;
+    GameInitData data;
 
     protected override void Awake()
     {
@@ -30,121 +30,42 @@ public class PVPGameManager : GameManager
         }
     }
 
-    public void StartGameInit()
+    protected override void Start()
     {
         IsNetworkGame = true;
 
         var go = PhotonNetwork.Instantiate("PUNCardDrawer", Vector3.zero, Quaternion.identity);
         cardDrawer = go.GetComponent<PUNCardDrawer>();
 
-        GameInitData initData = ContentsDataManager.Instance.GetPVPGameInitData();
-        photonView.RPC(nameof(GameInit), RpcTarget.All, (int)initData.contentType, initData.seed, go.GetPhotonView().ViewID);
+        data = ContentsDataManager.Instance.GetPVPGameInitData();
+        photonView.RPC(nameof(GameInit), RpcTarget.All, (int)data.contentType, data.seed, go.GetPhotonView().ViewID);
     }
 
     [PunRPC]
     public void GameInit(int type, int seed, int viewID)
     {
         Random.InitState(seed);
-
-        contentType = (PhaseData.ContentType)type;
-        phaseDatas = ContentsDataManager.Instance.GetPhaseDatas(contentType, ref rule);
-
-        StartPlay(viewID);
+        StartPlay(type, viewID);
     }
 
-    private void StartPlay(int viewID)
+    private void StartPlay(int type, int viewID)
     {
-        foreach (var card in otherCards)
-        {
-            card.Destroy();
-        }
+        InitNodeGenerator();
+        InitCardList();
+        InitRule(type);
+        InitCam();
 
-        foreach (var card in myCards)
-        {
-            card.Destroy();
-        }
-
-        myCards.Clear();
-        otherCards.Clear();
-
-        nodeGenerator.Create();
-        rule.Init();
-
-        if(null == cardDrawer)
+        if (null == cardDrawer)
             cardDrawer = PhotonView.Find(viewID).GetComponent<PUNCardDrawer>();
 
-        cardDrawer.Init(phaseDatas, ref myCards, ref otherCards, NextTurn);
+        InitCardDrawer();
 
         InitCards(2, myCards, true);
         InitCards(2, otherCards, false);
 
         isMyTurn = PhotonNetwork.IsMasterClient; // 마스터 클라이언트가 먼저 시작
         cardDrawer.DrawCard(isMyTurn);
+
+        ContentsDataManager.Instance.ClearDatas();
     }
-
-    private void InitCards(int cardCount, List<ICard> cards, bool isPlayer1)
-    {
-        for (int i = 0; i < cardCount; i++)
-        {
-            cardDrawer.DrawCard(isPlayer1, false);
-        }
-    }
-
-    private void NextTurn(ICard removedCard)
-    {
-        if (nodeGenerator.IsEndGame())
-        {
-            SettlementPlay();
-            return;
-        }
-
-        //리스트에서 제거하고
-        if (isMyTurn)
-            myCards.Remove(removedCard);
-        else
-            otherCards.Remove(removedCard);
-
-        //턴을 바꿔주고
-        isMyTurn = !isMyTurn;
-
-        //드로우한다
-        cardDrawer.DrawCard(isMyTurn);
-    }
-
-
-    private void SettlementPlay()
-    {
-        Rule.SettlementOccupiedNodes(
-            () =>
-            {
-                if (myScore > otherScore)
-                {
-                    gameUI.ShowWin();
-                }
-                else if (myScore < otherScore)
-                {
-                    gameUI.ShowLose();
-                }
-                else
-                {
-                    gameUI.ShowDraw();
-                }
-            });
-    }
-
-    #region Update Score
-
-    public override void UpdateMyScore(int score)
-    {
-        myScore += score;
-        gameUI.UpdateMyScore(myScore);
-    }
-
-    public override void UpdateOtherScore(int score)
-    {
-        otherScore += score;
-        gameUI.UpdateOtherScore(otherScore);
-    }
-
-    #endregion
 }

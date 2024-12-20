@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,13 +16,10 @@ public class GameInitHelper : MonoBehaviour
         if (null != pve)
         {
             PVEGameManager gameManager = Instantiate(PVEGameManagerPrefab);
-            gameManager.GameInit(pve);
         }
         else if(null != pvp)
         {
-
+            PhotonNetwork.Instantiate("PVPGameManager", Vector3.zero, Quaternion.identity);
         }
-
-        ContentsDataManager.Instance.ClearDatas();
     }
 }

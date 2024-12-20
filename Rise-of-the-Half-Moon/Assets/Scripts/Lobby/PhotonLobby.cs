@@ -148,22 +148,6 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
         };
 
         ContentsDataManager.Instance.SetPVPGameInitData(initData);
-
-        SceneManager.sceneLoaded += OnPVPSceneLoaded;
         PhotonNetwork.LoadLevel(Definitions.INGAME_SCENE);
-    }
-
-    private void OnPVPSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (scene.name == Definitions.INGAME_SCENE)
-        {
-            if (PhotonNetwork.IsMasterClient)
-            {
-                GameObject pvpManager = PhotonNetwork.Instantiate("PVPGameManager", Vector3.zero, Quaternion.identity);
-
-                pvpManager.GetComponent<PVPGameManager>().StartGameInit();
-            }
-            SceneManager.sceneLoaded -= OnPVPSceneLoaded;
-        }
     }
 }

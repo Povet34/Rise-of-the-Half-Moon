@@ -47,7 +47,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isMyTurn: 0
   contentType: 0
-  cardDrawerPrefab: {fileID: 6609869003056341992, guid: 7fdd8dfa173578147a0a4752e697431d, type: 3}
 --- !u!114 &3046215120066905746
 MonoBehaviour:
   m_ObjectHideFlags: 0
