@@ -16,5 +16,5 @@ MonoBehaviour:
   phaseIndex: 0
   phaseTexture: {fileID: 2800000, guid: da6fe30f7727cf84a9e9e4639f21b91d, type: 3}
   phaseSprite: {fileID: 0}
-  cardBackSprite: {fileID: 0}
+  cardBackSprite: {fileID: 21300000, guid: d273eee968fe82542872337bce4033b4, type: 3}
   description: 

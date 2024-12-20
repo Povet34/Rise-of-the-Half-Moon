@@ -32,6 +32,9 @@ public class PVPGameManager : GameManager
 
     protected override void Start()
     {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
         IsNetworkGame = true;
 
         var go = PhotonNetwork.Instantiate("PUNCardDrawer", Vector3.zero, Quaternion.identity);
