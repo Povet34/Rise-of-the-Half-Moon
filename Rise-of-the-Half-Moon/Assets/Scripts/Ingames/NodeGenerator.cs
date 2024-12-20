@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class NodeGenerator : MonoBehaviour
@@ -185,72 +186,101 @@ public class NodeGenerator : MonoBehaviour
         nodeB.connectedEdges.Add(newEdge);
     }
 
+    List<Node> GetConnectedNeighbors(Node node)
+    {
+        List<Node> connectedNeighbors = new List<Node>();
+        foreach (Edge edge in node.connectedEdges)
+        {
+            Node neighbor = edge.GetOtherNode(node);
+            connectedNeighbors.Add(neighbor);
+        }
+        return connectedNeighbors;
+    }
+
     #region Node Cycle
-    void GenerateCycles(Node putNode)
+    void GenerateCycles(Node startNode)
     {
         cycles.Clear();
+        List<Node> visited = new List<Node>();
+        List<Node> currentCycle = new List<Node>();
+        PhaseData.ContentType ct = gameManager.contentType;
 
-        HashSet<Node> visited = new HashSet<Node>();
-        int cycleId = 0;
-
-        Queue<Node> queue = new Queue<Node>();
-        queue.Enqueue(putNode);
-        visited.Add(putNode);
-
-        while (queue.Count > 0)
+        void Traverse(Node currentNode, int direction, int cycleId)
         {
-            Node currentNode = queue.Dequeue();
-            List<Node> phaseGroup = new List<Node> { currentNode };
-            int currentPhase = currentNode.GetPhaseType();
+            visited.Add(currentNode);
+            currentCycle.Add(currentNode);
 
-            foreach (Node neighbor in currentNode.GetAdjacentNodes())
+            List<Node> neighbors = GetConnectedNeighbors(currentNode);
+            foreach (Node neighbor in neighbors)
             {
-                if (!visited.Contains(neighbor))
+                if (visited.Contains(neighbor)) continue;
+
+                int currentPhase = currentNode.GetPhaseType();
+                int neighborPhase = neighbor.GetPhaseType();
+                bool isValid = false;
+
+                if (direction == 0)
                 {
-                    int neighborPhase = neighbor.GetPhaseType();
-
-                    if (PhaseData.GetPreviousPhaseType(currentPhase, gameManager.contentType) == neighborPhase ||
-                        PhaseData.GetNextPhaseType(currentPhase, gameManager.contentType) == neighborPhase)
-                    {
-                        queue.Enqueue(neighbor);
-                        visited.Add(neighbor);
-                        phaseGroup.Add(neighbor);
-                    }
+                    isValid = neighborPhase == PhaseData.GetNextPhaseType(currentPhase, ct) || neighborPhase == PhaseData.GetPreviousPhaseType(currentPhase, ct);
                 }
-            }
+                else if (direction == 1)
+                {
+                    isValid = (neighborPhase == PhaseData.GetNextPhaseType(currentPhase, ct));
+                }
+                else if (direction == -1)
+                {
+                    isValid = (neighborPhase == PhaseData.GetPreviousPhaseType(currentPhase, ct));
+                }
 
-            if (phaseGroup.Count > 2)
-            {
-                cycles[cycleId++] = phaseGroup;
+                if (isValid)
+                {
+                    int newDirection = (neighborPhase == PhaseData.GetNextPhaseType(currentPhase, ct)) ? 1 : -1;
+                    Traverse(neighbor, newDirection, cycleId);
+                }
             }
         }
 
-        // Merge cycles if they form a continuous sequence
-        MergeCycles();
-    }
-
-    void MergeCycles()
-    {
-        foreach (var cycle in cycles)
+        int cycleId = 0;
+        Traverse(startNode, 0, cycleId);
+        if (currentCycle.Count > 2)
         {
-            List<Node> sortedCycle = new List<Node>(cycle.Value);
-            sortedCycle.Sort((node1, node2) => node1.GetPhaseType().CompareTo(node2.GetPhaseType()));
+            _Sort();
+            cycles[cycleId++] = new List<Node>(currentCycle);
+        }
 
-            for (int i = 0; i < sortedCycle.Count - 1; i++)
+        _DebugCycles();
+
+
+        void _Sort()
+        {
+            currentCycle.Sort((node1, node2) =>
             {
-                int currentPhase = sortedCycle[i].GetPhaseType();
-                int nextPhase = sortedCycle[i + 1].GetPhaseType();
-
-                if (PhaseData.GetNextPhaseType(currentPhase, gameManager.contentType) != nextPhase &&
-                    PhaseData.GetPreviousPhaseType(currentPhase, gameManager.contentType) != nextPhase)
+                int phase1 = node1.GetPhaseType();
+                int phase2 = node2.GetPhaseType();
+                if (PhaseData.GetNextPhaseType(phase1, ct) == phase2)
                 {
-                    sortedCycle.RemoveAt(i + 1);
-                    i--;
+                    return -1;
                 }
+                else if (PhaseData.GetPreviousPhaseType(phase1, ct) == phase2)
+                {
+                    return 1;
+                }
+                return 0;
+            });
+        }
+        void _DebugCycles()
+        {
+            foreach (var cycle in cycles)
+            {
+                string nodes = "";
+                string phases = "";
+                foreach (var node in cycle.Value)
+                {
+                    nodes += $"{node.index} ";
+                    phases += $"{node.GetPhaseType()} ";
+                }
+                Debug.Log($"Cycle {cycle.Key} [노드 자리 : {startNode.index} 타입 : {startNode.GetPhaseType()}]: [{nodes}] [{phases}]");
             }
-
-            cycle.Value.Clear();
-            cycle.Value.AddRange(sortedCycle);
         }
     }
 
@@ -289,7 +319,6 @@ public class NodeGenerator : MonoBehaviour
 
         return emptyNodes;
     }
-
 
     public bool IsEndGame()
     {

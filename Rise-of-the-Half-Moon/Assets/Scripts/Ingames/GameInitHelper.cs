@@ -19,7 +19,7 @@ public class GameInitHelper : MonoBehaviour
         }
         else if(null != pvp)
         {
-            PhotonNetwork.Instantiate("PVPGameManager", Vector3.zero, Quaternion.identity);
+            PhotonNetwork.Instantiate(Definitions.PVPGameManager, Vector3.zero, Quaternion.identity);
         }
     }
 }

@@ -25,11 +25,11 @@ public class PVEGameManager : GameManager
         cardDrawer = Instantiate(cardDrawerPrefab);
         Random.InitState(data.seed);
 
+        contentType = data.contentType;
         initBotLevelData = ContentsDataManager.Instance.GetBotLevelData(data.initBotLevel);
 
         StartPlay();
     }
-
 
     private void StartPlay()
     {

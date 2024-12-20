@@ -36,7 +36,7 @@ public static class Definitions
     
     public const string PUNCard = "PUNCard";
     public const string PUNCardDrawer = "PUNCardDrawer";
-    public const string SyncCard = "SyncCard";
+    public const string PVPGameManager = "PVPGameManager";
 
     #endregion
 
