@@ -19,7 +19,6 @@ public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandle
 
     Action<PUNCard> nextTurnCallback;
     Action replaceCallback;
-    Action selectCallback;
     Vector2 dragPos;
 
     public void Init(ICard.CardParam param)
@@ -30,7 +29,7 @@ public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandle
 
         nextTurnCallback = param.nextTurnCallback;
         replaceCallback = param.replaceCallback;
-        selectCallback = param.selectCallback;
+        //selectCallback = param.selectCallback;
 
         if (phaseData != null)
         {
@@ -64,8 +63,6 @@ public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandle
             return;
 
         rt.anchoredPosition += eventData.delta / canvasGroup.transform.localScale.x; // 드래그 위치 업데이트
-
-        selectCallback?.Invoke();
     }
 
     public void OnEndDrag(PointerEventData eventData)

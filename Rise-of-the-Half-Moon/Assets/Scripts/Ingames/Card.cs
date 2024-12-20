@@ -18,7 +18,6 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     Action<Card> nextTurnCallback;
     Action replaceCallback;
-    Action selectCallback;
 
     Vector2 dragPos;
 
@@ -34,7 +33,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
         nextTurnCallback = cardParam.nextTurnCallback;
         replaceCallback = cardParam.replaceCallback;
-        selectCallback = cardParam.selectCallback;
+        //selectCallback = cardParam.selectCallback;
 
         if (phaseData != null)
         {
@@ -67,8 +66,6 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             return;
 
         rt.anchoredPosition += eventData.delta / canvasGroup.transform.localScale.x; // 드래그 위치 업데이트
-
-        selectCallback?.Invoke();
     }
 
     public void OnEndDrag(PointerEventData eventData)

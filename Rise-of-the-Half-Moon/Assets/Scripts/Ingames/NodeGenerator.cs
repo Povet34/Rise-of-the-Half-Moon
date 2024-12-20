@@ -185,64 +185,84 @@ public class NodeGenerator : MonoBehaviour
         nodeB.connectedEdges.Add(newEdge);
     }
 
-    #region Moon Cycle
-
-    void GenerateCycles()
+    #region Node Cycle
+    void GenerateCycles(Node putNode)
     {
         cycles.Clear();
 
         HashSet<Node> visited = new HashSet<Node>();
         int cycleId = 0;
 
-        foreach (Node node in nodes)
+        Queue<Node> queue = new Queue<Node>();
+        queue.Enqueue(putNode);
+        visited.Add(putNode);
+
+        while (queue.Count > 0)
         {
-            if (!visited.Contains(node))
+            Node currentNode = queue.Dequeue();
+            List<Node> phaseGroup = new List<Node> { currentNode };
+            int currentPhase = currentNode.GetPhaseType();
+
+            foreach (Node neighbor in currentNode.GetAdjacentNodes())
             {
-                List<Node> phaseGroup = new List<Node>();
-                Queue<Node> queue = new Queue<Node>();
-
-                queue.Enqueue(node);
-                visited.Add(node);
-
-                while (queue.Count > 0)
+                if (!visited.Contains(neighbor))
                 {
-                    Node currentNode = queue.Dequeue();
-                    phaseGroup.Add(currentNode);
-                    int currentPhase = currentNode.GetPhaseType();
+                    int neighborPhase = neighbor.GetPhaseType();
 
-                    foreach (Node neighbor in currentNode.GetAdjacentNodes())
+                    if (PhaseData.GetPreviousPhaseType(currentPhase, gameManager.contentType) == neighborPhase ||
+                        PhaseData.GetNextPhaseType(currentPhase, gameManager.contentType) == neighborPhase)
                     {
-                        if (!visited.Contains(neighbor))
-                        {
-                            int neighborPhase = neighbor.GetPhaseType();
-
-                            if (PhaseData.GetPreviousPhaseType(currentPhase, gameManager.contentType) == neighborPhase ||
-                                PhaseData.GetNextPhaseType(currentPhase, gameManager.contentType) == neighborPhase)
-                            {
-                                queue.Enqueue(neighbor);
-                                visited.Add(neighbor);
-                            }
-                        }
+                        queue.Enqueue(neighbor);
+                        visited.Add(neighbor);
+                        phaseGroup.Add(neighbor);
                     }
                 }
+            }
 
-                if (phaseGroup.Count > 2)
+            if (phaseGroup.Count > 2)
+            {
+                cycles[cycleId++] = phaseGroup;
+            }
+        }
+
+        // Merge cycles if they form a continuous sequence
+        MergeCycles();
+    }
+
+    void MergeCycles()
+    {
+        foreach (var cycle in cycles)
+        {
+            List<Node> sortedCycle = new List<Node>(cycle.Value);
+            sortedCycle.Sort((node1, node2) => node1.GetPhaseType().CompareTo(node2.GetPhaseType()));
+
+            for (int i = 0; i < sortedCycle.Count - 1; i++)
+            {
+                int currentPhase = sortedCycle[i].GetPhaseType();
+                int nextPhase = sortedCycle[i + 1].GetPhaseType();
+
+                if (PhaseData.GetNextPhaseType(currentPhase, gameManager.contentType) != nextPhase &&
+                    PhaseData.GetPreviousPhaseType(currentPhase, gameManager.contentType) != nextPhase)
                 {
-                    cycles[cycleId++] = phaseGroup;
+                    sortedCycle.RemoveAt(i + 1);
+                    i--;
                 }
             }
+
+            cycle.Value.Clear();
+            cycle.Value.AddRange(sortedCycle);
         }
     }
 
-    public List<List<Node>> GetSequentialPhaseNodes(Node startNode)
+    public List<List<Node>> GetSequentialPhaseNodes(Node putNode)
     {
-        GenerateCycles();
+        GenerateCycles(putNode);
 
         List<List<Node>> includedStartNodeCycles = new List<List<Node>>();
 
         foreach (var cycle in cycles)
         {
-            if (cycle.Value.Contains(startNode))
+            if (cycle.Value.Contains(putNode))
             {
                 List<Node> sortedCycle = new List<Node>(cycle.Value);
                 sortedCycle.Sort((node1, node2) => node2.GetPhaseType().CompareTo(node1.GetPhaseType()));
