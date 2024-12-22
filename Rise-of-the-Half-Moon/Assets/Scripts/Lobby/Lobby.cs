@@ -126,23 +126,13 @@ public class Lobby : MonoBehaviour
 
     private void StartPVEGame()
     {
-        PVEGameManager.GameInitData data = new PVEGameManager.GameInitData();
-        data.contentType = (PhaseData.ContentType)Random.Range(0, (int)PhaseData.ContentType.Count);
-        data.initBotLevel = Random.Range(0, ContentsDataManager.Instance.botLevelDatas.Count);
-        data.seed = Random.Range(0, 100000);
-
-        ContentsDataManager.Instance.SetPVEGameInitData(data);
+        ContentsDataManager.Instance.SetPVEGameInitData();
         SceneManager.LoadScene(Definitions.INGAME_SCENE);
     }
 
     private void StartTestPVEGame()
     {
-        PVEGameManager.GameInitData data = new PVEGameManager.GameInitData();
-        data.contentType = (PhaseData.ContentType)Random.Range(0, (int)PhaseData.ContentType.Count);
-        data.initBotLevel = 0;
-        data.seed = 1;
-
-        ContentsDataManager.Instance.SetTestData(data);
+        ContentsDataManager.Instance.SetTestData();
         SceneManager.LoadScene(Definitions.INGAME_SCENE);
     }
 }

@@ -7,9 +7,7 @@ public class GameUI : MonoBehaviour
     [SerializeField] TextMeshProUGUI myScore;
     [SerializeField] TextMeshProUGUI otherScore;
 
-    [SerializeField] GameObject resultPanel;
-    [SerializeField] TextMeshProUGUI resultText;
-    [SerializeField] Button retryButton;
+    [SerializeField] EndGamePanel endGamePanel;
 
     [SerializeField] Button settingButton;
     [SerializeField] IngameSettings ingameSettings;
@@ -21,9 +19,6 @@ public class GameUI : MonoBehaviour
 
     private void RegistEvents()
     {
-        retryButton.onClick.AddListener(null);
-        //retryButton.onClick.AddListener(PVEGameManager.Instance.GameInit);
-        retryButton.onClick.AddListener(() => { ActiveResult(false); });
         settingButton.onClick.AddListener(ShowSettingPanel);
     }
 
@@ -39,25 +34,17 @@ public class GameUI : MonoBehaviour
 
     public void ShowWin()
     {
-        ActiveResult(true);
-        resultText.text = "Win";
+        endGamePanel.ShowResult("Win");
     }
 
     public void ShowLose()
     {
-        ActiveResult(true); 
-        resultText.text = "Lose";
+        endGamePanel.ShowResult("Lose");
     }
 
     public void ShowDraw()
     {
-        ActiveResult(true);
-        resultText.text = "Draw";
-    }
-
-    private void ActiveResult(bool isShow)
-    {
-        resultPanel.gameObject.SetActive(isShow);
+        endGamePanel.ShowResult("Draw");
     }
 
     private void ShowSettingPanel()

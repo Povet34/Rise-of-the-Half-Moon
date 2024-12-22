@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -44,8 +45,17 @@ public class ContentsDataManager : Singleton<ContentsDataManager>
         }
     }
 
-    public void SetPVPGameInitData(PVPGameManager.GameInitData data)
+    public void SetPVPGameInitData()
     {
+        PhotonPlayerData myData = PhotonPlayerData.FromCustomProperties(PhotonNetwork.LocalPlayer.CustomProperties);
+        PVPGameManager.GameInitData data = new PVPGameManager.GameInitData
+        {
+            contentType = (PhaseData.ContentType)Random.Range(0, (int)PhaseData.ContentType.Count),
+            myPlayerData = myData,
+            otherPlayerData = PhotonPlayerData.FromCustomProperties(PhotonNetwork.PlayerListOthers[0].CustomProperties),
+            seed = Random.Range(0, 10000),
+        };
+
         pvpGameInitData = data;
     }
 
@@ -54,8 +64,13 @@ public class ContentsDataManager : Singleton<ContentsDataManager>
         return pvpGameInitData;
     }
 
-    public void SetPVEGameInitData(PVEGameManager.GameInitData data)
+    public void SetPVEGameInitData()
     {
+        PVEGameManager.GameInitData data = new PVEGameManager.GameInitData();
+        data.contentType = (PhaseData.ContentType)Random.Range(0, (int)PhaseData.ContentType.Count);
+        data.initBotLevel = Random.Range(0, ContentsDataManager.Instance.botLevelDatas.Count);
+        data.seed = Random.Range(0, 100000);
+
         pveGameInitData = data;
     }
 
@@ -64,8 +79,13 @@ public class ContentsDataManager : Singleton<ContentsDataManager>
         return pveGameInitData;
     }
 
-    public void SetTestData(PVEGameManager.GameInitData data)
+    public void SetTestData()
     {
+        PVEGameManager.GameInitData data = new PVEGameManager.GameInitData();
+        data.contentType = (PhaseData.ContentType)Random.Range(0, (int)PhaseData.ContentType.Count);
+        data.initBotLevel = 0;
+        data.seed = 1;
+
         testGameData = data;
     }
 

@@ -7,7 +7,7 @@ using DG.Tweening;
 public class ContentRule : MonoBehaviour
 {
     protected bool isAnimating = false;
-    protected bool isSettlementDone = false;
+    public bool IsSettlementDone { get; protected set; }
 
     protected NodeGenerator nodeGenerator;
     protected Queue<Action> animationQueue = new Queue<Action>();
@@ -35,14 +35,14 @@ public class ContentRule : MonoBehaviour
             {
                 myOccupiedNodes.Add(node);
             }
-            else
+            else if(node.occupiedUser == Definitions.OTHER_INDEX)
             {
                 otherOccupiedNodes.Add(node);
             }
         }
-        AddAnimateQueue(true, myOccupiedNodes, Definitions.SETTLEMENT_SCORE, settlementEndCallback);
-        AddAnimateQueue(false, otherOccupiedNodes, Definitions.SETTLEMENT_SCORE, settlementEndCallback);
-        LastSettlementAnimate();
+        AddAnimateQueue(true, myOccupiedNodes, Definitions.SETTLEMENT_SCORE);
+        AddAnimateQueue(false, otherOccupiedNodes, Definitions.SETTLEMENT_SCORE);
+        LastSettlementAnimate(settlementEndCallback);
     }
 
     public virtual void OnCardPlaced(Node node, bool isMine) 
@@ -159,11 +159,12 @@ public class ContentRule : MonoBehaviour
         });
     }
 
-    protected virtual void LastSettlementAnimate()
+    protected virtual void LastSettlementAnimate(Action settlementEndCallback)
     {
         animationQueue.Enqueue(() =>
         {
-            isSettlementDone = true;
+            IsSettlementDone = true;
+            settlementEndCallback.Invoke();
         });
     }
 

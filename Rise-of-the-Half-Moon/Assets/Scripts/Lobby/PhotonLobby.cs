@@ -151,16 +151,7 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
 
     public void StartPVPGame()
     {
-        PhotonPlayerData myData = PhotonPlayerData.FromCustomProperties(PhotonNetwork.LocalPlayer.CustomProperties);
-        PVPGameManager.GameInitData initData = new PVPGameManager.GameInitData
-        {
-            contentType = (PhaseData.ContentType)Random.Range(0, (int)PhaseData.ContentType.Count),
-            myPlayerData = myData,
-            otherPlayerData = PhotonPlayerData.FromCustomProperties(PhotonNetwork.PlayerListOthers[0].CustomProperties),
-            seed = Random.Range(0, 10000),
-        };
-
-        ContentsDataManager.Instance.SetPVPGameInitData(initData);
+        ContentsDataManager.Instance.SetPVPGameInitData();
         PhotonNetwork.LoadLevel(Definitions.INGAME_SCENE);
     }
 }
