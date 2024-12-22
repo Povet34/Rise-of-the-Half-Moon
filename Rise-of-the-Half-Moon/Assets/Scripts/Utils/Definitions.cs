@@ -53,24 +53,20 @@ public static class Definitions
 
     public const float Card_Alignment_Y = 0;
 
-    public static readonly Vector2[] OtherTwoCardPositions = {
+    public static readonly Vector2[] TwoCardPositions = {
         new Vector2(-80, Card_Alignment_Y),
         new Vector2(80, Card_Alignment_Y)
     };
-    public static readonly Vector2[] OtherThreeCardPositions = {
+    public static readonly Vector2[] ThreeCardPositions = {
         new Vector2(-150, Card_Alignment_Y),
         new Vector2(0, Card_Alignment_Y),
         new Vector2(150, Card_Alignment_Y)
     };
-
-    public static readonly Vector2[] MyTwoCardPositions = {
-        new Vector2(-80, -Card_Alignment_Y),
-        new Vector2(80, -Card_Alignment_Y)
-    };
-    public static readonly Vector2[] MyThreeCardPositions = {
-        new Vector2(-150, -Card_Alignment_Y),
-        new Vector2(0, -Card_Alignment_Y),
-        new Vector2(150, -Card_Alignment_Y)
+    public static readonly Vector2[] FourCardPositions = {
+        new Vector2(-210, Card_Alignment_Y),
+        new Vector2(-70, Card_Alignment_Y),
+        new Vector2(70, Card_Alignment_Y),
+        new Vector2(210, Card_Alignment_Y),
     };
 
     public static readonly Vector2 MyDrawCardSpawnPos = new Vector2(Screen.width, -Card_Alignment_Y);

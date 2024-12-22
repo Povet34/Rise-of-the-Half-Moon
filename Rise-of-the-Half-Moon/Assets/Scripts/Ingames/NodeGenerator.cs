@@ -1,8 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class NodeGenerator : MonoBehaviour
@@ -170,6 +167,10 @@ public class NodeGenerator : MonoBehaviour
     // Create an edge between two nodes (do not instantiate Edge here)
     void CreateEdge(Node nodeA, Node nodeB)
     {
+        // Check if either node already has 4 edges
+        if (nodeA.connectedEdges.Count >= 3 || nodeB.connectedEdges.Count >= 3)
+            return;
+
         // Initialize the edge, but do not instantiate it yet
         Vector3 midpoint = (nodeA.position + nodeB.position) / 2;
         GameObject edgeObject = Instantiate(edgePrefab, midpoint, Quaternion.identity, transform);
@@ -217,204 +218,141 @@ public class NodeGenerator : MonoBehaviour
         public CreaseType creaseType { get; set; }
     }
 
-    // startNode로부터 모든 노드까지의 거리를 구한다.
-    private Dictionary<Node, NodePathInfo> GetReachableNodes(Node startNode)
+    private void FindContinuousCreases(Node startNode)
     {
-        Dictionary<Node, NodePathInfo> reachableNodes = new Dictionary<Node, NodePathInfo>();
-        Queue<(Node node, int distance, List<Node> path)> queue = new Queue<(Node node, int distance, List<Node> path)>();
+        pathInfos.Clear();
 
-        queue.Enqueue((startNode, 0, new List<Node> { startNode }));
-        reachableNodes[startNode] = new NodePathInfo { EndNode = startNode, Distance = 0, Path = new List<Node> { startNode } };
+        //Find Path
+        FindPath(startNode, new List<Node> { startNode });
 
-        while (queue.Count > 0)
-        {
-            var (currentNode, currentDistance, currentPath) = queue.Dequeue();
-
-            foreach (Node neighbor in GetConnectedNeighbors(currentNode))
-            {
-                if (!reachableNodes.ContainsKey(neighbor))
-                {
-                    int newDistance = currentDistance + 1;
-                    List<Node> newPath = new List<Node>(currentPath) { neighbor };
-                    reachableNodes[neighbor] = new NodePathInfo { EndNode = neighbor, Distance = newDistance, Path = newPath };
-                    queue.Enqueue((neighbor, newDistance, newPath));
-                }
-            }
-        }
-
-        return reachableNodes;
+        //Marge Path
+        MergePath();
     }
 
-    private List<NodePathInfo> GetNodesByEdgeCount(Node startNode)
+    private void FindPath(Node currentNode, List<Node> currentPath)
     {
-        List<NodePathInfo> nodePathInfos = new List<NodePathInfo>();
-
-        Dictionary<Node, NodePathInfo> reachableNodes = GetReachableNodes(startNode);
-
-        foreach (var kvp in reachableNodes)
+        foreach (Node neighbor in GetConnectedNeighbors(currentNode))
         {
-            Node node = kvp.Key;
-            NodePathInfo pathInfo = kvp.Value;
-            int distance = pathInfo.Distance;
+            if (currentPath.Contains(neighbor))
+                continue;
 
-            // 경로에 있는 모든 노드가 유효한지 확인
-            bool isValidPath = true;
-            foreach (Node pathNode in pathInfo.Path)
+            List<Node> path = new List<Node>(currentPath) { neighbor };
+            NodePathInfo.CreaseType creaseType = NodePathInfo.CreaseType.None;
+
+            int currentNodePhase = currentNode.GetPhaseType();
+            int neighborPhase = neighbor.GetPhaseType();
+
+            if (neighborPhase == PhaseData.GetNextPhaseType(currentNodePhase, gameManager.contentType))
             {
-                if (pathNode == null || pathNode.phaseData == null)
+                creaseType = NodePathInfo.CreaseType.Increase;
+            }
+            else if (neighborPhase == PhaseData.GetPreviousPhaseType(currentNodePhase, gameManager.contentType))
+            {
+                creaseType = NodePathInfo.CreaseType.Decrease;
+            }
+            else
+            {
+                continue;
+            }
+
+            FindPathInDirection(neighbor, path, creaseType);
+        }
+    }
+
+    private void FindPathInDirection(Node currentNode, List<Node> currentPath, NodePathInfo.CreaseType creaseType)
+    {
+        bool validPath = true;
+
+        while (validPath)
+        {
+            validPath = false;
+            foreach (Node nextNeighbor in GetConnectedNeighbors(currentNode))
+            {
+                if (currentPath.Contains(nextNeighbor))
+                    continue;
+
+                int currentNodePhase = currentNode.GetPhaseType();
+                int nextNeighborPhase = nextNeighbor.GetPhaseType();
+
+                if ((creaseType == NodePathInfo.CreaseType.Increase &&
+                     nextNeighborPhase == PhaseData.GetNextPhaseType(currentNodePhase, gameManager.contentType)) ||
+                    (creaseType == NodePathInfo.CreaseType.Decrease &&
+                     nextNeighborPhase == PhaseData.GetPreviousPhaseType(currentNodePhase, gameManager.contentType)))
                 {
-                    isValidPath = false;
+                    currentPath.Add(nextNeighbor);
+                    currentNode = nextNeighbor;
+                    validPath = true;
                     break;
                 }
             }
 
-            if (isValidPath && distance >= 1)
+            if (!validPath)
             {
-                pathInfo.creaseType = IsPathIncreasingOrDecreasing(pathInfo);
-                nodePathInfos.Add(pathInfo);
-            }
-        }
-
-
-        return nodePathInfos;
-    }
-
-    //start부터 end까지 증가/감소 연결성인지 확인
-    private NodePathInfo.CreaseType IsPathIncreasingOrDecreasing(NodePathInfo pathInfo)
-    {
-        if (pathInfo.Path.Count < 2)
-        {
-            return NodePathInfo.CreaseType.None; // 경로에 노드가 1개 이하인 경우, None으로 간주
-        }
-
-        bool isIncreasing = true;
-        bool isDecreasing = true;
-
-        for (int i = 1; i < pathInfo.Path.Count; i++)
-        {
-            int previousPhase = pathInfo.Path[i - 1].phaseData.phaseIndex;
-            int currentPhase = pathInfo.Path[i].phaseData.phaseIndex;
-            PhaseData.ContentType contentType = pathInfo.Path[i].phaseData.contentType;
-
-            if (PhaseData.GetNextPhaseType(previousPhase, contentType) != currentPhase)
-            {
-                isIncreasing = false;
-            }
-
-            if (PhaseData.GetPreviousPhaseType(previousPhase, contentType) != currentPhase)
-            {
-                isDecreasing = false;
-            }
-        }
-
-        if (isIncreasing)
-        {
-            return NodePathInfo.CreaseType.Increase;
-        }
-        else if (isDecreasing)
-        {
-            return NodePathInfo.CreaseType.Decrease;
-        }
-        else
-        {
-            return NodePathInfo.CreaseType.None;
-        }
-    }
-
-    //NodePathInfo.CreaseType이 None이면 제거
-    private void RemoveNoneCreaseType(List<NodePathInfo> nodePaths)
-    {
-        nodePaths.RemoveAll(pathInfo => pathInfo.creaseType == NodePathInfo.CreaseType.None);
-    }
-
-    /// <summary>
-    /// 최소량보다 적으면 제거한다
-    /// </summary>
-    /// <param name="minimum"></param>
-    private void RemoveLessthanCount(int minimum, List<NodePathInfo> nodePaths)
-    {
-        nodePaths.RemoveAll(pathInfo => pathInfo.Path.Count < minimum);
-    }
-
-    //상위 경로가 하위 경로를 포함하는 경우 최상위 경로만 남기고 하위 경로를 모두 제거
-    private void RemoveDuplicationNodePath(List<NodePathInfo> nodePaths)
-    {
-        for (int i = 0; i < nodePaths.Count; i++)
-        {
-            for (int j = nodePaths.Count - 1; j > i; j--)
-            {
-                if (IsPathContained(nodePaths[i], nodePaths[j]))
+                NodePathInfo pathInfo = new NodePathInfo
                 {
-                    nodePaths.RemoveAt(j);
-                }
-                else if (IsPathContained(nodePaths[j], nodePaths[i]))
-                {
-                    nodePaths.RemoveAt(i);
-                    i--;
-                    break;
-                }
+                    EndNode = currentNode,
+                    Distance = currentPath.Count,
+                    Path = currentPath,
+                    creaseType = creaseType
+                };
+                pathInfos.Add(pathInfo);
             }
         }
     }
 
-    // 경로가 다른 경로를 포함하는지 확인하는 메서드
-    private bool IsPathContained(NodePathInfo pathInfo1, NodePathInfo pathInfo2)
+    private void MergePath()
     {
-        return !pathInfo2.Path.Except(pathInfo1.Path).Any();
-    }
+        List<NodePathInfo> newPathInfos = new List<NodePathInfo>();
+        List<NodePathInfo> increasePaths = pathInfos.Where(p => p.creaseType == NodePathInfo.CreaseType.Increase).ToList();
+        List<NodePathInfo> decreasePaths = pathInfos.Where(p => p.creaseType == NodePathInfo.CreaseType.Decrease).ToList();
 
-    //증가 path와 감소 path가 있고, 0번이 같다면 증가 path와 감소 path가 합쳐진 새로운 NodePath를 만들어서 추가한다.
-    private void MargeNodePath(List<NodePathInfo> nodePaths)
-    {
-        for (int i = 0; i < nodePaths.Count; i++)
+        if (increasePaths.Count > 0 && decreasePaths.Count > 0)
         {
-            for (int j = i + 1; j < nodePaths.Count; j++)
+            foreach (var increasePath in increasePaths)
             {
-                if (nodePaths[i].Path[0] == nodePaths[j].Path[0] &&
-                    nodePaths[i].creaseType == NodePathInfo.CreaseType.Increase &&
-                    nodePaths[j].creaseType == NodePathInfo.CreaseType.Decrease)
+                foreach (var decreasePath in decreasePaths)
                 {
-                    List<Node> mergedPath = new List<Node>(nodePaths[i].Path);
-                    mergedPath.AddRange(nodePaths[j].Path.Skip(1));
+                    List<Node> mergedPath = new List<Node>(increasePath.Path);
+                    mergedPath.AddRange(decreasePath.Path.Skip(1)); // Skip the first node to avoid duplication
+
+                    // Remove duplicate nodes
+                    mergedPath = mergedPath.Distinct().ToList();
 
                     NodePathInfo mergedPathInfo = new NodePathInfo
                     {
-                        EndNode = nodePaths[j].EndNode,
-                        Distance = nodePaths[i].Distance + nodePaths[j].Distance - 1,
+                        EndNode = decreasePath.EndNode,
+                        Distance = mergedPath.Count,
                         Path = mergedPath,
-                        creaseType = NodePathInfo.CreaseType.None
+                        creaseType = NodePathInfo.CreaseType.None // Merged path has no specific crease type
                     };
-
-                    nodePaths.Add(mergedPathInfo);
-                    break;
+                    newPathInfos.Add(mergedPathInfo);
                 }
             }
         }
-    }
+        else
+        {
+            newPathInfos.AddRange(increasePaths);
+            newPathInfos.AddRange(decreasePaths);
+        }
 
-
-    private void GenerateCycles(Node startNode)
-    {
-        pathInfos = GetNodesByEdgeCount(startNode);
-
-        RemoveNoneCreaseType(pathInfos);
-        MargeNodePath(pathInfos);
-        RemoveLessthanCount(3, pathInfos);
-
-        RemoveDuplicationNodePath(pathInfos);
+        // 기존의 것들을 삭제
+        pathInfos.Clear();
+        pathInfos.AddRange(newPathInfos);
     }
 
     public List<List<Node>> GetSequentialPhaseNodes(Node putNode)
     {
-        GenerateCycles(putNode);
+        FindContinuousCreases(putNode);
 
         List<List<Node>> includedStartNodeCycles = new List<List<Node>>();
 
-        foreach (var cycle in pathInfos)
+        foreach (var pathInfo in pathInfos)
         {
-            List<Node> sortedCycle = new List<Node>(cycle.Path);
-            sortedCycle.Sort((node1, node2) => node2.GetPhaseType().CompareTo(node1.GetPhaseType()));
+            if (pathInfo.Path.Count < 3)
+                continue;
 
+            List<Node> sortedCycle = new List<Node>(pathInfo.Path);
+            sortedCycle.Sort((node1, node2) => node2.GetPhaseType().CompareTo(node1.GetPhaseType()));
             includedStartNodeCycles.Add(sortedCycle);
         }
 

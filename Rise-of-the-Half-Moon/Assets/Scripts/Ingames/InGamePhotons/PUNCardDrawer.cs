@@ -2,6 +2,7 @@ using DG.Tweening;
 using Photon.Pun;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
@@ -51,7 +52,7 @@ public class PUNCardDrawer : MonoBehaviourPun, ICardDrawer
             return;
 
         List<ICard> targetCards = isPlayerTurn ? myCards : otherCards;
-        Vector2[] positions = GetCardPositions(targetCards.Count + 1, isPlayerTurn);
+        Vector2[] positions = GetCardPositions(targetCards.Count + 1);
         Vector2 spawnPos = isPlayerTurn ? Definitions.MyDrawCardSpawnPos : Definitions.OhterDrawCardSpawnPos;
 
         if (targetCards.Count >= positions.Length)
@@ -148,11 +149,18 @@ public class PUNCardDrawer : MonoBehaviourPun, ICardDrawer
         }
     }
 
-    Vector2[] GetCardPositions(int cardCount, bool isPlayer1)
+    Vector2[] GetCardPositions(int cardCount)
     {
-        if (isPlayer1)
-            return cardCount == 2 ? Definitions.MyTwoCardPositions : Definitions.MyThreeCardPositions;
-        else
-            return cardCount == 2 ? Definitions.OtherTwoCardPositions : Definitions.OtherThreeCardPositions;
+        switch(cardCount)
+        {
+            case 1:
+                return Definitions.TwoCardPositions;
+            case 2:
+                return Definitions.ThreeCardPositions;
+            case 3:
+                return Definitions.FourCardPositions;
+            default:
+                return null;
+        }
     }
 }
