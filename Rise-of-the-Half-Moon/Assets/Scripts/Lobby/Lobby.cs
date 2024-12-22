@@ -9,6 +9,7 @@ public class Lobby : MonoBehaviour
 {
     [SerializeField] Button matchmakingButton;
     [SerializeField] Button playWithAIButton;
+    [SerializeField] Button TestPVEButton;
     [SerializeField] Button SettingsButton;
 
     [SerializeField] LobbySettings settings;
@@ -26,9 +27,12 @@ public class Lobby : MonoBehaviour
             return;
         }
 
+        TestPVEButton.gameObject.SetActive(Application.isEditor);
+
         matchmakingButton.onClick.AddListener(StartMatchMaring);
         playWithAIButton.onClick.AddListener(PlayWithAI);
         SettingsButton.onClick.AddListener(() => settings.gameObject.SetActive(true));
+        TestPVEButton.onClick.AddListener(StartTestPVEGame);
 
         photonLobby.OnPlayerEnteredRoomCallback += OnPlayerEnteredRoom;
         photonLobby.OnPlayerAlreadyInRoomCallback += OnPlayerAlreadyInRoom;
@@ -56,6 +60,7 @@ public class Lobby : MonoBehaviour
     {
         if (globalVolumeController != null)
         {
+            photonLobby.DisconnectFromMaster();
             globalVolumeController.SetLensDistortion(-1.0f, 0.01f, 1.0f);
             StartCoroutine(LoadGameSceneAfterDelay(2.0f));
         }
@@ -127,6 +132,17 @@ public class Lobby : MonoBehaviour
         data.seed = Random.Range(0, 100000);
 
         ContentsDataManager.Instance.SetPVEGameInitData(data);
+        SceneManager.LoadScene(Definitions.INGAME_SCENE);
+    }
+
+    private void StartTestPVEGame()
+    {
+        PVEGameManager.GameInitData data = new PVEGameManager.GameInitData();
+        data.contentType = (PhaseData.ContentType)Random.Range(0, (int)PhaseData.ContentType.Count);
+        data.initBotLevel = 0;
+        data.seed = 1;
+
+        ContentsDataManager.Instance.SetTestData(data);
         SceneManager.LoadScene(Definitions.INGAME_SCENE);
     }
 }

@@ -2094,6 +2094,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PVPGameManagerPrefab: {fileID: 1331707780511862054, guid: ecd5bece04e62cd47aad13093631b042, type: 3}
   PVEGameManagerPrefab: {fileID: 3719392274442715907, guid: 54891e546927af249b52d4c90d1cbd44, type: 3}
+  TestGameManagerPrefab: {fileID: -6998247990097872172, guid: 2c57efb070c048e40aac6c685f1e45ed, type: 3}
 --- !u!1 &1102868352
 GameObject:
   m_ObjectHideFlags: 0

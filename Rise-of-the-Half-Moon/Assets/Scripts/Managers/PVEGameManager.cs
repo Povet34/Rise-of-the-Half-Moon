@@ -11,13 +11,13 @@ public class PVEGameManager : GameManager
         public int seed;
     }
 
-    BotLevelData initBotLevelData;
+     protected BotLevelData initBotLevelData;
 
-    [SerializeField] Bot botPrefab;
-    [SerializeField] CardDrawer cardDrawerPrefab;
-    
-    Bot bot;
-    GameInitData data;
+    [SerializeField] protected Bot botPrefab;
+    [SerializeField] protected CardDrawer cardDrawerPrefab;
+
+    protected Bot bot;
+    protected GameInitData data;
 
     protected override void Start()
     {
@@ -31,7 +31,7 @@ public class PVEGameManager : GameManager
         StartPlay();
     }
 
-    private void StartPlay()
+    protected void StartPlay()
     {
         InitCardList();
         InitNodeGenerator();

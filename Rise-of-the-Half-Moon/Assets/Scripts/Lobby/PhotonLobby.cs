@@ -48,6 +48,19 @@ public class PhotonLobby : MonoBehaviourPunCallbacks
         }
     }
 
+    public void DisconnectFromMaster()
+    {
+        if (PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.Disconnect();
+            Debug.Log("Disconnected from Master Server.");
+        }
+        else
+        {
+            Debug.LogWarning("Not connected to any server.");
+        }
+    }
+
     public override void OnDisconnected(DisconnectCause cause)
     {
         base.OnDisconnected(cause);

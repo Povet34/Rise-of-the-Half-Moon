@@ -71,9 +71,9 @@ public class PhaseData : ScriptableObject
     /// <param name="currentPhase"></param>
     /// <param name="comparePhase"></param>
     /// <returns></returns>
-    public bool IsPhasing(int currentPhase, int comparePhase)
+    public static bool IsPhasing(int currentPhase, int comparePhase, ContentType type)
     {
-        return comparePhase == GetPreviousPhaseType(currentPhase, contentType) || comparePhase == GetNextPhaseType(currentPhase, contentType);
+        return comparePhase == GetPreviousPhaseType(currentPhase, type) || comparePhase == GetNextPhaseType(currentPhase, type);
     }
 
     public static int GetPreviousPhaseType(int currentType, ContentType type)

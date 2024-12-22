@@ -11,6 +11,7 @@ public class ContentsDataManager : Singleton<ContentsDataManager>
 
     private PVPGameManager.GameInitData pvpGameInitData;
     private PVEGameManager.GameInitData pveGameInitData;
+    private PVEGameManager.GameInitData testGameData;
 
     public List<PhaseData> GetPhaseDatas(PhaseData.ContentType content, ref ContentRule rule)
     {
@@ -56,16 +57,21 @@ public class ContentsDataManager : Singleton<ContentsDataManager>
     public void SetPVEGameInitData(PVEGameManager.GameInitData data)
     {
         pveGameInitData = data;
-
-        if (TestManager.Instance.isTest)
-        {
-            pveGameInitData.contentType = testType;
-        }
     }
 
     public PVEGameManager.GameInitData GetPVEGameInitData()
     {
         return pveGameInitData;
+    }
+
+    public void SetTestData(PVEGameManager.GameInitData data)
+    {
+        testGameData = data;
+    }
+
+    public PVEGameManager.GameInitData GetTestData()
+    {
+        return testGameData;
     }
 
     public void ClearDatas()

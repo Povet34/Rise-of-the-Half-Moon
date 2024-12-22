@@ -30,7 +30,7 @@ public class Node : MonoBehaviour
         this.position = position;
         nodeRenderer = nodeObject.GetComponent<Renderer>(); // Get the Renderer component
 
-        pointValueNotifier.gameObject.SetActive(TestManager.Instance.isTest);
+        pointValueNotifier.gameObject.SetActive(false);
         propertyBlock = new MaterialPropertyBlock();
     }
 
@@ -118,10 +118,9 @@ public class Node : MonoBehaviour
 
     public void UpdatePointValue(int value)
     {
-        pointValueNotifier.gameObject.SetActive(TestManager.Instance.isTest);
-        if (TestManager.Instance.isTest)
-        {
-            pointValueNotifier.text = value.ToString();
-        }
+        //if (TestManager.Instance.isTest)
+        //{
+        //    pointValueNotifier.text = value.ToString();
+        //}
     }
 }
