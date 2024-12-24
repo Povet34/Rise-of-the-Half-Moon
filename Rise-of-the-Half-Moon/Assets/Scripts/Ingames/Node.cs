@@ -29,12 +29,13 @@ public class Node : MonoBehaviour
     public void Init(int index, Vector3 position, GameObject nodeObject)
     {
         this.index = index;
-        occupiedUser = Definitions.EMPTY_NODE;
         this.position = position;
+        occupiedUser = Definitions.EMPTY_NODE;
+        
         nodeRenderer = nodeObject.GetComponent<Renderer>(); // Get the Renderer component
-
-        pointValueNotifier.gameObject.SetActive(false);
         propertyBlock = new MaterialPropertyBlock();
+        
+        pointValueNotifier.gameObject.SetActive(false);
     }
 
     public int GetPhaseType()
@@ -125,5 +126,17 @@ public class Node : MonoBehaviour
         //{
         //    pointValueNotifier.text = value.ToString();
         //}
+    }
+
+    public bool IsConnected(Node target)
+    {
+        foreach (Edge edge in connectedEdges)
+        {
+            if (edge.nodeA == target || edge.nodeB == target)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

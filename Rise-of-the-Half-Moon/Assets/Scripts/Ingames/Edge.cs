@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class Edge : MonoBehaviour
 {
-    public Node nodeA; // The first node of the edge
-    public Node nodeB; // The second node of the edge
+    public Node nodeA;      // The first node of the edge
+    public Node nodeB;      // The second node of the edge
 
     // Init method to initialize an edge between two nodes
     public void Init(Node nodeA, Node nodeB)

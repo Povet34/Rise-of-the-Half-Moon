@@ -34,17 +34,17 @@ public class GameUI : MonoBehaviour
 
     public void ShowWin()
     {
-        endGamePanel.ShowResult("Win");
+        endGamePanel.ShowResult(Definitions.Win);
     }
 
     public void ShowLose()
     {
-        endGamePanel.ShowResult("Lose");
+        endGamePanel.ShowResult(Definitions.Lose);
     }
 
     public void ShowDraw()
     {
-        endGamePanel.ShowResult("Draw");
+        endGamePanel.ShowResult(Definitions.Draw);
     }
 
     private void ShowSettingPanel()

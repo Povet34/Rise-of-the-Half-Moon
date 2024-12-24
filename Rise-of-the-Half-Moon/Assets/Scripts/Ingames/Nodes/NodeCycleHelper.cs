@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,62 +8,70 @@ public class NodeCycleHelper
     public List<Node> nodes = new List<Node>();
     GameManager gameManager;
 
-    public void Init(GameManager gameManager, List<Node> nodes, int row, int col)
+    public NodeCycleHelper(GameManager gameManager, List<Node> nodes, int row, int col)
     {
         this.gameManager = gameManager;
         this.row = row;
         this.col = col;
-        this.nodes = nodes; 
+        this.nodes = nodes;
     }
 
-    public void CheckCombo(Node putNode)
+    public Dictionary<string, List<Node>> FindCycle(Node putNode)
     {
+        Dictionary<string, List<Node>> resultDic = new Dictionary<string, List<Node>>();
+
         UpdateNearNodeInfo(putNode);
-        Stack<Node> stack = new Stack<Node>();
-        stack.Push(putNode);
+
         List<List<Node>> nextNodeLists = new List<List<Node>>();
         List<List<Node>> prevNodeLists = new List<List<Node>>();
         List<Node> temp = new List<Node>();
         SetNextNodeList(ref nextNodeLists, ref temp, putNode);
         temp = new List<Node>();
         SetPrevNodeList(ref prevNodeLists, ref temp, putNode);
-        foreach (List<Node> prev in prevNodeLists)
+        foreach (List<Node> prevs in prevNodeLists)
         {
-            prev.Reverse();
+            prevs.Reverse();
+
             foreach (List<Node> next in nextNodeLists)
             {
-                List<Node> tmpNext = new List<Node>(next);
-                if (prev.Count > 0)
+                List<Node> result = new List<Node>();
+
+                List<Node> tmpNexts = new List<Node>(next);
+                if (prevs.Count > 0)
                 {
                     for (int i = 0; i < next.Count; i++)
                     {
-                        if (next[i] == prev[0])
+                        if (next[i] == prevs[0])
                         {
-                            tmpNext = next.GetRange(0, i);
+                            tmpNexts = next.GetRange(0, i);
                             break;
                         }
                     }
                 }
-                string str = string.Empty;
-                foreach (var tt in prev)
+                
+                string key = "";
+                foreach (var pre in prevs)
                 {
-                    str += tt.GetPhaseType().ToString();
-                    str += $"({tt.index})";
-                    str += "-";
+                    key += pre.index;
+                    result.Add(pre);
                 }
-                str += putNode.GetPhaseType().ToString();
-                str += $"({putNode.index})";
-                str += "-";
-                foreach (var tt in tmpNext)
+
+                key += putNode.index;
+                result.Add(putNode);
+
+                foreach (var nxt in tmpNexts)
                 {
-                    str += tt.GetPhaseType().ToString();
-                    str += $"({tt.index})";
-                    str += "-";
+                    key += nxt.index;
+                    result.Add(nxt);
                 }
-                Debug.Log(str);
+
+                resultDic[key] = result;
             }
         }
+
+        return resultDic;
     }
+
     private void SetNextNodeList(ref List<List<Node>> nextNodeLists, ref List<Node> currentPathNode, Node node)
     {
         bool isFindNext = false;
@@ -103,7 +110,7 @@ public class NodeCycleHelper
 
     public void UpdateNearNodeInfo(Node node)
     {
-        Node upNode = GetUpNode(node.index);
+        Node upNode = GetUpNode(node);
         if (upNode != null)
         {
             if (IsNext(upNode, node))
@@ -117,7 +124,7 @@ public class NodeCycleHelper
                 upNode.prevNodes.Add(node);
             }
         }
-        Node downNode = GetDownIndex(node.index);
+        Node downNode = GetDownIndex(node);
         if (downNode != null)
         {
             if (IsNext(downNode, node))
@@ -131,7 +138,7 @@ public class NodeCycleHelper
                 downNode.prevNodes.Add(node);
             }
         }
-        Node leftNode = GetLeftIndex(node.index);
+        Node leftNode = GetLeftIndex(node);
         if (leftNode != null)
         {
             if (IsNext(leftNode, node))
@@ -145,7 +152,7 @@ public class NodeCycleHelper
                 leftNode.prevNodes.Add(node);
             }
         }
-        Node rightNode = GetRightIndex(node.index);
+        Node rightNode = GetRightIndex(node);
         if (rightNode != null)
         {
             if (IsNext(rightNode, node))
@@ -164,32 +171,61 @@ public class NodeCycleHelper
     {
         return PhaseData.GetNextPhaseType(node1.GetPhaseType(), gameManager.contentType) == node2.GetPhaseType();
     }
+
     private bool IsPrev(Node node1, Node node2)
     {
         return PhaseData.GetPreviousPhaseType(node1.GetPhaseType(), gameManager.contentType) == node2.GetPhaseType();
     }
-    public Node GetUpNode(int index)
+
+    public Node GetUpNode(Node node)
     {
-        if (index < row)
+        if (node.index < row)
             return null;
-        return nodes[index - col];
+
+        var target = nodes[node.index - col];
+
+        if (!node.IsConnected(target))
+            return null;
+
+        return target;
     }
-    public Node GetDownIndex(int index)
+
+    public Node GetDownIndex(Node node)
     {
-        if (index >= row * col)
+        if (node.index >= row * col)
             return null;
-        return nodes[index + col]; 
+
+        var target = nodes[node.index + col];
+
+        if (!node.IsConnected(target))
+            return null;
+
+        return target;
     }
-    public Node GetLeftIndex(int index)
+
+    public Node GetLeftIndex(Node node)
     {
-        if (index % col == 0)
+        if (node.index % col == 0)
             return null;
-        return nodes[index - 1];
+
+        var target = nodes[node.index - 1];
+
+        if (!node.IsConnected(target))
+            return null;
+
+        return target;
     }
-    public Node GetRightIndex(int index)
+
+    public Node GetRightIndex(Node node)
     {
-        if (index % col == 9)
+        if (node.index % col == 9)
             return null;
-        return nodes[index + 1];
+
+        var target = nodes[node.index + 1];
+
+        if (!node.IsConnected(target))
+            return null;
+
+        return target;
     }
 }

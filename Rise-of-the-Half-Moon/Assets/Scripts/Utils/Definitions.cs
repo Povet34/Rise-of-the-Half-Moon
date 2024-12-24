@@ -40,6 +40,14 @@ public static class Definitions
 
     #endregion
 
+    #region Result Comments
+
+    public const string Win = "Win";
+    public const string Lose = "Lose";
+    public const string Draw = "Draw";
+
+    #endregion
+
     public const int EMPTY_NODE = 0;
     public const int NOT_OCCUPIED_NODE = 1;
     public const int MY_INDEX = 2;

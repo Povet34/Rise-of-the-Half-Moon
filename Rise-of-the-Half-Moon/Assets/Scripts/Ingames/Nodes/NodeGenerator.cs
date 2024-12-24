@@ -52,7 +52,7 @@ public class NodeGenerator : MonoBehaviour
         GenerateRandomConnections();
         EnsureAllNodesConnected();
 
-        nodeCycleHelper.Init(gameManager, Nodes, rows, cols);
+        nodeCycleHelper = new NodeCycleHelper(gameManager, Nodes, rows, cols);
     }
 
     void GenerateGrid()
@@ -345,21 +345,8 @@ public class NodeGenerator : MonoBehaviour
 
     public List<List<Node>> GetSequentialPhaseNodes(Node putNode)
     {
-        FindContinuousCreases(putNode);
-
-        List<List<Node>> includedStartNodeCycles = new List<List<Node>>();
-
-        foreach (var pathInfo in pathInfos)
-        {
-            if (pathInfo.Path.Count < 3)
-                continue;
-
-            List<Node> sortedCycle = new List<Node>(pathInfo.Path);
-            sortedCycle.Sort((node1, node2) => node2.GetPhaseType().CompareTo(node1.GetPhaseType()));
-            includedStartNodeCycles.Add(sortedCycle);
-        }
-
-        return includedStartNodeCycles; // Return an empty list if no group contains the startNode
+        List<List<Node>> includedStartNodeCycles = nodeCycleHelper.FindCycle(putNode).Values.ToList();
+        return includedStartNodeCycles;
     }
 
     #endregion
