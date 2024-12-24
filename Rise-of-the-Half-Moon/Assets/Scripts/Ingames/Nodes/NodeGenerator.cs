@@ -21,6 +21,7 @@ public class NodeGenerator : MonoBehaviour
     public List<Node> Nodes => nodes;
 
     private List<NodePathInfo> pathInfos = new List<NodePathInfo>();
+    private NodeCycleHelper nodeCycleHelper;
 
     readonly Vector3[] validDirections = new Vector3[]
     {
@@ -50,6 +51,8 @@ public class NodeGenerator : MonoBehaviour
         GenerateGrid();
         GenerateRandomConnections();
         EnsureAllNodesConnected();
+
+        nodeCycleHelper.Init(gameManager, Nodes, rows, cols);
     }
 
     void GenerateGrid()

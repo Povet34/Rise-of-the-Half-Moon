@@ -23,6 +23,9 @@ public class Node : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI pointValueNotifier;
 
+    public List<Node> nextNodes = new List<Node>();
+    public List<Node> prevNodes = new List<Node>();
+
     public void Init(int index, Vector3 position, GameObject nodeObject)
     {
         this.index = index;
