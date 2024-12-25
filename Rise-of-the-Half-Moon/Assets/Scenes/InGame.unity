@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
-  m_Sun: {fileID: 1786700941}
+  m_Sun: {fileID: 0}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1059,6 +1059,7 @@ GameObject:
   m_Component:
   - component: {fileID: 493918780}
   - component: {fileID: 493918779}
+  - component: {fileID: 493918781}
   m_Layer: 0
   m_Name: Global Volume
   m_TagString: Untagged
@@ -1081,7 +1082,7 @@ MonoBehaviour:
   m_IsGlobal: 1
   priority: 0
   blendDistance: 0
-  weight: 1
+  weight: 0.955
   sharedProfile: {fileID: 11400000, guid: 8536457e9703bcf48a56d131e41826ee, type: 2}
 --- !u!4 &493918780
 Transform:
@@ -1098,6 +1099,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &493918781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 493918778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3d8b838c35e5414581b5591c139e567, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &704235049
 GameObject:
   m_ObjectHideFlags: 0

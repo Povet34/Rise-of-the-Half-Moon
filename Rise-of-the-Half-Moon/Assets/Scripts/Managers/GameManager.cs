@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
 
     protected virtual void Start()
     {
+        volumeController.SetSuperiorUserEffect(Color.white, 1, 1);
     }
 
     protected virtual void InitCardList()
@@ -155,7 +156,7 @@ public class GameManager : MonoBehaviour
         float ratio = Mathf.InverseLerp(0, myScore + otherScore, Mathf.Abs(myScore - otherScore));
         float threshold = 1 - (ratio * 2f);
 
-        volumeController.SetSuperiorUserEffect(color, threshold, 30);
+        volumeController.SetSuperiorUserEffect(color, threshold, 10);
     }
 
     #endregion

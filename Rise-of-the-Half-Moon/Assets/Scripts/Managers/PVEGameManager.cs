@@ -21,6 +21,8 @@ public class PVEGameManager : GameManager
 
     protected override void Start()
     {
+        base.Start();
+
         data = ContentsDataManager.Instance.GetPVEGameInitData();
         cardDrawer = Instantiate(cardDrawerPrefab);
         Random.InitState(data.seed);

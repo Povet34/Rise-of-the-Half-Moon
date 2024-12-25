@@ -35,6 +35,8 @@ public class PVPGameManager : GameManager
         if (!PhotonNetwork.IsMasterClient)
             return;
 
+        base.Start();
+
         IsNetworkGame = true;
 
         var go = PhotonNetwork.Instantiate(Definitions.PUNCardDrawer, Vector3.zero, Quaternion.identity);
