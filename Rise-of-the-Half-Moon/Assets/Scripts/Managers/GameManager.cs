@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     protected List<PhaseData> phaseDatas;
     protected GameUI gameUI;
     protected InGameCamController camController;
+    protected GlobalVolumeController volumeController;
     protected ICardDrawer cardDrawer;
 
     [Header("Me")]
@@ -32,6 +33,7 @@ public class GameManager : MonoBehaviour
         nodeGenerator = FindAnyObjectByType<NodeGenerator>();
         gameUI = FindAnyObjectByType<GameUI>();
         camController = FindAnyObjectByType<InGameCamController>();
+        volumeController = FindAnyObjectByType<GlobalVolumeController>();
     }
 
     protected virtual void Start()
@@ -136,11 +138,24 @@ public class GameManager : MonoBehaviour
     {
         myScore += score;
         gameUI.UpdateMyScore(myScore);
+
+        EffectUpdateScore();
     }
     public virtual void UpdateOtherScore(int score) 
     {
         otherScore += score;
         gameUI.UpdateOtherScore(otherScore);
+
+        EffectUpdateScore();
+    }
+
+    protected virtual void EffectUpdateScore()
+    {
+        Color color = myScore > otherScore ? Color.red : Color.blue;
+        float ratio = Mathf.InverseLerp(0, myScore + otherScore, Mathf.Abs(myScore - otherScore));
+        float threshold = 1 - (ratio * 2f);
+
+        volumeController.SetSuperiorUserEffect(color, threshold, 30);
     }
 
     #endregion

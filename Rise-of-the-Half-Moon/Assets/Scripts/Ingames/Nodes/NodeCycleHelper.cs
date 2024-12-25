@@ -125,64 +125,8 @@ public class NodeCycleHelper
                 connectedNode.prevNodes.Add(node);
             }
         }
-
-        //Node upNode = GetUpNode(node);
-        //if (upNode != null)
-        //{
-        //    if (IsNext(upNode, node))
-        //    {
-        //        node.prevNodes.Add(upNode);
-        //        upNode.nextNodes.Add(node);
-        //    }
-        //    if (IsPrev(upNode, node))
-        //    {
-        //        node.nextNodes.Add(upNode);
-        //        upNode.prevNodes.Add(node);
-        //    }
-        //}
-        //Node downNode = GetDownIndex(node);
-        //if (downNode != null)
-        //{
-        //    if (IsNext(downNode, node))
-        //    {
-        //        node.prevNodes.Add(downNode);
-        //        downNode.nextNodes.Add(node);
-        //    }
-        //    if (IsPrev(downNode, node))
-        //    {
-        //        node.nextNodes.Add(downNode);
-        //        downNode.prevNodes.Add(node);
-        //    }
-        //}
-        //Node leftNode = GetLeftIndex(node);
-        //if (leftNode != null)
-        //{
-        //    if (IsNext(leftNode, node))
-        //    {
-        //        node.prevNodes.Add(leftNode);
-        //        leftNode.nextNodes.Add(node);
-        //    }
-        //    if (IsPrev(leftNode, node))
-        //    {
-        //        node.nextNodes.Add(leftNode);
-        //        leftNode.prevNodes.Add(node);
-        //    }
-        //}
-        //Node rightNode = GetRightIndex(node);
-        //if (rightNode != null)
-        //{
-        //    if (IsNext(rightNode, node))
-        //    {
-        //        node.prevNodes.Add(rightNode);
-        //        rightNode.nextNodes.Add(node);
-        //    }
-        //    if (IsPrev(rightNode, node))
-        //    {
-        //        node.nextNodes.Add(rightNode);
-        //        rightNode.prevNodes.Add(node);
-        //    }
-        //}
     }
+
     private bool IsNext(Node node1, Node node2)
     {
         return PhaseData.GetNextPhaseType(node1.GetPhaseType(), gameManager.contentType) == node2.GetPhaseType();
@@ -191,57 +135,5 @@ public class NodeCycleHelper
     private bool IsPrev(Node node1, Node node2)
     {
         return PhaseData.GetPreviousPhaseType(node1.GetPhaseType(), gameManager.contentType) == node2.GetPhaseType();
-    }
-
-    public Node GetUpNode(Node node)
-    {
-        if (node.index < row + 1)
-            return null;
-
-        var target = nodes[node.index - col];
-
-        if (!node.IsConnected(target))
-            return null;
-
-        return target;
-    }
-
-    public Node GetDownIndex(Node node)
-    {
-        if (node.index >= row * col)
-            return null;
-
-        var target = nodes[node.index + col];
-
-        if (!node.IsConnected(target))
-            return null;
-
-        return target;
-    }
-
-    public Node GetLeftIndex(Node node)
-    {
-        if (node.index % col == 0)
-            return null;
-
-        var target = nodes[node.index - 1];
-
-        if (!node.IsConnected(target))
-            return null;
-
-        return target;
-    }
-
-    public Node GetRightIndex(Node node)
-    {
-        if (node.index % col == 9)
-            return null;
-
-        var target = nodes[node.index + 1];
-
-        if (!node.IsConnected(target))
-            return null;
-
-        return target;
     }
 }

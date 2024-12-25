@@ -4640,7 +4640,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myScore: {fileID: 2041589266}
   otherScore: {fileID: 1131005661}
-  endGamePanel: {fileID: 0}
+  endGamePanel: {fileID: 1819754685}
   settingButton: {fileID: 453506681}
   ingameSettings: {fileID: 8878868}
 --- !u!4 &2060830383

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using DG.Tweening;
+using UnityEngine.UIElements;
 
 public class ContentRule : MonoBehaviour
 {
@@ -173,23 +174,72 @@ public class ContentRule : MonoBehaviour
         Sequence sequence = DOTween.Sequence();
         SetIsAnimation(true);
 
-        foreach (Node node in nodes)
-        {
-            Vector3 originalScale = node.transform.localScale;
-            Vector3 targetScale = originalScale * 1.5f;
-
-            sequence.Append(node.transform.DOScale(targetScale, 0.2f));
-            sequence.AppendCallback(() => node.EnableEmission(isMine ? Definitions.My_Occupied_Color : Definitions.Other_Occupied_Color));
-            sequence.AppendCallback(() => node.occupiedUser = isMine ? Definitions.MY_INDEX : Definitions.OTHER_INDEX);
-            sequence.AppendInterval(0.2f);
-            sequence.Append(node.transform.DOScale(originalScale, 0.2f));
-            sequence.AppendCallback(() => node.transform.localScale = originalScale);
-        }
+        _FastAnimation();
 
         sequence.AppendCallback(() => SetIsAnimation(false));
         sequence.AppendCallback(() => endCallback?.Invoke());
 
         sequence.Play();
+
+
+        void _SlowAnimation()
+        {
+            foreach (Node node in nodes)
+            {
+                Vector3 originalScale = node.transform.localScale;
+                Vector3 targetScale = originalScale * 1.5f;
+
+                sequence.Append(node.transform.DOScale(targetScale, 0.2f));
+                sequence.AppendCallback(() => node.EnableEmission(isMine ? Definitions.My_Occupied_Color : Definitions.Other_Occupied_Color));
+                sequence.AppendCallback(() => node.occupiedUser = isMine ? Definitions.MY_INDEX : Definitions.OTHER_INDEX);
+                sequence.AppendInterval(0.2f);
+                sequence.Append(node.transform.DOScale(originalScale, 0.2f));
+                sequence.AppendCallback(() => node.transform.localScale = originalScale);
+            }
+        }
+        void _FastAnimation()
+        {
+            sequence.AppendCallback(() => ScaleNodes(nodes, 1.5f, 0.2f, true));
+            sequence.AppendCallback(() => SetEmissionColorNodes(nodes, Definitions.Non_Occupied_Color));
+            sequence.AppendInterval(0.5f);
+
+            foreach (Node node in nodes)
+            {
+                sequence.AppendCallback(() => node.EnableEmission(isMine ? Definitions.My_Occupied_Color : Definitions.Other_Occupied_Color));
+                sequence.AppendCallback(() => node.occupiedUser = isMine ? Definitions.MY_INDEX : Definitions.OTHER_INDEX);
+                sequence.AppendInterval(0.3f);
+            }
+
+            sequence.AppendInterval(0.5f);
+            sequence.AppendCallback(() => ScaleNodes(nodes, 1.0f, 0.2f, true));
+            sequence.AppendCallback(() => ScaleNodes(nodes, 1.0f));
+        }
+    }
+
+    protected virtual void ScaleNodes(List<Node> nodes, float scale, float duraction = 0f, bool isTween = false)
+    {
+        if (isTween)
+        {
+            foreach (Node node in nodes)
+            {
+                node.transform.DOScale(Vector3.one * scale, duraction);
+            }
+        }
+        else
+        {
+            foreach (Node node in nodes)
+            {
+                node.transform.localScale = Vector3.one * scale;
+            }
+        }
+    }
+
+    protected virtual void SetEmissionColorNodes(List<Node> nodes, Color color)
+    {
+        foreach (Node node in nodes)
+        {
+            node.EnableEmission(color);
+        }
     }
 
     public virtual bool IsRemainScoreSettlement()

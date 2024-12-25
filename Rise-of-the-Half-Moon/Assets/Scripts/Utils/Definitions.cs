@@ -82,6 +82,7 @@ public static class Definitions
     public static readonly Vector2 OhterDrawCardSpawnPos = new Vector2(Screen.width, Card_Alignment_Y);
     public static float CardMoveDuration = 1f;
 
+    public static Color Non_Occupied_Color = Color.black;
     public static Color My_Occupied_Color = new Color(0.8f, 0.1f, 0.1f, 1f);
     public static Color Other_Occupied_Color = new Color(0.1f, 0.1f, 0.8f, 1f);
 
