@@ -65,7 +65,8 @@ public class NodeCycleHelper
                     result.Add(nxt);
                 }
 
-                resultDic[key] = result;
+                if(result.Count > 2)
+                    resultDic[key] = result;
             }
         }
 
@@ -110,62 +111,77 @@ public class NodeCycleHelper
 
     public void UpdateNearNodeInfo(Node node)
     {
-        Node upNode = GetUpNode(node);
-        if (upNode != null)
+        var connectedNodes = node.GetAdjacentNodes();
+        foreach(var connectedNode in connectedNodes)
         {
-            if (IsNext(upNode, node))
+            if (IsNext(connectedNode, node))
             {
-                node.prevNodes.Add(upNode);
-                upNode.nextNodes.Add(node);
+                node.prevNodes.Add(connectedNode);
+                connectedNode.nextNodes.Add(node);
             }
-            if (IsPrev(upNode, node))
+            if (IsPrev(connectedNode, node))
             {
-                node.nextNodes.Add(upNode);
-                upNode.prevNodes.Add(node);
+                node.nextNodes.Add(connectedNode);
+                connectedNode.prevNodes.Add(node);
             }
         }
-        Node downNode = GetDownIndex(node);
-        if (downNode != null)
-        {
-            if (IsNext(downNode, node))
-            {
-                node.prevNodes.Add(downNode);
-                downNode.nextNodes.Add(node);
-            }
-            if (IsPrev(downNode, node))
-            {
-                node.nextNodes.Add(downNode);
-                downNode.prevNodes.Add(node);
-            }
-        }
-        Node leftNode = GetLeftIndex(node);
-        if (leftNode != null)
-        {
-            if (IsNext(leftNode, node))
-            {
-                node.prevNodes.Add(leftNode);
-                leftNode.nextNodes.Add(node);
-            }
-            if (IsPrev(leftNode, node))
-            {
-                node.nextNodes.Add(leftNode);
-                leftNode.prevNodes.Add(node);
-            }
-        }
-        Node rightNode = GetRightIndex(node);
-        if (rightNode != null)
-        {
-            if (IsNext(rightNode, node))
-            {
-                node.prevNodes.Add(rightNode);
-                rightNode.nextNodes.Add(node);
-            }
-            if (IsPrev(rightNode, node))
-            {
-                node.nextNodes.Add(rightNode);
-                rightNode.prevNodes.Add(node);
-            }
-        }
+
+        //Node upNode = GetUpNode(node);
+        //if (upNode != null)
+        //{
+        //    if (IsNext(upNode, node))
+        //    {
+        //        node.prevNodes.Add(upNode);
+        //        upNode.nextNodes.Add(node);
+        //    }
+        //    if (IsPrev(upNode, node))
+        //    {
+        //        node.nextNodes.Add(upNode);
+        //        upNode.prevNodes.Add(node);
+        //    }
+        //}
+        //Node downNode = GetDownIndex(node);
+        //if (downNode != null)
+        //{
+        //    if (IsNext(downNode, node))
+        //    {
+        //        node.prevNodes.Add(downNode);
+        //        downNode.nextNodes.Add(node);
+        //    }
+        //    if (IsPrev(downNode, node))
+        //    {
+        //        node.nextNodes.Add(downNode);
+        //        downNode.prevNodes.Add(node);
+        //    }
+        //}
+        //Node leftNode = GetLeftIndex(node);
+        //if (leftNode != null)
+        //{
+        //    if (IsNext(leftNode, node))
+        //    {
+        //        node.prevNodes.Add(leftNode);
+        //        leftNode.nextNodes.Add(node);
+        //    }
+        //    if (IsPrev(leftNode, node))
+        //    {
+        //        node.nextNodes.Add(leftNode);
+        //        leftNode.prevNodes.Add(node);
+        //    }
+        //}
+        //Node rightNode = GetRightIndex(node);
+        //if (rightNode != null)
+        //{
+        //    if (IsNext(rightNode, node))
+        //    {
+        //        node.prevNodes.Add(rightNode);
+        //        rightNode.nextNodes.Add(node);
+        //    }
+        //    if (IsPrev(rightNode, node))
+        //    {
+        //        node.nextNodes.Add(rightNode);
+        //        rightNode.prevNodes.Add(node);
+        //    }
+        //}
     }
     private bool IsNext(Node node1, Node node2)
     {
@@ -179,7 +195,7 @@ public class NodeCycleHelper
 
     public Node GetUpNode(Node node)
     {
-        if (node.index < row)
+        if (node.index < row + 1)
             return null;
 
         var target = nodes[node.index - col];

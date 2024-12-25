@@ -53,7 +53,8 @@ public class Lobby : MonoBehaviour
 
     public void SetMatchmakingButtonInteractable(bool interactable)
     {
-        matchmakingButton.interactable = interactable;
+        if(matchmakingButton)
+            matchmakingButton.interactable = interactable;
     }
 
     private void PlayWithAI()
