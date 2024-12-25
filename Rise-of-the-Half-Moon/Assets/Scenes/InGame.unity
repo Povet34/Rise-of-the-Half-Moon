@@ -3776,9 +3776,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fbf0821cb46c4146861abe521728ffc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resultText: {fileID: 0}
-  replayButton: {fileID: 0}
-  exitButton: {fileID: 0}
+  resultText: {fileID: 2022834426}
+  replayButton: {fileID: 40281445}
+  exitButton: {fileID: 1184042510}
 --- !u!1 &1830513014
 GameObject:
   m_ObjectHideFlags: 0
