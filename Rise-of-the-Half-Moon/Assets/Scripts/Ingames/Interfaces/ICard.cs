@@ -7,16 +7,13 @@ public interface ICard
     {
         public Action<ICard> nextTurnCallback;
         public Action replaceCallback;
-        public Action selectCallback;
 
-        public CardParam(Action<ICard> nextTurnCallback, Action replaceCallback, Action selectCallback)
+        public CardParam(Action<ICard> nextTurnCallback, Action replaceCallback)
         {
             this.nextTurnCallback = nextTurnCallback;
             this.replaceCallback = replaceCallback;
-            this.selectCallback = selectCallback;
         }
     }
-
 
     public static bool IsDraging { get; set; }
     public bool IsMine { get; set; }

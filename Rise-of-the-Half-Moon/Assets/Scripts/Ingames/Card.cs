@@ -33,7 +33,6 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
         nextTurnCallback = cardParam.nextTurnCallback;
         replaceCallback = cardParam.replaceCallback;
-        //selectCallback = cardParam.selectCallback;
 
         if (phaseData != null)
         {

@@ -29,7 +29,6 @@ public class PUNCard : MonoBehaviourPunCallbacks, IBeginDragHandler, IDragHandle
 
         nextTurnCallback = param.nextTurnCallback;
         replaceCallback = param.replaceCallback;
-        //selectCallback = param.selectCallback;
 
         if (phaseData != null)
         {

@@ -88,13 +88,6 @@ public class CardDrawer : MonoBehaviour, ICardDrawer
             ICard.CardParam param = new ICard.CardParam();
             param.nextTurnCallback = nextTurnCallback;
             param.replaceCallback = () => { RepositionCards(targetCards, positions); };
-            param.selectCallback = () =>
-            {
-                foreach (var node in nodeGenerator.Nodes)
-                {
-                    node.UpdatePointValue(gameManager.Rule.PredictScoreForCard(node, card));
-                }
-            };
 
             card.Init(param);
         }
