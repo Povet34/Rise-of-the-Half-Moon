@@ -154,7 +154,7 @@ public class GameManager : MonoBehaviour
     {
         Color color = myScore > otherScore ? Color.red : Color.blue;
         float ratio = Mathf.InverseLerp(0, myScore + otherScore, Mathf.Abs(myScore - otherScore));
-        float threshold = 1 - (ratio * 2f);
+        float threshold = 1 - (ratio * 0.5f);
 
         volumeController.SetSuperiorUserEffect(color, threshold, 10);
     }
