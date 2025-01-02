@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class Node : MonoBehaviour
 {
+    const string BASE_MAP = "_BaseMap";
+    const string EMISSION_COLOR = "_EmissionColor";
+
     public class PutData
     {
         public int occupiedUser;   //occupied user index
@@ -77,7 +80,7 @@ public class Node : MonoBehaviour
             occupiedUser = data.occupiedUser;
 
             nodeRenderer.GetPropertyBlock(propertyBlock); // Retrieve current properties
-            propertyBlock.SetTexture("_BaseMap", phaseData.GetTexture()); // Change texture
+            propertyBlock.SetTexture(BASE_MAP, phaseData.GetTexture()); // Change texture
             nodeRenderer.SetPropertyBlock(propertyBlock); // Apply changes
         }
     }
@@ -87,7 +90,7 @@ public class Node : MonoBehaviour
         if (nodeRenderer != null && nodeRenderer.material != null)
         {
             nodeRenderer.GetPropertyBlock(propertyBlock);
-            propertyBlock.SetColor("_EmissionColor", emissionColor); // Change emission color
+            propertyBlock.SetColor(EMISSION_COLOR, emissionColor); // Change emission color
             nodeRenderer.SetPropertyBlock(propertyBlock);
         }
     }
