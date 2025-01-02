@@ -1603,8 +1603,6 @@ MonoBehaviour:
   rows: 4
   cols: 5
   spacing: 2
-  nodeObjects: []
-  edgeObjects: []
 --- !u!1 &811859521
 GameObject:
   m_ObjectHideFlags: 0

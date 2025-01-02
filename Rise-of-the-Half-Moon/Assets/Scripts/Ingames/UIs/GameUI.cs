@@ -12,6 +12,9 @@ public class GameUI : MonoBehaviour
     [SerializeField] Button settingButton;
     [SerializeField] IngameSettings ingameSettings;
 
+    public RectTransform GetMyScoreUI => myScore.rectTransform;
+    public RectTransform GetOtherScoreUI => otherScore.rectTransform;
+
     private void Start()
     {
         RegistEvents();

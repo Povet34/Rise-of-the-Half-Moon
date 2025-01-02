@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Node : MonoBehaviour
@@ -16,12 +17,15 @@ public class Node : MonoBehaviour
 
     private Renderer nodeRenderer;  // Renderer to change the color
     private MaterialPropertyBlock propertyBlock;
+    
 
     public int occupiedUser;
 
     public PhaseData phaseData;
 
+    [SerializeField] private RectTransform canvasRt;
     [SerializeField] private TextMeshProUGUI pointValueNotifier;
+    [SerializeField] private ScoreStar scoreStarPrefab;
 
     public List<Node> nextNodes = new List<Node>();
     public List<Node> prevNodes = new List<Node>();
@@ -44,6 +48,11 @@ public class Node : MonoBehaviour
             return phaseData.phaseIndex;
         else
             return -100;
+    }
+
+    public void SetOccupiedUser(int userIndex)
+    {
+        occupiedUser = userIndex;
     }
 
     public List<Node> GetAdjacentNodes()
@@ -73,43 +82,6 @@ public class Node : MonoBehaviour
         }
     }
 
-    // This method changes the color of the node based on the number of connected edges
-    public void ChangeColorBasedOnEdgeDistance(int edgeDistance)
-    {
-        switch (edgeDistance)
-        {
-            case 0:
-                ChangeColor(Color.red);
-                break;
-            case 1:
-                ChangeColor(Color.yellow);  // Edge 1 (yellow)
-                break;
-            case 2:
-                ChangeColor(Color.green);   // Edge 2 (green)
-                break;
-            case 3:
-                ChangeColor(Color.blue);    // Edge 3 (blue)
-                break;
-            case 4:
-                ChangeColor(Color.magenta); // Edge 4 (purple)
-                break;
-            default:
-                ChangeColor(Color.white);   // Default color (white)
-                break;
-        }
-    }
-
-    // Reset color to white
-    public void ResetColor()
-    {
-        ChangeColor(Color.white);
-    }
-
-    public void ChangeColor(Color color)
-    {
-        nodeRenderer.material.color = color;
-    }
-
     public void EnableEmission(Color emissionColor)
     {
         if (nodeRenderer != null && nodeRenderer.material != null)
@@ -120,23 +92,12 @@ public class Node : MonoBehaviour
         }
     }
 
-    public void UpdatePointValue(int value)
+    public void EffectStar(RectTransform attractor)
     {
-        //if (TestManager.Instance.isTest)
-        //{
-        //    pointValueNotifier.text = value.ToString();
-        //}
-    }
-
-    public bool IsConnected(Node target)
-    {
-        foreach (Edge edge in connectedEdges)
+        if (scoreStarPrefab != null)
         {
-            if (edge.nodeA == target || edge.nodeB == target)
-            {
-                return true;
-            }
+            //Instantiate
+            //DoEffect
         }
-        return false;
     }
 }

@@ -9,9 +9,9 @@ public class GameManager : MonoBehaviour
     public bool IsNetworkGame { get; protected set; }
 
     [Header("Data")]
-    protected ContentRule rule;
     public bool isMyTurn;
     public PhaseData.ContentType contentType;
+    protected ContentRule rule;
     protected System.Random random;
     protected NodeGenerator nodeGenerator;
     protected List<PhaseData> phaseDatas;
@@ -159,8 +159,12 @@ public class GameManager : MonoBehaviour
         float ratio = Mathf.InverseLerp(0, myScore + otherScore, Mathf.Abs(myScore - otherScore));
         float threshold = 1 - (ratio * 0.5f);
 
-        Debug.Log($"ratio {ratio} threshold {threshold}");
         volumeController.SetSuperiorUserEffect(color, threshold, 3);
+    }
+
+    public RectTransform GetScoreRt(bool isMine) 
+    {
+        return isMine ? gameUI.GetMyScoreUI : gameUI.GetOtherScoreUI;
     }
 
     #endregion

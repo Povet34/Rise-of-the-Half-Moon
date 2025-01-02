@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using DG.Tweening;
-using UnityEngine.UIElements;
 
 public class ContentRule : MonoBehaviour
 {
@@ -191,7 +190,8 @@ public class ContentRule : MonoBehaviour
 
                 sequence.Append(node.transform.DOScale(targetScale, 0.2f));
                 sequence.AppendCallback(() => node.EnableEmission(isMine ? Definitions.My_Occupied_Color : Definitions.Other_Occupied_Color));
-                sequence.AppendCallback(() => node.occupiedUser = isMine ? Definitions.MY_INDEX : Definitions.OTHER_INDEX);
+                sequence.AppendCallback(() => node.SetOccupiedUser(isMine ? Definitions.MY_INDEX : Definitions.OTHER_INDEX));
+                sequence.AppendCallback(() => node.EffectStar(gameManager.GetScoreRt(isMine)));
                 sequence.AppendInterval(0.2f);
                 sequence.Append(node.transform.DOScale(originalScale, 0.2f));
                 sequence.AppendCallback(() => node.transform.localScale = originalScale);
@@ -206,7 +206,9 @@ public class ContentRule : MonoBehaviour
             foreach (Node node in nodes)
             {
                 sequence.AppendCallback(() => node.EnableEmission(isMine ? Definitions.My_Occupied_Color : Definitions.Other_Occupied_Color));
-                sequence.AppendCallback(() => node.occupiedUser = isMine ? Definitions.MY_INDEX : Definitions.OTHER_INDEX);
+                sequence.AppendCallback(() => node.SetOccupiedUser(isMine ? Definitions.MY_INDEX : Definitions.OTHER_INDEX));
+                sequence.AppendCallback(() => node.EffectStar(gameManager.GetScoreRt(isMine)));
+
                 sequence.AppendInterval(0.3f);
             }
 
