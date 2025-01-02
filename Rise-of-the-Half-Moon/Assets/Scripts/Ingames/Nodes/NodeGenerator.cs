@@ -4,24 +4,23 @@ using UnityEngine;
 
 public class NodeGenerator : MonoBehaviour
 {
-    public GameObject nodePrefab;  // Prefab for the nodes
-    public GameObject edgePrefab;  // Prefab for the edges
-    public int rows = 3;           // Number of rows
-    public int cols = 4;           // Number of columns
-    public float spacing = 2.0f;   // Spacing between nodes
+    [SerializeField] GameObject nodePrefab;  // Prefab for the nodes
+    [SerializeField] GameObject edgePrefab;  // Prefab for the edges
+    [SerializeField] int rows = 3;           // Number of rows
+    [SerializeField] int cols = 4;           // Number of columns
+    [SerializeField] float spacing = 2.0f;   // Spacing between nodes
 
-    private GameManager gameManager;
-    private List<Node> nodes = new List<Node>();  // List to store all nodes
-    private List<Edge> edges = new List<Edge>();  // List to store all edges
+    GameManager gameManager;
+    List<Node> nodes = new List<Node>();  // List to store all nodes
+    List<Edge> edges = new List<Edge>();  // List to store all edges
 
     // Lists to manage the instantiated GameObjects
-    public List<GameObject> nodeObjects = new List<GameObject>();
-    public List<GameObject> edgeObjects = new List<GameObject>();
+    List<GameObject> nodeObjects = new List<GameObject>();
+    List<GameObject> edgeObjects = new List<GameObject>();
 
     public List<Node> Nodes => nodes;
 
-    private List<NodePathInfo> pathInfos = new List<NodePathInfo>();
-    private NodeCycleHelper nodeCycleHelper;
+    NodeCycleHelper nodeCycleHelper;
 
     readonly Vector3[] validDirections = new Vector3[]
     {
@@ -204,152 +203,12 @@ public class NodeGenerator : MonoBehaviour
         return connectedNeighbors;
     }
 
-    #region Node Cycle
-
-    private class NodePathInfo
-    {
-        public enum CreaseType
-        {
-            None,
-            Increase,
-            Decrease,
-        }
-
-        public Node EndNode { get; set; }
-        public int Distance { get; set; }
-        public List<Node> Path { get; set; }
-        public CreaseType creaseType { get; set; }
-    }
-
-    private void FindContinuousCreases(Node startNode)
-    {
-        pathInfos.Clear();
-
-        //Find Path
-        FindPath(startNode, new List<Node> { startNode });
-
-        //Marge Path
-        MergePath();
-    }
-
-    private void FindPath(Node currentNode, List<Node> currentPath)
-    {
-        foreach (Node neighbor in GetConnectedNeighbors(currentNode))
-        {
-            if (currentPath.Contains(neighbor))
-                continue;
-
-            List<Node> path = new List<Node>(currentPath) { neighbor };
-            NodePathInfo.CreaseType creaseType = NodePathInfo.CreaseType.None;
-
-            int currentNodePhase = currentNode.GetPhaseType();
-            int neighborPhase = neighbor.GetPhaseType();
-
-            if (neighborPhase == PhaseData.GetNextPhaseType(currentNodePhase, gameManager.contentType))
-            {
-                creaseType = NodePathInfo.CreaseType.Increase;
-            }
-            else if (neighborPhase == PhaseData.GetPreviousPhaseType(currentNodePhase, gameManager.contentType))
-            {
-                creaseType = NodePathInfo.CreaseType.Decrease;
-            }
-            else
-            {
-                continue;
-            }
-
-            FindPathInDirection(neighbor, path, creaseType);
-        }
-    }
-
-    private void FindPathInDirection(Node currentNode, List<Node> currentPath, NodePathInfo.CreaseType creaseType)
-    {
-        bool validPath = true;
-
-        while (validPath)
-        {
-            validPath = false;
-            foreach (Node nextNeighbor in GetConnectedNeighbors(currentNode))
-            {
-                if (currentPath.Contains(nextNeighbor))
-                    continue;
-
-                int currentNodePhase = currentNode.GetPhaseType();
-                int nextNeighborPhase = nextNeighbor.GetPhaseType();
-
-                if ((creaseType == NodePathInfo.CreaseType.Increase &&
-                     nextNeighborPhase == PhaseData.GetNextPhaseType(currentNodePhase, gameManager.contentType)) ||
-                    (creaseType == NodePathInfo.CreaseType.Decrease &&
-                     nextNeighborPhase == PhaseData.GetPreviousPhaseType(currentNodePhase, gameManager.contentType)))
-                {
-                    currentPath.Add(nextNeighbor);
-                    currentNode = nextNeighbor;
-                    validPath = true;
-                    break;
-                }
-            }
-
-            if (!validPath)
-            {
-                NodePathInfo pathInfo = new NodePathInfo
-                {
-                    EndNode = currentNode,
-                    Distance = currentPath.Count,
-                    Path = currentPath,
-                    creaseType = creaseType
-                };
-                pathInfos.Add(pathInfo);
-            }
-        }
-    }
-
-    private void MergePath()
-    {
-        List<NodePathInfo> newPathInfos = new List<NodePathInfo>();
-        List<NodePathInfo> increasePaths = pathInfos.Where(p => p.creaseType == NodePathInfo.CreaseType.Increase).ToList();
-        List<NodePathInfo> decreasePaths = pathInfos.Where(p => p.creaseType == NodePathInfo.CreaseType.Decrease).ToList();
-
-        if (increasePaths.Count > 0 && decreasePaths.Count > 0)
-        {
-            foreach (var increasePath in increasePaths)
-            {
-                foreach (var decreasePath in decreasePaths)
-                {
-                    List<Node> mergedPath = new List<Node>(increasePath.Path);
-                    mergedPath.AddRange(decreasePath.Path.Skip(1)); // Skip the first node to avoid duplication
-
-                    // Remove duplicate nodes
-                    mergedPath = mergedPath.Distinct().ToList();
-
-                    NodePathInfo mergedPathInfo = new NodePathInfo
-                    {
-                        EndNode = decreasePath.EndNode,
-                        Distance = mergedPath.Count,
-                        Path = mergedPath,
-                        creaseType = NodePathInfo.CreaseType.None // Merged path has no specific crease type
-                    };
-                    newPathInfos.Add(mergedPathInfo);
-                }
-            }
-        }
-        else
-        {
-            newPathInfos.AddRange(increasePaths);
-            newPathInfos.AddRange(decreasePaths);
-        }
-
-        // 기존의 것들을 삭제
-        pathInfos.Clear();
-        pathInfos.AddRange(newPathInfos);
-    }
-
     public List<List<Node>> GetSequentialPhaseNodes(Node putNode)
     {
         List<List<Node>> includedStartNodeCycles = nodeCycleHelper.FindCycle(putNode).Values.ToList();
         return includedStartNodeCycles;
     }
 
-    #endregion
 
     public List<Node> FindEmptyOccupidNodes()
     {

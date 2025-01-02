@@ -156,6 +156,7 @@ public class GameManager : MonoBehaviour
         float ratio = Mathf.InverseLerp(0, myScore + otherScore, Mathf.Abs(myScore - otherScore));
         float threshold = 1 - (ratio * 2f);
 
+        Debug.Log($"ratio {ratio} threshold {threshold}");
         volumeController.SetSuperiorUserEffect(color, threshold, 10);
     }
 

@@ -4,8 +4,6 @@ public class TestPVEGameManager : PVEGameManager
 {
     protected override void Start()
     {
-        base.Start();
-
         data = ContentsDataManager.Instance.GetTestData();
         cardDrawer = Instantiate(cardDrawerPrefab);
         Random.InitState(data.seed);
