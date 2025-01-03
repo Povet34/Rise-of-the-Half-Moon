@@ -7,27 +7,26 @@ https://github.com/nmtoan91/Unity-Plugin-Extract-Multiple-Sprite
 https://github.com/playgameservices/play-games-plugin-for-unity
 
 --------------------------------------------------------------------------------------------------------------------------------------------
-## Code
+# Implement
 
-### PhaseCycle 요약
-•	Card를 Node에 두었을 때, 해당 Node와 관련 있는 모든 Phase Cycle을 찾는 함수
-
-### Firebase
-• Auth
- - Anonymous
- - Google
+## PhaseCycle 요약
+- Card를 Node에 두었을 때, 해당 Node와 관련 있는 모든 Phase Cycle을 찾는 함수
 
 
-• Realtime database
+## Firebase
+### Auth
+- Anonymous
+- Google
+## Realtime database
  - User
  - Score(MMR)
 
-### Photon Pun2
-• Room
-• RPC
- - Put Cards
- - Use Item
+## Photon Pun2
+### Room
+### RPC
+- Put Cards
+- Use Item
 
-### Admob
-### Sounds
-### Effect
+## Admob
+## Sounds
+## Effect
