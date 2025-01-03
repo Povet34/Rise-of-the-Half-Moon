@@ -16,6 +16,8 @@ https://github.com/playgameservices/play-games-plugin-for-unity
 • Auth
  - Anonymous
  - Google
+
+
 • Realtime database
  - User
  - Score(MMR)
