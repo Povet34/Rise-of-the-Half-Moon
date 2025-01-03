@@ -53,7 +53,14 @@ public class NodeGenerator : MonoBehaviour
             {
                 Vector3 position = new Vector3(j * spacing, i * spacing, 0);
                 Node node = Instantiate(nodePrefab, position, Quaternion.Euler(0, 0, 180), transform);
-                node.Init(order++, position);
+
+                var data = new Node.InitData();
+                data.index = order++;
+                data.position = position;
+                data.myProfileTr = gameManager.GetMyProfileWorldTr();
+                data.otherProfileTr = gameManager.GetOtherProfileWorldTr();
+
+                node.Init(data);
                 nodes.Add(node);
             }
         }
@@ -173,17 +180,6 @@ public class NodeGenerator : MonoBehaviour
 
         nodeA.connectedEdges.Add(edge);
         nodeB.connectedEdges.Add(edge);
-    }
-
-    List<Node> GetConnectedNeighbors(Node node)
-    {
-        List<Node> connectedNeighbors = new List<Node>();
-        foreach (Edge edge in node.connectedEdges)
-        {
-            Node neighbor = edge.GetOtherNode(node);
-            connectedNeighbors.Add(neighbor);
-        }
-        return connectedNeighbors;
     }
 
     public List<List<Node>> GetSequentialPhaseNodes(Node putNode)

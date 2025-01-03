@@ -207,7 +207,7 @@ public class ContentRule : MonoBehaviour
             {
                 sequence.AppendCallback(() => node.EnableEmission(isMine ? Definitions.My_Occupied_Color : Definitions.Other_Occupied_Color));
                 sequence.AppendCallback(() => node.SetOccupiedUser(isMine ? Definitions.MY_INDEX : Definitions.OTHER_INDEX));
-                sequence.AppendCallback(() => node.EffectStar(gameManager.GetScoreRt(isMine)));
+                sequence.AppendCallback(() => node.EffectStar(isMine));
 
                 sequence.AppendInterval(0.3f);
             }

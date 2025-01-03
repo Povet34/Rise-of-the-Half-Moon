@@ -36,7 +36,6 @@ public class InGameCamController : MonoBehaviour
         // 카메라 초기화
         mainCamera.transform.position = new Vector3(nodeBounds.center.x, nodeBounds.center.y, -10);
 
-
         // 카메라의 orthographicSize를 바운드의 크기에 맞게 조절
         float sizeX = nodeBounds.size.x / 2f / mainCamera.aspect;
         float sizeY = nodeBounds.size.y / 2f;

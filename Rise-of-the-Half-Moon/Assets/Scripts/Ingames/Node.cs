@@ -1,3 +1,4 @@
+using Photon.Pun.Demo.PunBasics;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
@@ -8,10 +9,20 @@ public class Node : MonoBehaviour
     const string BASE_MAP = "_BaseMap";
     const string EMISSION_COLOR = "_EmissionColor";
 
-    public class PutData
+    GameManager gameManager;
+
+    public struct PutData
     {
         public int occupiedUser;   //occupied user index
         public PhaseData moonPhaseData; //moon phase data
+    }
+
+    public struct InitData
+    {
+        public int index;
+        public Vector3 position;
+        public Transform myProfileTr;
+        public Transform otherProfileTr;
     }
 
     public int index;
@@ -30,15 +41,19 @@ public class Node : MonoBehaviour
     public List<Node> nextNodes = new List<Node>();
     public List<Node> prevNodes = new List<Node>();
 
-    private Vector3 myProfilePos;
-    private Vector3 otherProfilePos;
+    private Transform myProfileTr;
+    private Transform otherProfileTr;
 
-    public void Init(int index, Vector3 position)
+    public void Init(InitData data)
     {
-        this.index = index;
-        this.position = position;
+        index = data.index;
+        position = data.position;
+        myProfileTr = data.myProfileTr;
+        otherProfileTr = data.otherProfileTr;
+
         occupiedUser = Definitions.EMPTY_NODE;
-        
+
+        gameManager = FindAnyObjectByType<GameManager>();
         nodeRenderer = GetComponent<Renderer>(); // Get the Renderer component
         propertyBlock = new MaterialPropertyBlock();
 
@@ -74,15 +89,12 @@ public class Node : MonoBehaviour
 
     public void PutCard(PutData data)
     {
-        if (null != data)
-        {
-            phaseData = data.moonPhaseData;
-            occupiedUser = data.occupiedUser;
+        phaseData = data.moonPhaseData;
+        occupiedUser = data.occupiedUser;
 
-            nodeRenderer.GetPropertyBlock(propertyBlock); // Retrieve current properties
-            propertyBlock.SetTexture(BASE_MAP, phaseData.GetTexture()); // Change texture
-            nodeRenderer.SetPropertyBlock(propertyBlock); // Apply changes
-        }
+        nodeRenderer.GetPropertyBlock(propertyBlock); 
+        propertyBlock.SetTexture(BASE_MAP, phaseData.GetTexture()); 
+        nodeRenderer.SetPropertyBlock(propertyBlock);
     }
 
     public void EnableEmission(Color emissionColor)
@@ -99,7 +111,7 @@ public class Node : MonoBehaviour
     {
         if (scoreStarPrefab != null)
         {
-            var targetPos = isMine ? myProfilePos : otherProfilePos;
+            var targetPos = isMine ? myProfileTr.position : otherProfileTr.position;
             ScoreStar scoreStar = Instantiate(scoreStarPrefab, transform.position, Quaternion.identity);
             scoreStar.DoEffect(isMine, targetPos);
         }

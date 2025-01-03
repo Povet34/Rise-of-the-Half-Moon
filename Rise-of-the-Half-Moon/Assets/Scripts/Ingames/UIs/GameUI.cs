@@ -13,6 +13,9 @@ public class GameUI : MonoBehaviour
     [SerializeField] Button settingButton;
     [SerializeField] IngameSettings ingameSettings;
 
+    [SerializeField] Transform myScoreWorldTr;
+    [SerializeField] Transform otherScoreWorldTr;
+
     public RectTransform GetMyScoreUI => myScore.rectTransform;
     public RectTransform GetOtherScoreUI => otherScore.rectTransform;
 
@@ -57,24 +60,13 @@ public class GameUI : MonoBehaviour
     }
 
 
-    public Vector3 GetMyProfileWorldPosition()
+    public Transform GetMyProfileWorldTr()
     {
-        return GetWorldPositionFromRectTransform(myScore.rectTransform);
+        return myScoreWorldTr;
     }
 
-    public Vector3 GetOtherProfileWorldPosition()
+    public Transform GetOtherProfileWorldTr()
     {
-        return GetWorldPositionFromRectTransform(otherScore.rectTransform);
-    }
-
-    private Vector3 GetWorldPositionFromRectTransform(RectTransform rectTransform)
-    {
-        if(RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, rectTransform.position, uiCam, out Vector3 worldPosition))
-        {
-            worldPosition.z = 0; // Z축을 0으로 설정
-            return worldPosition;
-        }
-
-        return Vector3.zero;
+        return otherScoreWorldTr;
     }
 }

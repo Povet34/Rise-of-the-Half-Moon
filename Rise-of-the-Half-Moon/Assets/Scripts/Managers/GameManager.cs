@@ -167,14 +167,14 @@ public class GameManager : MonoBehaviour
         return isMine ? gameUI.GetMyScoreUI : gameUI.GetOtherScoreUI;
     }
 
-    public Vector3 GetMyProfileWorldPosition()
+    public Transform GetMyProfileWorldTr()
     {
-        return gameUI.GetMyProfileWorldPosition();
+        return gameUI.GetMyProfileWorldTr();
     }
 
-    public Vector3 GetOtherProfileWorldPosition()
+    public Transform GetOtherProfileWorldTr()
     {
-        return gameUI.GetOtherProfileWorldPosition();
+        return gameUI.GetOtherProfileWorldTr();
     }
 
     #endregion
