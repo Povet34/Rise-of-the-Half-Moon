@@ -11,3 +11,21 @@ https://github.com/playgameservices/play-games-plugin-for-unity
 
 ### PhaseCycle 요약
 •	Card를 Node에 두었을 때, 해당 Node와 관련 있는 모든 Phase Cycle을 찾는 함수
+
+### Firebase
+• Auth
+ - Anonymous
+ - Google
+• Realtime database
+ - User
+ - Score(MMR)
+
+### Photon Pun2
+• Room
+• RPC
+ - Put Cards
+ - Use Item
+
+### Admob
+### Sounds
+### Effect
