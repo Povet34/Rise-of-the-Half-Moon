@@ -1,24 +1,31 @@
 using AssetKits.ParticleImage;
+using DG.Tweening;
 using UnityEngine;
 
 public class ScoreStar : MonoBehaviour
 {
-    public void DoEffect(Vector2 startPos, RectTransform attractor)
+    [SerializeField] SpriteRenderer bigStarRenderer;
+
+    public void DoEffect(bool isMine, Vector3 targetPos)
     {
-        ParticleImage pi = GetComponent<ParticleImage>();
-        
-        if (!pi)
-            return;
+        SetColor(isMine);
+        SetMoveSequene(targetPos);
+    }
 
-        RectTransform rt = GetComponent<RectTransform>();
-        rt.anchoredPosition = startPos;
+    private void SetMoveSequene(Vector3 targetPos) 
+    {
+        Vector3 randomDirection = Random.insideUnitSphere * 3.0f;
+        randomDirection.z = 0;
 
-        pi.onFirstParticleFinished.AddListener(() =>
-        {
-            Destroy(gameObject);
-        });
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(transform.DOMove(transform.position + randomDirection, 0.3f).SetEase(Ease.OutBounce));
+        sequence.Append(transform.DOLocalMove(targetPos, 0.5f).SetEase(Ease.InOutQuad));
+        sequence.OnComplete(() => { Destroy(gameObject); });
+        sequence.Play();
+    }
 
-        pi.attractorTarget = attractor;
-        pi.Play();
+    private void SetColor(bool isMine)
+    {
+        bigStarRenderer.color = isMine ? Definitions.My_Occupied_Color : Definitions.Other_Occupied_Color;
     }
 }

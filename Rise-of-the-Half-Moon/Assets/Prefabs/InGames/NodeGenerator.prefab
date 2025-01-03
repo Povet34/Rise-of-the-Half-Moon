@@ -44,11 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 333e2ba56b5d1df488dda216dd2d816b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nodePrefab: {fileID: 8713281928742885693, guid: faa85c1847b4c3e47abeb000f9ea42dc, type: 3}
-  edgePrefab: {fileID: 936009015636973731, guid: 025d60f5112aafa4bbcace35dacd6a17, type: 3}
+  nodePrefab: {fileID: -7162551318012664574, guid: faa85c1847b4c3e47abeb000f9ea42dc, type: 3}
+  edgePrefab: {fileID: -1471696418063046956, guid: 025d60f5112aafa4bbcace35dacd6a17, type: 3}
   rows: 4
   cols: 5
   spacing: 2
-  seed: 0
-  nodeObjects: []
-  edgeObjects: []

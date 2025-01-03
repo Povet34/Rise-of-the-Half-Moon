@@ -17,14 +17,11 @@ public class Node : MonoBehaviour
     public int index;
     public List<Edge> connectedEdges = new List<Edge>();
     public Vector3 position;
+    public int occupiedUser;
+    public PhaseData phaseData;
 
     private Renderer nodeRenderer;  // Renderer to change the color
     private MaterialPropertyBlock propertyBlock;
-    
-
-    public int occupiedUser;
-
-    public PhaseData phaseData;
 
     [SerializeField] private RectTransform canvasRt;
     [SerializeField] private TextMeshProUGUI pointValueNotifier;
@@ -33,15 +30,18 @@ public class Node : MonoBehaviour
     public List<Node> nextNodes = new List<Node>();
     public List<Node> prevNodes = new List<Node>();
 
-    public void Init(int index, Vector3 position, GameObject nodeObject)
+    private Vector3 myProfilePos;
+    private Vector3 otherProfilePos;
+
+    public void Init(int index, Vector3 position)
     {
         this.index = index;
         this.position = position;
         occupiedUser = Definitions.EMPTY_NODE;
         
-        nodeRenderer = nodeObject.GetComponent<Renderer>(); // Get the Renderer component
+        nodeRenderer = GetComponent<Renderer>(); // Get the Renderer component
         propertyBlock = new MaterialPropertyBlock();
-        
+
         pointValueNotifier.gameObject.SetActive(false);
     }
 
@@ -95,12 +95,18 @@ public class Node : MonoBehaviour
         }
     }
 
-    public void EffectStar(RectTransform attractor)
+    public void EffectStar(bool isMine)
     {
         if (scoreStarPrefab != null)
         {
-            //Instantiate
-            //DoEffect
+            var targetPos = isMine ? myProfilePos : otherProfilePos;
+            ScoreStar scoreStar = Instantiate(scoreStarPrefab, transform.position, Quaternion.identity);
+            scoreStar.DoEffect(isMine, targetPos);
         }
+    }
+
+    public void Destroy()
+    {
+        Destroy(gameObject);
     }
 }

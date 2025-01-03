@@ -5,7 +5,10 @@ using UnityEngine;
 public class InGameCamController : MonoBehaviour
 {
     [SerializeField] RectTransform touchPanel;
+
     [SerializeField] Camera mainCamera;
+    [SerializeField] Camera uiCamera;
+
     [SerializeField] float panSpeed = 0.1f;
     [SerializeField] float zoomSpeed = 0.1f;
     [SerializeField] float minZoom = 5f;
@@ -31,12 +34,17 @@ public class InGameCamController : MonoBehaviour
         }
 
         // 카메라 초기화
-        mainCamera.transform.position = new Vector3(nodeBounds.center.x, nodeBounds.center.y, -10f);
+        mainCamera.transform.position = new Vector3(nodeBounds.center.x, nodeBounds.center.y, -10);
+
 
         // 카메라의 orthographicSize를 바운드의 크기에 맞게 조절
         float sizeX = nodeBounds.size.x / 2f / mainCamera.aspect;
         float sizeY = nodeBounds.size.y / 2f;
         mainCamera.orthographicSize = Mathf.Clamp(Mathf.Max(sizeX, sizeY) * 1.5f, minZoom, maxZoom);
+
+        uiCamera.transform.position = mainCamera.transform.position;
+        uiCamera.orthographicSize = mainCamera.orthographicSize;
+
     }
 
     private void Update()
@@ -126,12 +134,16 @@ public class InGameCamController : MonoBehaviour
     private void PanCamera(Vector2 touchDelta)
     {
         Vector3 panMovement = new Vector3(-touchDelta.x * panSpeed, -touchDelta.y * panSpeed, 0);
+
         mainCamera.transform.position += panMovement;
+        uiCamera.transform.position += panMovement;
     }
 
     private void ZoomCamera(float pinchDelta)
     {
         float newZoom = Mathf.Clamp(mainCamera.orthographicSize + pinchDelta * zoomSpeed, minZoom, maxZoom);
+
         mainCamera.orthographicSize = newZoom;
+        uiCamera.orthographicSize = newZoom;
     }
 }

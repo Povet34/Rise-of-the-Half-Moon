@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class GameUI : MonoBehaviour
 {
+    [SerializeField] Camera uiCam;
     [SerializeField] TextMeshProUGUI myScore;
     [SerializeField] TextMeshProUGUI otherScore;
 
@@ -53,5 +54,27 @@ public class GameUI : MonoBehaviour
     private void ShowSettingPanel()
     {
         ingameSettings.gameObject.SetActive(true);
+    }
+
+
+    public Vector3 GetMyProfileWorldPosition()
+    {
+        return GetWorldPositionFromRectTransform(myScore.rectTransform);
+    }
+
+    public Vector3 GetOtherProfileWorldPosition()
+    {
+        return GetWorldPositionFromRectTransform(otherScore.rectTransform);
+    }
+
+    private Vector3 GetWorldPositionFromRectTransform(RectTransform rectTransform)
+    {
+        if(RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, rectTransform.position, uiCam, out Vector3 worldPosition))
+        {
+            worldPosition.z = 0; // Z축을 0으로 설정
+            return worldPosition;
+        }
+
+        return Vector3.zero;
     }
 }

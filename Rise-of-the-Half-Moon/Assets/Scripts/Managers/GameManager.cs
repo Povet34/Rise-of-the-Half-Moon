@@ -167,5 +167,15 @@ public class GameManager : MonoBehaviour
         return isMine ? gameUI.GetMyScoreUI : gameUI.GetOtherScoreUI;
     }
 
+    public Vector3 GetMyProfileWorldPosition()
+    {
+        return gameUI.GetMyProfileWorldPosition();
+    }
+
+    public Vector3 GetOtherProfileWorldPosition()
+    {
+        return gameUI.GetOtherProfileWorldPosition();
+    }
+
     #endregion
 }

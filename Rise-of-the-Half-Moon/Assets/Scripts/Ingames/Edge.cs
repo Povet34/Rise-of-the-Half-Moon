@@ -25,4 +25,9 @@ public class Edge : MonoBehaviour
         }
         return null;
     }
+
+    public void Destroy()
+    {
+        Destroy(gameObject);
+    }
 }

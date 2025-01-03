@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class NodeGenerator : MonoBehaviour
 {
-    [SerializeField] GameObject nodePrefab;  // Prefab for the nodes
-    [SerializeField] GameObject edgePrefab;  // Prefab for the edges
+    [SerializeField] Node nodePrefab;        // Prefab for the nodes
+    [SerializeField] Edge edgePrefab;        // Prefab for the edges
     [SerializeField] int rows = 3;           // Number of rows
     [SerializeField] int cols = 4;           // Number of columns
     [SerializeField] float spacing = 2.0f;   // Spacing between nodes
@@ -13,15 +13,9 @@ public class NodeGenerator : MonoBehaviour
     GameManager gameManager;
     List<Node> nodes = new List<Node>();  // List to store all nodes
     List<Edge> edges = new List<Edge>();  // List to store all edges
-
-    // Lists to manage the instantiated GameObjects
-    List<GameObject> nodeObjects = new List<GameObject>();
-    List<GameObject> edgeObjects = new List<GameObject>();
-
-    public List<Node> Nodes => nodes;
-
     NodeCycleHelper nodeCycleHelper;
 
+    public List<Node> Nodes => nodes;
     readonly Vector3[] validDirections = new Vector3[]
     {
         Vector3.right,
@@ -34,15 +28,11 @@ public class NodeGenerator : MonoBehaviour
     {
         gameManager = FindAnyObjectByType<GameManager>();
 
-        foreach (GameObject nodeObject in nodeObjects)
-        {
-            Destroy(nodeObject);
-        }
+        foreach (var node in nodes)
+            node.Destroy();
 
-        foreach (GameObject edgeObject in edgeObjects)
-        {
-            Destroy(edgeObject);
-        }
+        foreach (var edge in edges)
+            edge.Destroy();
 
         nodes.Clear();
         edges.Clear();
@@ -62,13 +52,9 @@ public class NodeGenerator : MonoBehaviour
             for (int j = 0; j < cols; j++)
             {
                 Vector3 position = new Vector3(j * spacing, i * spacing, 0);
-                GameObject nodeObject = Instantiate(nodePrefab, position, Quaternion.Euler(0, 0, 180), transform);
-
-                Node newNode = nodeObject.GetComponent<Node>();
-                newNode.Init(order++, position, nodeObject);
-
-                nodes.Add(newNode);
-                nodeObjects.Add(nodeObject);
+                Node node = Instantiate(nodePrefab, position, Quaternion.Euler(0, 0, 180), transform);
+                node.Init(order++, position);
+                nodes.Add(node);
             }
         }
     }
@@ -175,21 +161,18 @@ public class NodeGenerator : MonoBehaviour
 
         // Initialize the edge, but do not instantiate it yet
         Vector3 midpoint = (nodeA.position + nodeB.position) / 2;
-        GameObject edgeObject = Instantiate(edgePrefab, midpoint, Quaternion.identity, transform);
+        Edge edge = Instantiate(edgePrefab, midpoint, Quaternion.identity, transform);
 
         Vector3 direction = nodeB.position - nodeA.position;
-        edgeObject.transform.rotation = Quaternion.LookRotation(Vector3.forward, direction);
-        edgeObject.transform.localScale = new Vector3(0.1f, direction.magnitude / 2, 0.1f);
-
-        Edge newEdge = edgeObject.GetComponent<Edge>();
-        newEdge.Init(nodeA, nodeB);
+        edge.transform.rotation = Quaternion.LookRotation(Vector3.forward, direction);
+        edge.transform.localScale = new Vector3(0.1f, direction.magnitude / 2, 0.1f);
+        edge.Init(nodeA, nodeB);
 
         // Add the edge to the node's connected edges list
-        edges.Add(newEdge);
-        edgeObjects.Add(edgeObject);
+        edges.Add(edge);
 
-        nodeA.connectedEdges.Add(newEdge);
-        nodeB.connectedEdges.Add(newEdge);
+        nodeA.connectedEdges.Add(edge);
+        nodeB.connectedEdges.Add(edge);
     }
 
     List<Node> GetConnectedNeighbors(Node node)

@@ -362,6 +362,6 @@ MonoBehaviour:
   phaseData: {fileID: 0}
   canvasRt: {fileID: 8250597406980628737}
   pointValueNotifier: {fileID: 6191725390949828812}
-  scoreStarPrefab: {fileID: 8725055144490771826, guid: 7c38bd9456b0b9748a713805d96b3e64, type: 3}
+  scoreStarPrefab: {fileID: 3618827772899015537, guid: 7c38bd9456b0b9748a713805d96b3e64, type: 3}
   nextNodes: []
   prevNodes: []
