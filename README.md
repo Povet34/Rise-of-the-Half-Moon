@@ -9,5 +9,5 @@ https://github.com/playgameservices/play-games-plugin-for-unity
 --------------------------------------------------------------------------------------------------------------------------------------------
 ## Code
 
-### NodeGenerator 요약
-•	노드와 엣지를 생성하고 관리하는 클래스입니다.
+### PhaseCycle 요약
+•	Card를 Node에 두었을 때, 해당 Node와 관련 있는 모든 Phase Cycle을 찾는 함수
