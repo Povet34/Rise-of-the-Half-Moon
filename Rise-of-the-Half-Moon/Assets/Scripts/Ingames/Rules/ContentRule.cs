@@ -224,23 +224,19 @@ public class ContentRule : MonoBehaviour
 
         Sequence sequence = DOTween.Sequence();
         SetIsAnimation(true);
+        sequence.AppendCallback(() => gameManager.ShowMakePatternNotifier(data.showType.ToString()));
 
-        switch(data.showType)
+        switch (data.showType)
         {
             case ShowType.SamePhase:
-                _AnimateAtOnce();
-                break;
             case ShowType.Combination:
                 _AnimateAtOnce();
                 break;
             case ShowType.Cycle:
+            case ShowType.End:
                 _AnimateSequentially();
                 break;
-            case ShowType.End:
-                break;
         }
-
-        gameManager.ShowMakePatternNotifier(data.showType.ToString());
 
         sequence.AppendCallback(() => SetIsAnimation(false));
         sequence.AppendCallback(() => data.endCallback?.Invoke());

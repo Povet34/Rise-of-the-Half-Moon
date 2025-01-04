@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6124438474532096456}
   - component: {fileID: 3590795456851361758}
   - component: {fileID: 6191725390949828812}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: PointValueNotifier
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -146,7 +146,7 @@ GameObject:
   - component: {fileID: 2935247920756814706}
   - component: {fileID: 6777479134066789748}
   - component: {fileID: 7645808314139988597}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -249,7 +249,7 @@ GameObject:
   - component: {fileID: 4409751048607536140}
   - component: {fileID: 2298983885302367871}
   - component: {fileID: -7162551318012664574}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Node
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -360,7 +360,6 @@ MonoBehaviour:
   position: {x: 0, y: 0, z: 0}
   occupiedUser: 0
   phaseData: {fileID: 0}
-  canvasRt: {fileID: 8250597406980628737}
   pointValueNotifier: {fileID: 6191725390949828812}
   scoreStarPrefab: {fileID: 3618827772899015537, guid: 7c38bd9456b0b9748a713805d96b3e64, type: 3}
   nextNodes: []
