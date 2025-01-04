@@ -177,5 +177,10 @@ public class GameManager : MonoBehaviour
         return gameUI.GetOtherProfileWorldTr();
     }
 
+    public void ShowMakePatternNotifier(string text)
+    {
+        gameUI.ShowMakePatternNotifier(text);
+    }
+
     #endregion
 }

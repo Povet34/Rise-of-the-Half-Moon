@@ -104,7 +104,7 @@ public class Node : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public Edge GetsharedEdage(Node other)
+    public Edge GetSharedEdge(Node other)
     {
         foreach (Edge edge in connectedEdges)
         {

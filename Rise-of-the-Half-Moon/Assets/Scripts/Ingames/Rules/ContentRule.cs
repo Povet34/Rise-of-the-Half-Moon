@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using DG.Tweening;
+using UnityEditor.Experimental.GraphView;
 
 public class ContentRule : MonoBehaviour
 {
@@ -129,7 +130,7 @@ public class ContentRule : MonoBehaviour
             AnimData data = new AnimData();
             data.isMine = isMine;
             data.nodes = cycle;
-            data.score = Definitions.PHASE_CYCLE_SCORE * cycle.Count;
+            data.score = Definitions.PHASE_CYCLE_SCORE;
             data.showType = ShowType.Cycle;
 
             AddAnimateQueue(data);
@@ -227,10 +228,10 @@ public class ContentRule : MonoBehaviour
         switch(data.showType)
         {
             case ShowType.SamePhase:
-                _AnimateAtOnce(true);
+                _AnimateAtOnce();
                 break;
             case ShowType.Combination:
-                _AnimateAtOnce(false);
+                _AnimateAtOnce();
                 break;
             case ShowType.Cycle:
                 _AnimateSequentially();
@@ -239,12 +240,11 @@ public class ContentRule : MonoBehaviour
                 break;
         }
 
+        gameManager.ShowMakePatternNotifier(data.showType.ToString());
 
         sequence.AppendCallback(() => SetIsAnimation(false));
         sequence.AppendCallback(() => data.endCallback?.Invoke());
         sequence.Play();
-
-        _UpdateScore(data.isMine);
 
         void _UpdateScore(bool isMine)
         {
@@ -276,7 +276,7 @@ public class ContentRule : MonoBehaviour
         }
 
         /// 한번에 애니메이션
-        void _AnimateAtOnce(bool isEdge)
+        void _AnimateAtOnce()
         {
             sequence.AppendCallback(() => ScaleNodes(data.nodes, 1.5f, 0.2f, true));
             sequence.AppendCallback(() => SetEmissionColorNodes(data.nodes, Definitions.Non_Occupied_Color));
@@ -286,9 +286,10 @@ public class ContentRule : MonoBehaviour
             {
                 sequence.AppendCallback(() => node.EnableEmission(color));
                 sequence.AppendCallback(() => node.SetOccupiedUser(userIndex));
-                sequence.AppendCallback(() => _DoScoreEffect(node.transform, targetPos));
             }
 
+            var sharedEdge = data.nodes[0].GetSharedEdge(data.nodes[1]);
+            _DoScoreEffect(sharedEdge.transform, targetPos);
 
             sequence.AppendInterval(0.5f);
             sequence.AppendCallback(() => ScaleNodes(data.nodes, 1.0f, 0.2f, true));
@@ -304,7 +305,7 @@ public class ContentRule : MonoBehaviour
                 targetPos = targetPos,
                 endCallback = () => 
                 {
-                    //여기서 점수를 올려야할거같은데..
+                    _UpdateScore(data.isMine);
                 }
             });
         }
