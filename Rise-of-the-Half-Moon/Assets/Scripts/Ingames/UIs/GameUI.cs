@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 public class GameUI : MonoBehaviour
 {
-    [SerializeField] Camera uiCam;
     [SerializeField] TextMeshProUGUI myScore;
     [SerializeField] TextMeshProUGUI otherScore;
 
@@ -12,7 +11,9 @@ public class GameUI : MonoBehaviour
 
     [SerializeField] Button settingButton;
     [SerializeField] IngameSettings ingameSettings;
+    [SerializeField] MakePatternNotifier patternNotifier;
 
+    [Header("3D Helper")]
     [SerializeField] Transform myScoreWorldTr;
     [SerializeField] Transform otherScoreWorldTr;
 
@@ -68,5 +69,10 @@ public class GameUI : MonoBehaviour
     public Transform GetOtherProfileWorldTr()
     {
         return otherScoreWorldTr;
+    }
+
+    public void ShowMakePatternNotifier(string text)
+    {
+        patternNotifier.ShowNotifier(text);
     }
 }

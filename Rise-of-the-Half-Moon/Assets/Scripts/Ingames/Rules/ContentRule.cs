@@ -6,6 +6,24 @@ using DG.Tweening;
 
 public class ContentRule : MonoBehaviour
 {
+    public enum ShowType
+    {
+        None,
+        SamePhase,
+        Combination,
+        Cycle,
+        End,
+    }
+
+    public struct AnimData
+    {
+        public bool isMine;
+        public List<Node> nodes;
+        public int score;
+        public Action endCallback;
+        public ShowType showType;
+    }
+
     protected bool isAnimating = false;
     public bool IsSettlementDone { get; protected set; }
 
@@ -14,11 +32,15 @@ public class ContentRule : MonoBehaviour
     protected GameManager gameManager;
     protected GlobalVolumeController volumeController;
 
+    ScoreStar scoreStarPrefab;
+
     public virtual void Init()
     {
         gameManager = FindAnyObjectByType<GameManager>();
         nodeGenerator = FindAnyObjectByType<NodeGenerator>();
         volumeController = FindAnyObjectByType<GlobalVolumeController>();
+        scoreStarPrefab = Resources.Load<ScoreStar>("ScoreStar");
+
         StartCoroutine(DelayAnimation());
     }
 
@@ -40,25 +62,43 @@ public class ContentRule : MonoBehaviour
                 otherOccupiedNodes.Add(node);
             }
         }
-        AddAnimateQueue(true, myOccupiedNodes, Definitions.SETTLEMENT_SCORE);
-        AddAnimateQueue(false, otherOccupiedNodes, Definitions.SETTLEMENT_SCORE);
+
+        AnimData data = new AnimData();
+        data.isMine = true;
+        data.nodes = myOccupiedNodes;
+        data.score = Definitions.SETTLEMENT_SCORE;
+        data.showType = ShowType.End;
+        AddAnimateQueue(data);
+
+        data = new AnimData();
+        data.isMine = false;
+        data.nodes = otherOccupiedNodes;
+        data.score = Definitions.SETTLEMENT_SCORE;
+        AddAnimateQueue(data);
+
         LastSettlementAnimate(settlementEndCallback);
     }
 
     public virtual void OnCardPlaced(Node node, bool isMine) 
     {
-        CheckAdjacentNodes(node, isMine);
+        CheckSameNodes(node, isMine);
         CheckCombineNodes(node, isMine);
         CheckCycle(node, isMine);
     }
 
-    protected virtual void CheckAdjacentNodes(Node node, bool isMine) 
+    protected virtual void CheckSameNodes(Node node, bool isMine) 
     {
         foreach (Node adjacentNode in node.GetAdjacentNodes())
         {
             if (adjacentNode.phaseData != null && adjacentNode.GetPhaseType() == node.GetPhaseType())
             {
-                AddAnimateQueue(isMine, new List<Node>() { node, adjacentNode }, Definitions.SAME_PHASE_SCORE);
+                AnimData data = new AnimData();
+                data.isMine = isMine;
+                data.nodes = new List<Node>() { node, adjacentNode };
+                data.score = Definitions.SAME_PHASE_SCORE;
+                data.showType = ShowType.SamePhase;
+                
+                AddAnimateQueue(data);
             }
         }
     }
@@ -69,7 +109,13 @@ public class ContentRule : MonoBehaviour
         {
             if (adjacentNode.phaseData != null && IsCombination(node.GetPhaseType(), adjacentNode.GetPhaseType()))
             {
-                AddAnimateQueue(isMine, new List<Node>() { node, adjacentNode }, Definitions.COMBINATION_SCORE);
+                AnimData data = new AnimData();
+                data.isMine = isMine;
+                data.nodes = new List<Node>() { node, adjacentNode };
+                data.score = Definitions.COMBINATION_SCORE;
+                data.showType = ShowType.Combination;
+
+                AddAnimateQueue(data);
             }
         }
     }
@@ -80,7 +126,13 @@ public class ContentRule : MonoBehaviour
 
         foreach (var cycle in cycles)
         {
-            AddAnimateQueue(isMine, cycle, Definitions.PHASE_CYCLE_SCORE * cycle.Count);
+            AnimData data = new AnimData();
+            data.isMine = isMine;
+            data.nodes = cycle;
+            data.score = Definitions.PHASE_CYCLE_SCORE * cycle.Count;
+            data.showType = ShowType.Cycle;
+
+            AddAnimateQueue(data);
         }
     }
 
@@ -146,16 +198,11 @@ public class ContentRule : MonoBehaviour
         }
     }
 
-    protected virtual void AddAnimateQueue(bool isMine, List<Node> nodes, int score, Action endCallback = null) 
+    protected virtual void AddAnimateQueue(AnimData data) 
     {
         animationQueue.Enqueue(() =>
         {
-            AnimateNodes(nodes, isMine, endCallback);
-
-            if (isMine)
-                gameManager.UpdateMyScore(score);
-            else
-                gameManager.UpdateOtherScore(score);
+            AnimateNodes(data);
         });
     }
 
@@ -168,53 +215,98 @@ public class ContentRule : MonoBehaviour
         });
     }
 
-    protected virtual void AnimateNodes(List<Node> nodes, bool isMine, Action endCallback) 
+    protected virtual void AnimateNodes(AnimData data)
     {
+        Color color = data.isMine ? Definitions.My_Occupied_Color : Definitions.Other_Occupied_Color;
+        int userIndex = data.isMine ? Definitions.MY_INDEX : Definitions.OTHER_INDEX;
+        Vector3 targetPos = data.isMine ? gameManager.GetMyProfileWorldTr().position : gameManager.GetOtherProfileWorldTr().position;
+
         Sequence sequence = DOTween.Sequence();
         SetIsAnimation(true);
 
-        _FastAnimation();
+        switch(data.showType)
+        {
+            case ShowType.SamePhase:
+                _AnimateAtOnce(true);
+                break;
+            case ShowType.Combination:
+                _AnimateAtOnce(false);
+                break;
+            case ShowType.Cycle:
+                _AnimateSequentially();
+                break;
+            case ShowType.End:
+                break;
+        }
+
 
         sequence.AppendCallback(() => SetIsAnimation(false));
-        sequence.AppendCallback(() => endCallback?.Invoke());
-
+        sequence.AppendCallback(() => data.endCallback?.Invoke());
         sequence.Play();
 
+        _UpdateScore(data.isMine);
 
-        void _SlowAnimation()
+        void _UpdateScore(bool isMine)
         {
-            foreach (Node node in nodes)
-            {
-                Vector3 originalScale = node.transform.localScale;
-                Vector3 targetScale = originalScale * 1.5f;
-
-                sequence.Append(node.transform.DOScale(targetScale, 0.2f));
-                sequence.AppendCallback(() => node.EnableEmission(isMine ? Definitions.My_Occupied_Color : Definitions.Other_Occupied_Color));
-                sequence.AppendCallback(() => node.SetOccupiedUser(isMine ? Definitions.MY_INDEX : Definitions.OTHER_INDEX));
-                sequence.AppendCallback(() => node.EffectStar(isMine));
-                sequence.AppendInterval(0.2f);
-                sequence.Append(node.transform.DOScale(originalScale, 0.2f));
-                sequence.AppendCallback(() => node.transform.localScale = originalScale);
-            }
+            if (data.isMine)
+                gameManager.UpdateMyScore(data.score);
+            else
+                gameManager.UpdateOtherScore(data.score);
         }
-        void _FastAnimation()
+
+        /// 순차적으로 애니메이션
+        void _AnimateSequentially()
         {
-            sequence.AppendCallback(() => ScaleNodes(nodes, 1.5f, 0.2f, true));
-            sequence.AppendCallback(() => SetEmissionColorNodes(nodes, Definitions.Non_Occupied_Color));
+            sequence.AppendCallback(() => ScaleNodes(data.nodes, 1.5f, 0.2f, true));
+            sequence.AppendCallback(() => SetEmissionColorNodes(data.nodes, Definitions.Non_Occupied_Color));
             sequence.AppendInterval(0.5f);
 
-            foreach (Node node in nodes)
+            foreach (Node node in data.nodes)
             {
-                sequence.AppendCallback(() => node.EnableEmission(isMine ? Definitions.My_Occupied_Color : Definitions.Other_Occupied_Color));
-                sequence.AppendCallback(() => node.SetOccupiedUser(isMine ? Definitions.MY_INDEX : Definitions.OTHER_INDEX));
-                sequence.AppendCallback(() => node.EffectStar(isMine));
+                sequence.AppendCallback(() => node.EnableEmission(color));
+                sequence.AppendCallback(() => node.SetOccupiedUser(userIndex));
+                sequence.AppendCallback(() => _DoScoreEffect(node.transform, targetPos));
 
                 sequence.AppendInterval(0.3f);
             }
 
             sequence.AppendInterval(0.5f);
-            sequence.AppendCallback(() => ScaleNodes(nodes, 1.0f, 0.2f, true));
-            sequence.AppendCallback(() => ScaleNodes(nodes, 1.0f));
+            sequence.AppendCallback(() => ScaleNodes(data.nodes, 1.0f, 0.2f, true));
+            sequence.AppendCallback(() => ScaleNodes(data.nodes, 1.0f));
+        }
+
+        /// 한번에 애니메이션
+        void _AnimateAtOnce(bool isEdge)
+        {
+            sequence.AppendCallback(() => ScaleNodes(data.nodes, 1.5f, 0.2f, true));
+            sequence.AppendCallback(() => SetEmissionColorNodes(data.nodes, Definitions.Non_Occupied_Color));
+            sequence.AppendInterval(0.5f);
+
+            foreach (Node node in data.nodes)
+            {
+                sequence.AppendCallback(() => node.EnableEmission(color));
+                sequence.AppendCallback(() => node.SetOccupiedUser(userIndex));
+                sequence.AppendCallback(() => _DoScoreEffect(node.transform, targetPos));
+            }
+
+
+            sequence.AppendInterval(0.5f);
+            sequence.AppendCallback(() => ScaleNodes(data.nodes, 1.0f, 0.2f, true));
+            sequence.AppendCallback(() => ScaleNodes(data.nodes, 1.0f));
+        }
+
+        void _DoScoreEffect(Transform tr, Vector3 targetPos)
+        {
+            var st = Instantiate(scoreStarPrefab, tr.position, Quaternion.identity);
+            st.DoEffect(new ScoreStar.Data()
+            {
+                isMine = data.isMine,
+                targetPos = targetPos,
+                endCallback = () => 
+                {
+                    //여기서 점수를 올려야할거같은데..
+                }
+            });
         }
     }
 

@@ -3258,6 +3258,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ContentsDataManager
       objectReference: {fileID: 0}
+    - target: {fileID: 8222668208291267696, guid: 9745210b43c8fec49ba2154d5ccb6481, type: 3}
+      propertyPath: scoreStarPrefab
+      value: 
+      objectReference: {fileID: 3618827772899015537, guid: 7c38bd9456b0b9748a713805d96b3e64, type: 3}
     - target: {fileID: 8538562924108770134, guid: 9745210b43c8fec49ba2154d5ccb6481, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

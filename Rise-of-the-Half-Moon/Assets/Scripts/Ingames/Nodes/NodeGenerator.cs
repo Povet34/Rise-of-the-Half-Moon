@@ -57,8 +57,6 @@ public class NodeGenerator : MonoBehaviour
                 var data = new Node.InitData();
                 data.index = order++;
                 data.position = position;
-                data.myProfileTr = gameManager.GetMyProfileWorldTr();
-                data.otherProfileTr = gameManager.GetOtherProfileWorldTr();
 
                 node.Init(data);
                 nodes.Add(node);

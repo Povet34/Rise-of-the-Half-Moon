@@ -21,8 +21,6 @@ public class Node : MonoBehaviour
     {
         public int index;
         public Vector3 position;
-        public Transform myProfileTr;
-        public Transform otherProfileTr;
     }
 
     public int index;
@@ -34,22 +32,16 @@ public class Node : MonoBehaviour
     private Renderer nodeRenderer;  // Renderer to change the color
     private MaterialPropertyBlock propertyBlock;
 
-    [SerializeField] private RectTransform canvasRt;
     [SerializeField] private TextMeshProUGUI pointValueNotifier;
     [SerializeField] private ScoreStar scoreStarPrefab;
 
     public List<Node> nextNodes = new List<Node>();
     public List<Node> prevNodes = new List<Node>();
 
-    private Transform myProfileTr;
-    private Transform otherProfileTr;
-
     public void Init(InitData data)
     {
         index = data.index;
         position = data.position;
-        myProfileTr = data.myProfileTr;
-        otherProfileTr = data.otherProfileTr;
 
         occupiedUser = Definitions.EMPTY_NODE;
 
@@ -107,18 +99,20 @@ public class Node : MonoBehaviour
         }
     }
 
-    public void EffectStar(bool isMine)
-    {
-        if (scoreStarPrefab != null)
-        {
-            var targetPos = isMine ? myProfileTr.position : otherProfileTr.position;
-            ScoreStar scoreStar = Instantiate(scoreStarPrefab, transform.position, Quaternion.identity);
-            scoreStar.DoEffect(isMine, targetPos);
-        }
-    }
-
     public void Destroy()
     {
         Destroy(gameObject);
+    }
+
+    public Edge GetsharedEdage(Node other)
+    {
+        foreach (Edge edge in connectedEdges)
+        {
+            if (edge.GetOtherNode(this) == other)
+            {
+                return edge;
+            }
+        }
+        return null;
     }
 }
