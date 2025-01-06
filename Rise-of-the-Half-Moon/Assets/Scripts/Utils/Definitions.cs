@@ -51,7 +51,7 @@ public static class Definitions
     #region Sounds
     public const string SOUND_BGM1 = "BGM1";
     public const string SOUND_UI_BUTTON_CLICK = "UIButtonClick";
-    public const string SOUND_OCCUR_SCORE_STAR = "OccurScoreStar";    //DM-CGS-03
+    public const string SOUND_OCCUR_SCORE_STAR = "OccurScoreStar";    //DM-CGS-03    
     public const string SOUND_ARRIVE_SCORE_STAR = "ArriveScoreStar";  //DM-CGS-28
 
     #endregion

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: ArriveScoreStar
   m_EditorClassIdentifier: 
   soundName: ArriveScoreStar
-  clip: {fileID: 8300000, guid: 29bde6326b4c34ad8a12da475f79b50a, type: 3}
+  clip: {fileID: 8300000, guid: 79180f511d89441b9aa23ccae1992fe0, type: 3}
   volume: 1
   pitch: 1

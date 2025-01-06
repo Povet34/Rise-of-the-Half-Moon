@@ -9,6 +9,22 @@ public class SoundManager : Singleton<SoundManager>
 
     private Coroutine bgmCoroutine;
 
+    public void PlaySFX(string name, float pitch)
+    {
+        GameObject go = new GameObject(name + "SFX");
+        AudioSource sfxSource = go.AddComponent<AudioSource>();
+        SFXData sound = System.Array.Find(sfxDatas, s => s.soundName == name);
+        if (sound != null)
+        {
+            sfxSource.clip = sound.clip;
+            sfxSource.volume = sound.volume;
+            sfxSource.pitch = pitch;
+            sfxSource.Play();
+        }
+
+        Destroy(go, sound.clip.length);
+    }
+
     public void PlaySFX(string name)
     {
         GameObject go = new GameObject(name + "SFX");
