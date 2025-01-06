@@ -253,6 +253,7 @@ public class ContentRule : MonoBehaviour
         /// 순차적으로 애니메이션
         void _AnimateSequentially()
         {
+            int count = 0;
             sequence.AppendCallback(() => ScaleNodes(data.nodes, 1.5f, 0.2f, true));
             sequence.AppendCallback(() => SetEmissionColorNodes(data.nodes, Definitions.Non_Occupied_Color));
             sequence.AppendInterval(0.5f);
@@ -261,7 +262,7 @@ public class ContentRule : MonoBehaviour
             {
                 sequence.AppendCallback(() => node.EnableEmission(color));
                 sequence.AppendCallback(() => node.SetOccupiedUser(userIndex));
-                sequence.AppendCallback(() => _DoScoreEffect(node.transform, targetPos));
+                sequence.AppendCallback(() => _DoScoreEffect(node.transform, targetPos, ++count));
 
                 sequence.AppendInterval(0.3f);
             }
@@ -274,6 +275,7 @@ public class ContentRule : MonoBehaviour
         /// 한번에 애니메이션
         void _AnimateAtOnce()
         {
+            int count = 0;
             sequence.AppendCallback(() => ScaleNodes(data.nodes, 1.5f, 0.2f, true));
             sequence.AppendCallback(() => SetEmissionColorNodes(data.nodes, Definitions.Non_Occupied_Color));
             sequence.AppendInterval(0.5f);
@@ -285,21 +287,22 @@ public class ContentRule : MonoBehaviour
             }
 
             var sharedEdge = data.nodes[0].GetSharedEdge(data.nodes[1]);
-            _DoScoreEffect(sharedEdge.transform, targetPos);
+            _DoScoreEffect(sharedEdge.transform, targetPos, ++count);
 
             sequence.AppendInterval(0.5f);
             sequence.AppendCallback(() => ScaleNodes(data.nodes, 1.0f, 0.2f, true));
             sequence.AppendCallback(() => ScaleNodes(data.nodes, 1.0f));
         }
 
-        void _DoScoreEffect(Transform tr, Vector3 targetPos)
+        void _DoScoreEffect(Transform tr, Vector3 targetPos, int count)
         {
             var st = Instantiate(scoreStarPrefab, tr.position, Quaternion.identity);
             st.DoEffect(new ScoreStar.Data()
             {
                 isMine = data.isMine,
                 targetPos = targetPos,
-                endCallback = () => 
+                spawnSoundPitch = count,
+                endCallback = () =>
                 {
                     _UpdateScore(data.isMine);
                 }
