@@ -40,6 +40,12 @@ public static class Definitions
 
     #endregion
 
+    #region Prefab Names
+
+    public const string PREFAB_SCORE_STAR = "ScoreStar";
+
+    #endregion
+
     #region Result Comments
 
     public const string Win = "Win";

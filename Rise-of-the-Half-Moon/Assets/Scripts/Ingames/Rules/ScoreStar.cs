@@ -33,8 +33,8 @@ public class ScoreStar : MonoBehaviour
         sequence.OnComplete(() => 
         {
             data.endCallback?.Invoke();
+            SoundManager.Instance.PlaySFX(Definitions.SOUND_ARRIVE_SCORE_STAR);
             Destroy(gameObject);
-            SoundManager.Instance.PlayBGM(Definitions.SOUND_ARRIVE_SCORE_STAR);
         });
 
 

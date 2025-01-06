@@ -40,7 +40,7 @@ public class ContentRule : MonoBehaviour
         gameManager = FindAnyObjectByType<GameManager>();
         nodeGenerator = FindAnyObjectByType<NodeGenerator>();
         volumeController = FindAnyObjectByType<GlobalVolumeController>();
-        scoreStarPrefab = Resources.Load<ScoreStar>("ScoreStar");
+        scoreStarPrefab = Resources.Load<ScoreStar>(Definitions.PREFAB_SCORE_STAR);
 
         StartCoroutine(DelayAnimation());
     }
@@ -75,6 +75,7 @@ public class ContentRule : MonoBehaviour
         data.isMine = false;
         data.nodes = otherOccupiedNodes;
         data.score = Definitions.SETTLEMENT_SCORE;
+        data.showType = ShowType.End;
         AddAnimateQueue(data);
 
         LastSettlementAnimate(settlementEndCallback);
@@ -224,7 +225,9 @@ public class ContentRule : MonoBehaviour
 
         Sequence sequence = DOTween.Sequence();
         SetIsAnimation(true);
-        sequence.AppendCallback(() => gameManager.ShowMakePatternNotifier(data.showType.ToString()));
+
+        if(data.showType != ShowType.End)
+            sequence.AppendCallback(() => gameManager.ShowMakePatternNotifier(data.showType.ToString()));
 
         switch (data.showType)
         {
