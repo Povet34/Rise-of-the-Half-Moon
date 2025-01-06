@@ -9,8 +9,6 @@ public class Node : MonoBehaviour
     const string BASE_MAP = "_BaseMap";
     const string EMISSION_COLOR = "_EmissionColor";
 
-    GameManager gameManager;
-
     public struct PutData
     {
         public int occupiedUser;   //occupied user index
@@ -45,7 +43,6 @@ public class Node : MonoBehaviour
 
         occupiedUser = Definitions.EMPTY_NODE;
 
-        gameManager = FindAnyObjectByType<GameManager>();
         nodeRenderer = GetComponent<Renderer>(); // Get the Renderer component
         propertyBlock = new MaterialPropertyBlock();
 

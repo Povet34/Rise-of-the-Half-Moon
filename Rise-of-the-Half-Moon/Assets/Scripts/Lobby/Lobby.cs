@@ -38,6 +38,8 @@ public class Lobby : MonoBehaviour
         photonLobby.OnPlayerAlreadyInRoomCallback += OnPlayerAlreadyInRoom;
         photonLobby.OnJoinedRoomCallback += OnJoinedRoom;
         photonLobby.OnCreatedRoomCallback += OnCreatedRoom;
+
+        SoundManager.Instance.PlayBGM(Definitions.SOUND_BGM1);
     }
 
     private void OnDestroy()

@@ -48,6 +48,14 @@ public static class Definitions
 
     #endregion
 
+    #region Sounds
+    public const string SOUND_BGM1 = "BGM1";
+    public const string SOUND_UI_BUTTON_CLICK = "UIButtonClick";
+    public const string SOUND_OCCUR_SCORE_STAR = "OccurScoreStar";    //DM-CGS-03
+    public const string SOUND_ARRIVE_SCORE_STAR = "ArriveScoreStar";  //DM-CGS-28
+
+    #endregion
+
     public const int EMPTY_NODE = 0;
     public const int NOT_OCCUPIED_NODE = 1;
     public const int MY_INDEX = 2;

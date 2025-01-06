@@ -1,10 +1,5 @@
-using System;
-using System.Collections;
 using Firebase.Auth;
-using Google;
 using UnityEngine;
-using UnityEngine.Networking;
-using UnityEngine.UI;
 
 public class LoginManager : MonoBehaviour
 {
