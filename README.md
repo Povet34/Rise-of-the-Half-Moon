@@ -1,5 +1,9 @@
 # Rise of the Half Moon
 
+### Ingame Video
+https://github.com/user-attachments/assets/c0950ac0-29d3-4428-b2b0-e1d72912d09e
+
+
 ## 사용된 플러그인
 ### Extract-Multiple-Sprite
 https://github.com/nmtoan91/Unity-Plugin-Extract-Multiple-Sprite
