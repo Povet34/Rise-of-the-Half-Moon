@@ -4,11 +4,16 @@
 https://github.com/user-attachments/assets/c0950ac0-29d3-4428-b2b0-e1d72912d09e
 
 
-## 사용된 플러그인
-### Extract-Multiple-Sprite
-https://github.com/nmtoan91/Unity-Plugin-Extract-Multiple-Sprite
-### play-games-plugin-for-unity
-https://github.com/playgameservices/play-games-plugin-for-unity
+## 요약
+### 사용기술
+- 아틀라스 sprite 를 다중 Sprite로 추출
+- 점수 Cycle 탐색을 위해 DPS 사용
+- Scriptable Object를 이용하여 데이터 관리
+- Google Firebase realtimeDB
+- Google Firebase Auth
+- PUN2을 이용하여 매치메이킹 및 게임 진행
+- DOTween
+- PostProcessing을 이용하여, Game의 유불리함 표현
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 # Implement
