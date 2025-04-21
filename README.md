@@ -1,6 +1,6 @@
 # Rise of the Half Moon
 
-### 구글 두들 게임
+### 원작 구글 두들 게임
 플레이해보기
 https://doodles.google/doodle/rise-of-the-half-moon/
 
