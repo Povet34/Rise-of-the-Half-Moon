@@ -1,5 +1,10 @@
 # Rise of the Half Moon
 
+### 구글 두들 게임
+플레이해보기
+https://doodles.google/doodle/rise-of-the-half-moon/
+
+
 ### Ingame Video
 https://github.com/user-attachments/assets/c0950ac0-29d3-4428-b2b0-e1d72912d09e
 
