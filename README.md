@@ -22,6 +22,10 @@ Google Doodle 원작 게임입니다. 아래 링크에서 플레이해볼 수 �
 
 ---
 
+
+
+
+
 # 🚧 구현 항목
 
 ## 🧩 Game Contents
