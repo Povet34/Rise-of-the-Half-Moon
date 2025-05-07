@@ -164,6 +164,9 @@ public class NodeCycleHelper
         return PhaseData.GetPreviousPhaseType(node1.GetPhaseType(), gameManager.contentType) == node2.GetPhaseType();
     }
 }
+
+```
+
 </details>
 
 ---
