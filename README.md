@@ -165,29 +165,55 @@ public class NodeCycleHelper
     }
 }
 </details>
-☁️ Firebase
-🔐 Auth 방식
-익명 로그인
 
-Google 로그인
+---
 
-📊 Realtime Database 구조
-Users: 유저 정보
+## ☁️ Firebase 연동
 
-Scores: 유저별 점수 (MMR 등)
+### 🔐 Auth 방식
 
-🔄 Photon PUN2
-🏠 Room 관리
-자동 매치메이킹 지원
+- ✅ 익명 로그인
+    
+- ✅ Google 로그인
+    
 
-🔁 RPC 활용
-카드 놓기 (PutCard)
+### 📊 Realtime Database 구조
 
-아이템 사용 (UseItem)
+- `Users`: 유저 정보
+    
+- `Scores`: 유저별 점수 (MMR 등)
+    
 
-📢 기타 시스템
-📱 Admob: 광고 지원
+---
 
-🔊 Sounds: BGM / 효과음 구성
+## 🔄 Photon PUN2
 
-💥 Effects: 카드 배치 및 스킬 이펙트 처리
+### 🏠 Room 관리
+
+- 자동 매치메이킹 지원
+    
+
+### 🔁 RPC 활용
+
+- 카드 놓기 (`PutCard`)
+    
+- 아이템 사용 (`UseItem`)
+    
+
+---
+
+## 📢 기타 시스템
+
+### 📱 AdMob
+
+- 광고 지원 (보상형 등)
+    
+
+### 🔊 Sounds
+
+- BGM / 효과음 구성
+    
+
+### 💥 Effects
+
+- 카드 배치 / 스킬 사용 시 이펙트 처리
