@@ -185,6 +185,7 @@ public class NodeCycleHelper
 - `Users`: 유저 정보
     
 - `Scores`: 유저별 점수 (MMR 등)
+-  점수는 저장하지만 아직 구현 x
     
 
 ---
@@ -207,9 +208,9 @@ public class NodeCycleHelper
 
 ## 📢 기타 시스템
 
-### 📱 AdMob
+~~### 📱 AdMob~~
 
-- 광고 지원 (보상형 등)
+~~- 광고 지원 (보상형 등)~~
     
 
 ### 🔊 Sounds
