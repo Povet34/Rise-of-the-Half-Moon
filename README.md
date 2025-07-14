@@ -12,7 +12,7 @@ Google Doodle 원작 게임입니다. 아래 링크에서 플레이해볼 수 �
 ## 🛠️ 사용 기술
 
 - 🎨 Sprite Atlas → 다중 Sprite 추출
-- 📈 DPS를 이용한 점수 Cycle 탐색
+- 📈 DFS를 이용한 점수 Cycle 탐색
 - 📦 `ScriptableObject`로 게임 데이터 관리
 - ☁️ Firebase Realtime Database
 - 🔐 Firebase Authentication (익명/Google 로그인)
